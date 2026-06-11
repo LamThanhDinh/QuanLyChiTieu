@@ -1,0 +1,69 @@
+/* ProfileStatsWidget.module.css */
+
+.widgetContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #fcfdfe;
+  border: 1.5px solid #e0e7ef;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(63, 81, 181, 0.04);
+  min-width: 280px;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.iconProfile,
+.iconSecurity {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-background);
+  flex-shrink: 0;
+}
+
+.iconProfile {
+  background-color: var(--color-primary);
+}
+
+.iconSecurity {
+  background-color: #ff9800;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.username,
+.status {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.comparison {
+  font-size: 0.65rem;
+  color: var(--color-text-secondary);
+}
+
+.divider {
+  width: 1px;
+  align-self: stretch;
+  background-color: #e0e7ef;
+}

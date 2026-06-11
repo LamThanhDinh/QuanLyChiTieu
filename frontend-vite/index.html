@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="manifest" href="/manifest.json">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý chi tiêu</title>
+    <script>
+      // Prevent FOUC by setting theme class immediately
+      (function () {
+        const saved = localStorage.getItem("darkMode");
+        const isDarkMode = saved !== null ? JSON.parse(saved) : false;
+
+        if (isDarkMode) {
+          document.documentElement.classList.add("dark-theme", "dark");
+        } else {
+          document.documentElement.classList.add("light-theme");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

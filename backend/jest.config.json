@@ -1,0 +1,15 @@
+{
+  "testEnvironment": "node",
+  "testMatch": ["**/__tests__/**/*.js", "**/?(*.)+(spec|test).js"],
+  "collectCoverageFrom": [
+    "controllers/**/*.js",
+    "models/**/*.js",
+    "middleware/**/*.js",
+    "routes/**/*.js",
+    "!**/node_modules/**",
+    "!**/__tests__/**"
+  ],
+  "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"],
+  "testTimeout": 60000,
+  "verbose": true
+}

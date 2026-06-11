@@ -1,0 +1,89 @@
+/* src/components/Goals/GoalFilterButtons.module.css (Phiên bản đồng bộ) */
+
+.filterWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Nút bấm chính để mở/đóng menu */
+.filterButton {
+  /* --- Bắt đầu phần đồng bộ --- */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--color-border-light);
+  border-radius: 8px;
+  border: 2px solid transparent; /* Giống react-select */
+  padding: 0 10px; /* Điều chỉnh padding cho phù hợp */
+  min-height: 40px; /* Đặt chiều cao tối thiểu giống react-select */
+
+  /* ✅ Thêm chiều rộng tối thiểu để 2 nút bằng nhau */
+  min-width: 160px;
+
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+/* ✅ Đồng bộ hiệu ứng hover: chỉ đổi màu viền */
+.filterButton:hover {
+  border-color: var(--color-border);
+}
+
+/* ✅ Đồng bộ hiệu ứng focus/active */
+.filterButton[aria-expanded="true"] {
+  background-color: var(--color-background);
+  border-color: #a5b4fc;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+/* --- Phần menu thả xuống không cần thay đổi nhiều --- */
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 10;
+  background: var(--color-background);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-border);
+  padding: 8px;
+  width: 100%; /* Menu sẽ có độ rộng bằng nút bấm */
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dropdownItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  text-align: left;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.dropdownItem:hover {
+  background-color: var(--color-border-light);
+}
+
+.dropdownItem.activeItem {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.checkIcon {
+  color: var(--color-primary);
+}

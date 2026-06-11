@@ -1,0 +1,151 @@
+/* SecurityActions.module.css */
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 400px; /* Đồng bộ với PasswordChange */
+  background: var(--color-surface-primary);
+  color: var(--color-text-primary);
+}
+
+.historySection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Cho phép flex shrink */
+}
+
+.historySection h3 {
+  font-size: 1.2rem;
+  margin: 0 0 16px 0;
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.historyContainer {
+  flex: 1;
+  overflow-y: auto;
+  height: 100%;
+  max-height: none;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  background-color: var(--color-input-background);
+  padding: 12px;
+}
+
+.historyList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.historyItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+  gap: 12px;
+}
+
+.historyItem:last-child {
+  border-bottom: none;
+}
+
+.historyInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0; /* Cho phép text truncate */
+}
+
+.historyInfo strong {
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  word-break: break-word;
+}
+
+.historyInfo span {
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+}
+
+.historyTime {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.dangerSection {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.dangerSection h4 {
+  font-size: 1rem;
+  margin: 0 0 12px 0;
+  color: var(--color-error-primary);
+  font-weight: 600;
+}
+
+.dangerZone {
+  background-color: rgba(239, 68, 68, 0.05);
+  border: 1px solid #ffdde0;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.dangerZone strong {
+  color: var(--color-error-primary);
+  font-size: 0.9rem;
+}
+
+.dangerZone p {
+  margin: 4px 0 0 0;
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+}
+
+.dangerButton {
+  background-color: var(--color-error-secondary);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  min-width: 100px;
+  transition: background-color 0.2s;
+}
+
+.dangerButton:hover {
+  background-color: #b91c1c;
+}
+
+/* Scrollbar styling */
+.historyContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.historyContainer::-webkit-scrollbar-track {
+  background: var(--color-surface-secondary);
+  border-radius: 3px;
+}
+
+.historyContainer::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.historyContainer::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}

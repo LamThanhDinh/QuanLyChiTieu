@@ -1,0 +1,264 @@
+/* src/styles/CategoriesPage.module.css */
+
+/* Container bao bọc toàn bộ trang, tạo khoảng đệm */
+.pageWrapper {
+  width: 100%;
+  padding: var(--page-gap) 0; /* Chỉ có padding top/bottom */
+  background-color: var(--page-background);
+  min-height: calc(100vh - 140px);
+}
+
+.contentContainer {
+  width: 100%;
+  padding: 0 var(--page-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-gap);
+}
+
+/* Container cho toàn bộ khu vực phân tích (khối trắng lớn) */
+.analyticsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 25px;
+  background-color: var(--color-background);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+}
+
+/* Container chứa 2 cột: chart bên trái, list bên phải */
+.contentRow {
+  display: flex;
+  gap: 24px;
+  align-items: stretch;
+  min-height: 500px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .contentRow {
+    flex-direction: column;
+    gap: 16px;
+    min-height: auto;
+  }
+
+  .chartContainer,
+  .listContainer {
+    min-width: auto;
+  }
+}
+
+/* Cột chứa biểu đồ - 4/10 chiều ngang (bên trái) */
+.chartContainer {
+  flex: 4;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cột chứa danh sách - 6/10 chiều ngang (bên phải) */
+.listContainer {
+  flex: 6;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Loading and error states */
+.loading,
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+}
+
+.error {
+  color: #dc3545;
+}
+
+/* Nhóm nút lọc loại danh mục */
+.typeFilterButtons {
+  display: flex;
+  background-color: #e9ecef;
+  border-radius: 18px;
+  padding: 4px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  gap: 0;
+  justify-content: center;
+  align-items: center;
+}
+
+.typeFilterButtons button {
+  background-color: transparent;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.typeFilterButtons button:hover {
+  background-color: #dee2e6;
+}
+
+.typeFilterButtons button.active {
+  background-color: var(--color-background);
+  color: var(--color-primary);
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Thêm style cho .typeFilterBox và .typeFilterTitle */
+.typeFilterBox {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  background-color: #fcfcfe; /* Tương tự fieldset */
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0; /* Viền nhẹ nhàng, đồng bộ */
+  border-radius: 12px; /* Bo tròn góc */
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.typeFilterTitle {
+  font-size: 0.95rem; /* Đồng bộ với legend */
+  font-weight: 600;
+  color: var(--color-primary) !important; /* Tăng độ ưu tiên để đảm bảo áp dụng style */
+  min-width: auto;
+  text-align: left;
+  margin-bottom: 0;
+  letter-spacing: 0.01em; /* Thêm khoảng cách ký tự nhỏ */
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .contentRow {
+    gap: 20px;
+  }
+
+  /* Giữ tỷ lệ 4-6 trên desktop nhỏ (chart-list) */
+  .chartContainer {
+    flex: 4;
+    min-width: 250px;
+  }
+
+  .listContainer {
+    flex: 6;
+  }
+}
+
+@media (max-width: 992px) {
+  .contentRow {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .chartContainer,
+  .listContainer {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .container {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+
+  .contentRow {
+    gap: 16px;
+  }
+
+  .typeFilterButtons {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .typeFilterBox {
+    padding: 6px 4px;
+    min-width: 0;
+  }
+
+  .typeFilterTitle {
+    font-size: 1rem;
+    min-width: 120px;
+  }
+}
+
+/* Style cho container chứa bộ lọc loại danh mục */
+
+.filtersContainer {
+  display: flex;
+  flex-wrap: wrap; /* Cho phép xuống dòng trên màn hình nhỏ */
+  gap: 16px; /* Khoảng cách giữa 2 bộ lọc */
+  align-items: flex-start; /* Căn chỉnh theo đầu */
+}
+
+/* Style cho fieldset của bộ lọc loại danh mục (COPY từ DateRangeNavigator) */
+.typeFilterFieldset {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  margin: 0;
+  padding: 0.75rem 1rem 1rem; /* Áp dụng padding giống hệt bên trong DateRangeNavigator */
+  background-color: #fcfcfe;
+}
+
+/* Style cho legend của bộ lọc loại danh mục (COPY từ DateRangeNavigator) */
+.typeFilterLegend {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  padding: 3px 10px;
+  margin-left: 1rem; /* Đẩy legend vào trong một chút */
+}
+
+/* Nhóm nút lọc loại danh mục - không cần thay đổi nhiều */
+.typeFilterButtons {
+  display: flex;
+  background-color: #e9ecef;
+  border-radius: 18px;
+  padding: 2px; /* Giảm padding để nút vừa vặn hơn */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  gap: 0;
+  justify-content: center;
+  align-items: center;
+}
+
+.typeFilterButtons button {
+  background-color: transparent;
+  border: none;
+  padding: 7px 15px; /* Điều chỉnh padding cho cân đối */
+  border-radius: 14px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.typeFilterButtons button:hover {
+  background-color: #dee2e6;
+}
+
+.typeFilterButtons button.active {
+  background-color: var(--color-background);
+  color: var(--color-primary);
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Đồng bộ shadow */
+}

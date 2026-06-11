@@ -1,0 +1,175 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 8px;
+  height: 40px;
+  padding: 0 20px;
+  cursor: pointer;
+  transition:
+    box-shadow 0.2s,
+    transform 0.18s,
+    background 0.2s;
+  box-shadow: var(--shadow-base);
+  outline: none;
+  gap: 10px;
+}
+
+.primary {
+  background: var(--color-primary);
+  color: var(--color-background);
+  box-shadow: 0 3px 12px rgba(63, 81, 181, 0.3);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  box-shadow: 0 6px 20px rgba(63, 81, 181, 0.4);
+  transform: scale(1.02) translateY(-1px);
+}
+
+.primary:active {
+  transform: scale(0.98);
+}
+
+.primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Secondary (nhỏ, xanh dương đậm, gần giống navbar) */
+.secondary {
+  background: var(--color-primary);
+  color: var(--color-background);
+  font-size: 0.97rem;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(63, 81, 181, 0.2);
+  animation: popBtn 0.7s;
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  box-shadow: 0 4px 16px rgba(63, 81, 181, 0.4);
+  filter: brightness(1.08);
+}
+.secondary:active {
+  transform: scale(0.98);
+}
+.secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Accent variant - Sử dụng CSS variables từ hệ thống */
+.accent {
+  background: linear-gradient(
+    135deg,
+    var(--color-accent-primary) 0%,
+    var(--color-accent-secondary) 100%
+  );
+  color: white;
+  font-size: 0.875rem;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 8px;
+  box-shadow:
+    0 2px 4px rgba(59, 130, 246, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.accent:hover:not(:disabled) {
+  background: linear-gradient(
+    135deg,
+    var(--color-accent-hover-primary) 0%,
+    var(--color-accent-hover-secondary) 100%
+  );
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 8px rgba(59, 130, 246, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.accent:active {
+  transform: translateY(0);
+  box-shadow:
+    0 2px 4px rgba(59, 130, 246, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.accent:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Success variant - Sử dụng CSS variables từ hệ thống */
+.success {
+  background: linear-gradient(
+    135deg,
+    var(--color-success-primary) 0%,
+    var(--color-success-secondary) 100%
+  );
+  color: white;
+  font-size: 0.875rem;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 8px;
+  box-shadow:
+    0 2px 4px rgba(34, 197, 94, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.success:hover:not(:disabled) {
+  background: linear-gradient(
+    135deg,
+    var(--color-success-hover-primary) 0%,
+    var(--color-success-hover-secondary) 100%
+  );
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 8px rgba(34, 197, 94, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.success:active {
+  transform: translateY(0);
+  box-shadow:
+    0 2px 4px rgba(34, 197, 94, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.success:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.2em;
+  margin-right: 6px;
+}
+.loading {
+  font-size: 0.95em;
+  font-weight: 500;
+  color: var(--color-background);
+}
+
+@keyframes popBtn {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  80% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}

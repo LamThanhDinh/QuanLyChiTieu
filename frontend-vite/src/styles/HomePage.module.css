@@ -1,0 +1,86 @@
+/* src/styles/HomePage.module.css */
+
+.pageWrapper {
+  width: 100%;
+  padding: var(--page-gap) 0; /* Chỉ có padding top/bottom */
+  background-color: var(--page-background);
+  min-height: calc(100vh - 140px);
+}
+
+.contentContainer {
+  width: 100%;
+  padding: 0 var(--page-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-gap);
+}
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-gap);
+}
+
+.headerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.contextRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.contextText {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.moodEmoji {
+  font-size: 1.2rem;
+}
+
+.miniStats {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+/* Wrapper cho StatsOverview với thiết kế mới */
+.statsOverviewWrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 4px 0;
+}
+
+/* Thêm CSS cho homePageHeader để đảm bảo styling nhất quán với các page khác */
+.homePageHeader {
+  /* Styling nhất quán với các page khác */
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .statsOverviewWrapper {
+    max-width: 1000px;
+  }
+}
+
+@media (max-width: 992px) {
+  .statsOverviewWrapper {
+    max-width: 800px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    gap: 16px;
+  }
+
+  .statsOverviewWrapper {
+    max-width: 100%;
+    justify-content: flex-start;
+  }
+}

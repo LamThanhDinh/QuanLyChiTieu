@@ -1,0 +1,84 @@
+/* src/components/Common/ConfirmDialog.module.css */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Đảm bảo nó ở trên cùng */
+}
+
+.modalContent {
+  background-color: var(--color-background);
+  padding: 25px 30px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 400px; /* Giới hạn chiều rộng tối đa */
+  text-align: center;
+}
+
+.modalTitle {
+  font-size: 1.4rem;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.modalMessage {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: center; /* Căn giữa các nút */
+  gap: 15px; /* Khoảng cách giữa các nút */
+}
+
+.modalButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.cancelButton {
+  background-color: #f0f0f0;
+  color: #555;
+  border: 1px solid #ddd;
+}
+
+.cancelButton:hover {
+  background-color: #e7e7e7;
+}
+
+.confirmButton {
+  background-color: #dc3545; /* Màu đỏ cho nút xác nhận xóa */
+  color: white;
+}
+
+.confirmButton:hover {
+  background-color: #c82333;
+}
+/* THÊM VÀO CUỐI FILE: src/components/Common/ConfirmDialog.module.css */
+
+.errorMessage {
+  color: #dc3545; /* Màu đỏ */
+  background-color: rgba(239, 68, 68, 0.1); /* Nền đỏ nhạt */
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: -10px; /* Dịch lên một chút */
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}

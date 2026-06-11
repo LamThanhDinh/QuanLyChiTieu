@@ -1,0 +1,133 @@
+/* frontend-vite/src/components/Common/DateRangeNavigator.module.css */
+
+.controlsGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem 1rem 1rem; /* Áp dụng padding vào đây */
+}
+
+.filterButtons {
+  display: flex;
+  background-color: #e9ecef;
+  border-radius: 18px; /* Bo tròn cả cụm */
+  padding: 2px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filterButtons button {
+  background-color: transparent;
+  border: none;
+  padding: 7px 15px;
+  border-radius: 14px; /* Bo tròn từng nút */
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.filterButtons button:hover {
+  background-color: #dee2e6;
+}
+
+.filterButtons button.active {
+  background-color: var(--color-background);
+  color: var(--color-primary);
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navButtonsBox {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: var(--color-surface-secondary);
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+}
+
+.navButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  padding: 7px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.navButton:hover {
+  background-color: #e9ecef;
+  color: #343a40;
+}
+
+.navDateSelect {
+  /* Reset giao diện mặc định */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  border: none;
+  margin: 0;
+  font-family: inherit;
+  cursor: pointer;
+
+  /* Mũi tên tùy chỉnh */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%233f51b5%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 0.65em auto;
+
+  /* Căn chỉnh và kích thước */
+  padding: 7px 30px 7px 5px; /* Đồng bộ padding dọc và giảm nhẹ */
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  line-height: inherit;
+  text-align: center;
+  min-width: 120px;
+  white-space: nowrap;
+}
+
+.navDateSelect:focus {
+  outline: none; /* Bỏ viền focus mặc định */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .controlsGroup {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .navButtonsBox {
+    /* Cho phép box này chiếm toàn bộ chiều rộng và căn giữa nội dung */
+    flex-grow: 1;
+    justify-content: center;
+  }
+
+  .navDateSelect {
+    min-width: 100px; /* Giảm chiều rộng tối thiểu trên mobile */
+    flex-grow: 1; /* Cho phép co giãn */
+  }
+}
+
+.dateRangeFieldset {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  margin: 0;
+  padding: 0; /* Xóa padding khỏi fieldset */
+  background-color: #fcfcfe;
+}
+
+.dateRangeLegend {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-primary); /* Khôi phục màu xanh */
+  padding: 3px 10px;
+  margin-left: 1rem;
+}

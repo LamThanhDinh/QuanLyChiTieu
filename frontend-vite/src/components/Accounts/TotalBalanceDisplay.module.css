@@ -1,0 +1,144 @@
+/* src/components/Accounts/TotalBalanceDisplay.module.css */
+
+.totalBalanceContainer {
+  background: var(--color-background);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px #0001;
+  padding: 28px;
+  transition: box-shadow 0.2s;
+  border: 1px solid #e9ecef;
+  text-align: center;
+}
+
+.totalBalanceContainer:hover {
+  box-shadow: 0 8px 32px #0002;
+}
+
+.title {
+  font-size: 1.15rem;
+  color: #555e68;
+  font-weight: 600;
+  margin: 0 0 25px 0;
+  text-align: left;
+}
+
+.totalAmount {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.totalLabel {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin: 4px 0 20px 0;
+}
+
+.chartSection {
+  width: 100%;
+  height: 200px; /* Chiều cao cố định cho biểu đồ */
+  margin-bottom: 20px;
+}
+
+.legendSection {
+  margin-top: 15px;
+  border-top: 1px solid #e9ecef;
+  padding-top: 15px;
+}
+
+.legendList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Cập nhật style cho mỗi mục chú thích */
+.legendItem {
+  display: flex;
+  align-items: center; /* Căn giữa theo chiều dọc */
+  font-size: 0.9rem;
+  border-radius: 8px;
+  padding: 4px 8px;
+  transition: background 0.2s;
+}
+
+.legendItem:hover {
+  background: var(--color-surface-secondary);
+}
+
+.legendIcon {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+/* Thêm container để nhóm Tên và % */
+.legendInfo {
+  display: flex;
+  align-items: baseline; /* Căn theo dòng chữ */
+  gap: 6px; /* Khoảng cách giữa tên và % */
+  text-align: left;
+  flex-grow: 1; /* Đẩy số dư sang phải */
+}
+
+.legendText {
+  color: #343a40;
+  font-weight: 500;
+}
+
+/* Thêm style cho text % */
+.legendPercent {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.legendValue {
+  color: #495057;
+  font-weight: 600;
+  margin-left: auto;
+  padding-left: 10px;
+  white-space: nowrap;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.loadingIcon {
+  font-size: 2rem;
+  color: var(--color-primary);
+}
+
+.negativeTotal {
+  color: #e74c3c;
+  background: var(--color-background) 0f0;
+  border-radius: 8px;
+  padding: 4px 0;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 600px) {
+  .totalBalanceContainer {
+    padding: 10px;
+  }
+  .chartSection {
+    height: 140px;
+  }
+  .legendItem {
+    font-size: 0.8rem;
+    padding: 2px 4px;
+  }
+}
+
+/* Bỏ class legendWrapper không cần thiết */

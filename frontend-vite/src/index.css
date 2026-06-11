@@ -1,0 +1,107 @@
+/* index.css */
+
+/* --- Design System --- */
+@import './styles/globals.css';
+
+/* --- Tailwind Directives --- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- Custom Animations for Admin Page --- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s ease-out;
+}
+
+.animate-scale-up {
+  animation: scaleUp 0.3s ease-out;
+}
+
+/* --- HTML and Body Base Styles --- */
+html {
+  /* Đảm bảo html có thể chiếm toàn bộ chiều cao viewport */
+  height: 100%;
+  /* Ngăn cuộn ngang không mong muốn nếu có thành phần dùng vw rộng hơn */
+  overflow-x: hidden; /* Cân nhắc nếu thực sự cần, có thể ẩn nội dung rộng hơn */
+}
+
+body {
+  /* @apply bg-red-100; Tailwind class cho màu nền */
+
+  /* Đảm bảo body chiếm ít nhất toàn bộ chiều cao của html (tức là viewport) */
+  min-height: 100%;
+  /* Cho phép body cuộn theo chiều dọc nếu nội dung dài hơn */
+  overflow-y: auto;
+
+  margin: 0; /* Reset margin mặc định của trình duyệt */
+  padding: 0; /* Reset padding mặc định của trình duyệt */
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Nếu bạn muốn layout chính của toàn bộ ứng dụng là flex column */
+  /* thì body có thể là flex container */
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- React Root Element Style --- */
+/* Giả sử div root của bạn trong public/index.html có id là "root" */
+#root {
+  /* Để #root có thể mở rộng theo body */
+  flex-grow: 1; /* Nếu body là flex container, #root sẽ chiếm không gian còn lại */
+  display: flex; /* Làm cho #root cũng là flex container */
+  flex-direction: column; /* Để các page component bên trong có thể được sắp xếp dọc */
+  /* min-height: 100%; không cần thiết nếu body đã là min-height: 100% và #root là flex-grow:1 */
+}
+
+/* --- Code Font Style (thường dùng cho thẻ <code>) --- */
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+/* --- Các CSS toàn cục khác bạn có thể cần --- */
+/* Ví dụ:
+* {
+  box-sizing: border-box;
+}
+*/

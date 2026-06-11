@@ -1,0 +1,445 @@
+/* src/components/Accounts/AccountList.module.css */
+.accountListContainer {
+  background-color: var(--color-background);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 15px;
+  height: 650px;
+  overflow-y: auto;
+}
+
+.listItems {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.accountItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 22px 24px;
+  border-radius: 8px;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s,
+    transform 0.2s;
+  border: 1px solid #f0f2f5;
+  box-shadow: 0 2px 12px #0001;
+  position: relative;
+  min-height: 80px;
+}
+.accountItem:hover {
+  background-color: var(--color-surface-secondary);
+  box-shadow: 0 6px 24px #0002;
+  transform: translateY(-2px) scale(1.01);
+}
+
+.accountInfo {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 0;
+}
+
+.accountIconItem {
+  font-size: 1.6rem;
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  padding: 10px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.accountDetails {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.accountName {
+  font-size: 1.1rem;
+  color: var(--color-text-primary);
+  font-weight: 600;
+  white-space: normal;
+  word-break: break-word;
+  overflow: visible;
+}
+
+.accountSubDetail {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.balanceAndActions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.balanceContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  width: 150px;
+}
+
+.accountBalance {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #34495e;
+}
+
+.progressBarContainer {
+  width: 100%;
+  height: 5px;
+  background-color: #e9ecef;
+  border-radius: 2.5px;
+}
+
+.progressBar {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: 2.5px;
+  transition: width 0.4s ease-out;
+}
+
+.accountActions {
+  display: flex;
+  gap: 8px;
+}
+
+.actionButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  font-size: 1rem;
+  color: #95a5a6;
+  transition:
+    all 0.2s,
+    transform 0.15s;
+  border-radius: 50%;
+}
+.actionButton:hover {
+  background-color: #e9ecef;
+  transform: scale(1.12);
+}
+.editButton:hover {
+  color: #f39c12;
+}
+.deleteButton:hover {
+  color: #e74c3c;
+}
+
+.loadingMessage,
+.errorMessage,
+.noItemsMessage {
+  text-align: center;
+  padding: 50px 20px;
+  color: #7f8c8d;
+  background-color: var(--color-surface-secondary);
+  border-radius: 8px;
+}
+/* --- THÊM CÁC STYLE MỚI CHO ACCOUNT ITEM VÀO CUỐI FILE --- */
+
+/* Cập nhật lại layout chính của accountItem */
+.accountItem {
+  display: grid;
+  grid-template-columns: 2fr 3fr 2fr; /* Chia thành 3 cột với tỷ lệ linh hoạt */
+  gap: 20px;
+  align-items: center;
+}
+
+/* Bỏ style cũ không cần thiết nữa */
+.balanceContainer,
+.progressBarContainer,
+.progressBar {
+  display: none;
+}
+
+/* Cột 2: Phần activity bar và số liệu */
+.activitySection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.activityBar {
+  display: flex;
+  height: 26px;
+  border-radius: 13px;
+  background-color: #e9ecef;
+  overflow: visible;
+  position: relative;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.transactionCountLabel {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--color-primary);
+  color: var(--color-background);
+  font-weight: 600;
+  font-size: 0.7rem;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 2px 8px var(--color-primary) 40,
+    0 1px 3px #0002;
+  border: 2px solid var(--color-background);
+  cursor: pointer;
+  z-index: 3;
+  transition:
+    box-shadow 0.18s,
+    background 0.18s;
+  margin-left: 2px;
+  margin-right: 2px;
+  padding: 0;
+  line-height: 1;
+}
+.transactionCountLabel:hover {
+  background: #283593;
+  box-shadow:
+    0 4px 16px var(--color-primary) 70,
+    0 2px 8px #0002;
+}
+
+.incomeBar {
+  background-color: #28a745;
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+  border-radius: 8px 0 0 8px;
+}
+
+.expenseBar {
+  background-color: #dc3545;
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+  border-radius: 0 8px 8px 0;
+}
+
+.activityFigures {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.incomeText {
+  color: #28a745;
+}
+
+.expenseText {
+  color: #dc3545;
+}
+
+/* Cột 3: Căn chỉnh lại số dư và nút */
+.balanceAndActions {
+  justify-content: flex-end; /* Đẩy về cuối bên phải */
+  gap: 15px;
+}
+
+.accountBalance {
+  text-align: right;
+  min-width: 120px; /* Đặt chiều rộng tối thiểu để không bị nhảy số */
+}
+
+.accountItem {
+  display: grid;
+  grid-template-columns: 2fr 3fr 2fr; /* Chia thành 3 cột với tỷ lệ linh hoạt */
+  gap: 20px;
+  align-items: center;
+}
+
+/* Bỏ style cũ không cần thiết nữa */
+.balanceContainer,
+.progressBarContainer,
+.progressBar {
+  display: none;
+}
+
+/* Cột 2: Phần activity bar và số liệu */
+.activitySection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.activityBar {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  background-color: #e9ecef;
+  overflow: hidden; /* Đảm bảo các bar con bo góc theo cha */
+}
+
+.incomeBar {
+  background-color: #28a745; /* Màu xanh lá cho thu nhập */
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+}
+
+.expenseBar {
+  background-color: #dc3545; /* Màu đỏ cho chi tiêu */
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+}
+
+.activityFigures {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.incomeText {
+  color: #28a745;
+}
+
+.expenseText {
+  color: #dc3545;
+}
+
+/* Cột 3: Căn chỉnh lại số dư và nút */
+.balanceAndActions {
+  justify-content: flex-end; /* Đẩy về cuối bên phải */
+  gap: 15px;
+}
+
+.accountBalance {
+  text-align: right;
+  min-width: 120px; /* Đặt chiều rộng tối thiểu để không bị nhảy số */
+}
+
+.negativeBalance {
+  border: 2px solid #e74c3c;
+  background: var(--color-background) 0f0;
+}
+.negativeBalance .accountBalance {
+  color: #e74c3c;
+}
+.negativeBadge {
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  background: #ffeaea;
+  color: #e74c3c;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 16px;
+  font-size: 0.92rem;
+  box-shadow: 0 2px 8px #e74c3c40;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  z-index: 2;
+}
+.negativeIcon {
+  font-size: 1em;
+  color: #e74c3c;
+}
+
+.iconButton {
+  background: #f5f6fa;
+  border: none;
+  border-radius: 50%;
+  padding: 8px;
+  font-size: 1.1rem;
+  color: #6a5af9;
+  transition:
+    background 0.18s,
+    color 0.18s,
+    transform 0.15s;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #6a5af910;
+}
+.iconButton:hover {
+  background: #e6e8ff;
+  color: #4f8cff;
+  transform: scale(1.12);
+}
+.filterButton {
+  background: #f5f6fa;
+  color: #6a5af9;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-right: 8px;
+  box-shadow: 0 2px 8px #6a5af910;
+  transition:
+    background 0.18s,
+    color 0.18s,
+    box-shadow 0.18s;
+  cursor: pointer;
+}
+.filterButton:hover {
+  background: #e6e8ff;
+  color: #4f8cff;
+}
+.filterButtonActive {
+  background: linear-gradient(90deg, #4f8cff 0%, #6a5af9 100%);
+  color: var(--color-background);
+  box-shadow: 0 4px 16px #6a5af930;
+}
+
+.highlight {
+  border: 2.5px solid #4f8cff !important;
+  box-shadow:
+    0 0 12px #4f8cff33,
+    0 2px 8px #4f8cff22;
+  background: #f0f7ff;
+  transform: scale(1.02);
+  transition: all 0.18s cubic-bezier(0.4, 2, 0.6, 1);
+  z-index: 2;
+}
+
+.transactionCountBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: var(--color-background);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 2px 10px;
+  margin: 0 auto 4px auto;
+  box-shadow:
+    0 2px 8px var(--color-primary) 40,
+    0 1px 3px #0002;
+  cursor: pointer;
+  transition:
+    box-shadow 0.18s,
+    background 0.18s;
+  min-width: 40px;
+  max-width: 90%;
+  text-align: center;
+}
+.transactionCountBox:hover {
+  background: #283593;
+  box-shadow:
+    0 4px 16px var(--color-primary) 70,
+    0 2px 8px #0002;
+}

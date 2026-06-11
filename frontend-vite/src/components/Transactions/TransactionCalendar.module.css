@@ -1,0 +1,208 @@
+/* --- 0. Card Wrapper cho lịch --- */
+.calendarCard {
+  background: var(--color-background);
+  border-radius: 18px;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.08),
+    0 1.5px 4px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--color-border);
+  padding: 32px 24px;
+  margin-bottom: 24px;
+}
+/* Mở và THAY THẾ TOÀN BỘ file: TransactionCalendar.module.css */
+
+/* --- 1. Layout chính sử dụng CSS Grid --- */
+.calendarContainer {
+  display: grid;
+  /* Chia thành 3 phần, cột đầu tiên chiếm 2 phần, cột thứ hai chiếm 1 phần */
+  grid-template-columns: 2fr 1fr;
+  gap: 24px; /* Khoảng cách giữa lịch và cột tóm tắt */
+  width: 100%;
+}
+
+.gridSection {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background);
+  border-radius: 12px;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--color-border);
+  padding: 16px;
+}
+
+/* --- 2. Lưới Lịch (Cột Trái) --- */
+.weekDaysGrid,
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  width: 100%;
+}
+
+.weekDay {
+  text-align: center;
+  font-weight: 600;
+  color: var(--color-text-secondary); /* Màu xám nhạt hơn */
+  padding: 10px 0;
+  font-size: 0.875rem;
+}
+
+.dayCell {
+  position: relative; /* Cần thiết cho tooltip */
+  border: 1px solid var(--color-border); /* Viền đậm hơn */
+  min-height: 80px; /* Chiều cao cố định 80px */
+  height: 80px; /* Đảm bảo chiều cao bằng nhau */
+  padding: 8px;
+  transition: background-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.dayCell:hover {
+  background-color: var(--color-surface-secondary);
+  z-index: 10; /* Đưa ô đang hover lên trên để tooltip không bị che */
+}
+
+/* Highlight styles chỉ cho week */
+.highlightWeek {
+  border: 2px solid var(--color-primary) !important;
+  background-color: rgba(63, 81, 181, 0.08);
+  box-shadow: 0 0 0 1px rgba(63, 81, 181, 0.2);
+}
+
+.highlightWeek:hover {
+  background-color: rgba(63, 81, 181, 0.12);
+}
+
+.dayNumber {
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+
+.notCurrentMonth .dayNumber {
+  color: var(--color-gray-400); /* Làm mờ số của tháng khác */
+}
+
+.dayContent {
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+/* --- 3. Tooltip khi Hover --- */
+.dayCell[data-tooltip]::after {
+  content: attr(data-tooltip); /* Lấy nội dung từ thuộc tính data-tooltip */
+  position: absolute;
+  bottom: 100%; /* Hiển thị phía trên ô ngày */
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px); /* Căn giữa và đẩy lên 10px */
+  background-color: #1f2937; /* Màu nền tối */
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  white-space: pre; /* Giữ lại ký tự xuống dòng (\n) */
+  z-index: 20;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.2s,
+    visibility 0.2s,
+    transform 0.2s;
+  pointer-events: none; /* Không cho tooltip cản trở việc click */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dayCell[data-tooltip]:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-5px); /* Hiệu ứng trồi lên */
+}
+
+/* --- 4. Cột Tóm Tắt (Cột Phải) --- */
+.summarySection {
+  display: flex;
+  flex-direction: column; /* Xếp các item theo chiều dọc */
+  gap: 16px;
+  background: var(--color-background);
+  border-radius: 12px;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--color-border);
+  padding: 16px;
+}
+
+.summaryItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 10px;
+  background-color: var(--color-surface-secondary);
+  border: 1px solid var(--color-border-light);
+}
+
+.summaryIconWrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.summaryIconWrapper svg {
+  font-size: 1.2rem;
+}
+
+.incomeBg {
+  background-color: rgba(16, 185, 129, 0.1);
+}
+.expenseBg {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+.balanceBg {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.summaryLabel {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  display: block;
+}
+
+.summaryAmount {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 4px 0 0 0;
+}
+
+.income {
+  color: #10b981;
+}
+.expense {
+  color: var(--color-error-primary);
+}
+.balance {
+  color: #3b82f6;
+}
+
+/* --- 5. Responsive --- */
+@media (max-width: 992px) {
+  .calendarContainer {
+    grid-template-columns: 1fr; /* Chuyển về 1 cột trên màn hình nhỏ */
+  }
+}
+
+@media (max-width: 600px) {
+  .dayCell {
+    min-height: 80px; /* Giữ chiều cao 80px trên mobile */
+    height: 80px; /* Đảm bảo chiều cao bằng nhau trên mobile */
+  }
+}

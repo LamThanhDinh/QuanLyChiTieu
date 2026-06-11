@@ -1,0 +1,41 @@
+.filterButtonGroup {
+  display: flex;
+  gap: 8px;
+  background: var(--color-border-light);
+  border-radius: 8px;
+  padding: 4px 8px;
+  align-items: center;
+}
+
+.filterButtonGroup button {
+  background: none;
+  border: none;
+  outline: none;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.filterButtonGroup button:hover {
+  background: #e0e7ef;
+}
+
+.filterButtonGroup .active,
+.filterButtonGroup button.active {
+  background: #6366f1;
+  color: var(--color-background);
+  font-weight: 600;
+}
+
+.icon {
+  margin-right: 6px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.1em;
+}

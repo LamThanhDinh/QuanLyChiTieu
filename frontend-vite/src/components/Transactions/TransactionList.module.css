@@ -1,0 +1,73 @@
+/* Ghi vào file: frontend-vite/src/components/Transactions/TransactionList.module.css */
+
+.listContainer {
+  width: 100%;
+}
+
+.tableWrapper {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.transactionsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.transactionsTable th,
+.transactionsTable td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+.transactionsTable th {
+  background-color: var(--color-surface-secondary);
+  color: #555;
+  font-weight: 600;
+}
+
+.transactionsTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.transactionsTable tbody tr:hover {
+  background-color: #f7f7f7;
+}
+
+.amountHeader {
+  text-align: right !important;
+}
+
+.message {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface-secondary);
+  border-radius: 8px;
+}
+
+.error {
+  color: #dc3545;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  /* (Bạn có thể copy các media query từ RecentTransactions.module.css vào đây nếu cần) */
+}
+/* THÊM VÀO CUỐI FILE: TransactionList.module.css */
+
+.title {
+  /* Thêm flex để căn icon và text */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.titleIcon {
+  color: #6366f1; /* Cùng màu với icon bộ lọc */
+}

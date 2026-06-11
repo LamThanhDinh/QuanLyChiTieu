@@ -1,0 +1,28 @@
+.sortWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--color-border-light);
+  border-radius: 8px;
+  padding: 0 12px; /* Bỏ padding trên dưới vì react-select đã có chiều cao */
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s;
+  border: 2px solid transparent;
+}
+
+.sortWrapper:hover {
+  background-color: var(--color-border);
+}
+
+.sortWrapper:focus-within {
+  background-color: var(--color-background);
+  border-color: #a5b4fc;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+/* GIỮ LẠI: Style cho icon */
+.sortIcon {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}

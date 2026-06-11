@@ -1,0 +1,375 @@
+/* ===== STATS OVERVIEW WIDGET - CLEAN & MODERN DESIGN ===== */
+
+/* ===== WIDGET CONTAINER ===== */
+.widgetContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 8px;
+  gap: 8px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.02);
+  width: 100%;
+  max-width: 650px;
+  height: 86px;
+  margin: 0;
+  overflow: visible;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.widgetContainer:hover {
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.03);
+  border-color: #d1d5db;
+}
+
+.loadingContent,
+.noDataContent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ===== STAT CARDS ===== */
+.statCard {
+  display: flex;
+  flex-direction: column; /* Sắp xếp Hàng 1 (cardTop) và Hàng 2 (comparison) theo cột */
+  align-items: stretch; /* Kéo dài các item con theo chiều rộng */
+  gap: 6px; /* Khoảng cách giữa Hàng 1 và Hàng 2 */
+  flex: 1;
+  min-width: 0;
+  border-radius: 8px;
+  padding: 8px;
+  background: #fafbfc;
+  border: 1px solid #f3f4f6;
+  transition: all 0.25s ease;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* THÊM CLASS MỚI CHO HÀNG 1 */
+.cardTop {
+  display: flex;
+  flex-direction: row; /* Sắp xếp icon và mainInfo theo hàng ngang */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  gap: 8px; /* Khoảng cách giữa icon và khối thông tin */
+  flex: 1;
+}
+
+.statCard:hover {
+  background: #f9fafb;
+  border-color: #e5e7eb;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* ===== ICONS ===== */
+.iconIncome,
+.iconExpense,
+.iconCashflow {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 2;
+}
+
+.iconIncome {
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  color: white;
+}
+
+.iconExpense {
+  background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+  color: white;
+}
+
+.iconCashflow {
+  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+  color: white;
+}
+
+/* ===== DETAILS SECTION ===== */
+.mainInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start; /* Căn lề trái cho label và amount */
+  flex-grow: 1;
+  min-width: 0;
+  gap: 2px;
+}
+.label {
+  font-size: 0.6rem;
+  color: #6b7280;
+  font-weight: 600;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  text-align: center;
+}
+
+.amountIncome,
+.amountExpense,
+.amountCashflow {
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.amountIncome {
+  color: #059669;
+}
+
+.amountExpense {
+  color: #dc2626;
+}
+
+.amountCashflow {
+  color: #2563eb;
+}
+
+/* ===== COMPARISON BADGES ===== */
+.comparison {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Giữ nguyên căn giữa cho đẹp */
+  gap: 4px; /* Tăng khoảng cách một chút */
+  font-size: 0.5rem;
+  font-weight: 500;
+  padding: 2px 4px;
+  border-radius: 4px;
+  width: 100%; /* Cho nó rộng toàn bộ thẻ */
+  max-width: 100%;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* BỎ margin-top vì đã có gap từ .statCard */
+  text-align: center;
+  box-sizing: border-box; /* Thêm để padding không làm vỡ layout */
+}
+
+.comparisonText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  text-align: center;
+}
+
+.trendIcon {
+  font-size: 0.4rem;
+  flex-shrink: 0;
+}
+
+/* ===== TREND COLORS ===== */
+.positive {
+  color: #065f46;
+  background: #d1fae5;
+  border-color: #a7f3d0;
+}
+
+.negative {
+  color: #991b1b;
+  background: #fee2e2;
+  border-color: #fecaca;
+}
+
+.neutral {
+  color: #374151;
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+}
+
+/* ===== DIVIDERS ===== */
+.divider {
+  width: 1px;
+  height: 50%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #e5e7eb 20%,
+    #e5e7eb 80%,
+    transparent 100%
+  );
+  flex-shrink: 0;
+  align-self: center;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .widgetContainer {
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    min-height: 240px;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .statCard {
+    width: 100%;
+    padding: 16px;
+    gap: 16px;
+    height: auto;
+    min-height: 65px;
+  }
+
+  .iconIncome,
+  .iconExpense,
+  .iconCashflow {
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+
+  .divider {
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      #e5e7eb 20%,
+      #e5e7eb 80%,
+      transparent 100%
+    );
+    align-self: center;
+  }
+
+  .label {
+    font-size: 0.75rem;
+  }
+
+  .amountIncome,
+  .amountExpense,
+  .amountCashflow {
+    font-size: 1.3rem;
+  }
+
+  .comparison {
+    font-size: 0.65rem;
+    padding: 4px 10px;
+  }
+
+  .comparisonText {
+    max-width: 200px;
+  }
+
+  .trendIcon {
+    font-size: 0.55rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .widgetContainer {
+    padding: 14px;
+    gap: 10px;
+    min-height: 220px;
+  }
+
+  .statCard {
+    padding: 14px;
+    gap: 14px;
+    min-height: 60px;
+  }
+
+  .iconIncome,
+  .iconExpense,
+  .iconCashflow {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .label {
+    font-size: 0.7rem;
+  }
+
+  .amountIncome,
+  .amountExpense,
+  .amountCashflow {
+    font-size: 1.1rem;
+  }
+
+  .comparison {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+  }
+
+  .comparisonText {
+    max-width: 160px;
+  }
+
+  .trendIcon {
+    font-size: 0.5rem;
+  }
+}
+
+/* ===== LOADING & NO DATA STATES ===== */
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.noData {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+  .widgetContainer,
+  .statCard,
+  .comparison {
+    transition: none;
+  }
+
+  .statCard:hover {
+    transform: none;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .widgetContainer {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+
+  .statCard {
+    background: #fff;
+    border: 1px solid #000;
+  }
+}

@@ -1,0 +1,59 @@
+/* Ghi vào file: frontend-vite/src/components/Common/Pagination.module.css */
+.paginationContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 0;
+}
+
+.pageList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 6px;
+}
+
+.pageButton,
+.navButton {
+  background-color: var(--color-background);
+  border: 1px solid #dee2e6;
+  color: #495057;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pageButton:hover,
+.navButton:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.pageButton.active {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  font-weight: 700;
+}
+
+.navButton:disabled {
+  color: #ced4da;
+  cursor: not-allowed;
+  background-color: var(--color-surface-secondary);
+}
+
+.ellipsis {
+  padding: 8px;
+  color: var(--color-text-secondary);
+}

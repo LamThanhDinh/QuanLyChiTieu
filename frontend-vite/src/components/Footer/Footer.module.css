@@ -1,0 +1,96 @@
+/* src/components/Footer/FooterSocial.module.css */
+.footer {
+  background-color: var(--color-text-primary); /* Màu nền tối, ví dụ: xanh than đậm */
+  color: #bdc3c7; /* Màu chữ xám nhạt */
+  padding: 30px 40px; /* Tăng padding cho không gian thoải mái hơn */
+  margin-top: auto; /* Đẩy footer xuống cuối trang */
+  border-top: 4px solid var(--color-primary); /* Đường kẻ màu chủ đạo của ứng dụng bạn */
+}
+
+.footerContent {
+  max-width: 1200px; /* Giới hạn chiều rộng nội dung footer */
+  margin: 0 auto; /* Căn giữa nội dung */
+  display: flex;
+  flex-direction: column; /* Sắp xếp các cụm theo chiều dọc trên mobile trước */
+  align-items: center; /* Căn giữa các cụm */
+  gap: 20px; /* Khoảng cách giữa các cụm */
+  text-align: center; /* Căn giữa text mặc định */
+}
+
+.mainInfo {
+  margin-bottom: 10px;
+}
+
+.copyright {
+  font-size: 0.9rem;
+  margin: 0 0 5px 0;
+}
+
+.madeWith {
+  font-size: 0.85rem;
+  color: #95a5a6; /* Màu xám nhạt hơn chút */
+}
+
+.heartIcon {
+  color: #e74c3c; /* Màu đỏ cho icon trái tim */
+  margin: 0 3px;
+}
+
+.footerLinks {
+  display: flex;
+  flex-wrap: wrap; /* Cho phép các link xuống dòng */
+  justify-content: center; /* Căn giữa các link */
+  gap: 10px 20px; /* Khoảng cách giữa các link (dọc và ngang) */
+  margin-bottom: 10px;
+}
+
+.linkItem {
+  color: #ecf0f1; /* Màu trắng ngà cho link */
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease-in-out, text-decoration 0.2s ease-in-out;
+}
+
+.linkItem:hover {
+  color: var(--color-background); /* Sáng hơn khi hover */
+  text-decoration: underline;
+}
+
+.socialIcons {
+  display: flex;
+  gap: 20px; /* Khoảng cách giữa các icon mạng xã hội */
+}
+
+.socialIconLink {
+  color: #ecf0f1;
+  font-size: 1.5rem; /* Kích thước icon lớn hơn một chút */
+  transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.socialIconLink:hover {
+  color: var(--color-primary); /* Màu chủ đạo khi hover icon */
+  transform: scale(1.15); /* Phóng to nhẹ icon khi hover */
+}
+
+/* Responsive cho màn hình lớn hơn, có thể chia cột */
+@media (min-width: 769px) {
+  .footerContent {
+    flex-direction: row; /* Sắp xếp các cụm theo hàng ngang */
+    justify-content: space-between; /* Phân bố không gian giữa các cụm */
+    text-align: left; /* Căn trái text cho các cụm */
+  }
+
+  .mainInfo {
+    margin-bottom: 0;
+    text-align: left;
+  }
+
+  .footerLinks {
+    justify-content: center; /* Vẫn có thể căn giữa các link nếu muốn */
+    margin-bottom: 0;
+  }
+
+  .socialIcons {
+    /* Đã được căn phải do justify-content: space-between của .footerContent */
+  }
+}

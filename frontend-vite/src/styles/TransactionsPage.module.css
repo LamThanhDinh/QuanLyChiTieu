@@ -1,0 +1,191 @@
+/* Mở và THAY THẾ TOÀN BỘ file: TransactionsPage.module.css */
+
+/* --- 1. BỐ CỤC TỔNG THỂ CỦA TRANG --- */
+.pageWrapper {
+  width: 100%;
+  padding: var(--page-gap) 0; /* Chỉ có padding top/bottom */
+  background-color: var(--page-background);
+  min-height: calc(100vh - 140px); /* Đảm bảo chiếm toàn bộ chiều cao */
+}
+
+.contentContainer {
+  width: 100%;
+  padding: 0 var(--page-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-gap);
+}
+
+.overviewSection {
+  width: 100%;
+}
+
+/* ✅ THAY ĐỔI QUAN TRỌNG Ở ĐÂY */
+.mainContent {
+  display: flex;
+  flex-direction: column; /* Sắp xếp các card con theo chiều dọc */
+  gap: 24px; /* Khoảng cách giữa card Lịch và card Danh sách */
+}
+
+/* 
+  CÁC CLASS .leftColumn và .rightColumn ĐÃ ĐƯỢC XÓA VÌ KHÔNG CÒN SỬ DỤNG
+*/
+
+/* --- 3. STYLE CHO "THẺ" (CARD) CHUNG --- */
+.contentCard {
+  background-color: var(--color-background);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  width: 100%;
+  border: 1px solid #eef2f7;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eef2f7;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+}
+
+/* --- 4. STYLE CHO CÁC KHU VỰC CỤ THỂ --- */
+.filterSection {
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+/* --- 5. RESPONSIVE DESIGN (CHO MÀN HÌNH NHỎ) --- */
+@media (max-width: 768px) {
+  .contentCard {
+    padding: 16px;
+  }
+
+  .cardTitle {
+    font-size: 1.1rem;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* --- CSS CHO LAYOUT MỚI --- */
+
+/* Header Card */
+.transactionPageHeader {
+  margin-bottom: 32px;
+}
+
+/* Sections layout cho PageContentContainer */
+.calendarSection {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.widgetSection {
+  width: 100%;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.filterSection {
+  width: 100%;
+  margin-bottom: 24px;
+  padding: 20px;
+  background-color: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Section Header Styles */
+.sectionHeader {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.sectionTitle h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.sectionIcon {
+  width: 20px;
+  height: 20px;
+  color: #4f46e5;
+}
+
+.sectionSubtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.listSection {
+  width: 100%;
+}
+
+/* Smart context styling */
+.smartContext {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.contextText {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.moodEmoji {
+  font-size: 1.25rem;
+}
+
+.miniStats {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .calendarSection,
+  .widgetSection,
+  .filterSection,
+  .listSection {
+    margin-bottom: 16px;
+  }
+
+  .filterSection {
+    padding: 16px;
+  }
+
+  .widgetSection {
+    justify-content: center;
+  }
+}

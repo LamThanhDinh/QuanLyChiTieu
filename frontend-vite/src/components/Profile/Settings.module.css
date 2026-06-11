@@ -1,0 +1,298 @@
+/* Settings Component Styles */
+
+/* Card Title - Matching ProfileInfo */
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-text-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* Message Display */
+.message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.message.success {
+  background-color: rgba(34, 197, 94, 0.9);
+  color: white;
+  border: 1px solid var(--color-success-secondary, #22c55e);
+}
+
+.message.error {
+  background-color: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: 1px solid var(--color-error-secondary, #ef4444);
+}
+
+.message.info {
+  background-color: rgba(59, 130, 246, 0.9);
+  color: white;
+  border: 1px solid var(--color-primary, #3b82f6);
+}
+
+/* Settings Content */
+.settingsContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Settings Item */
+.settingsItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--color-surface-primary);
+  border-radius: 8px;
+  border: 1.5px solid var(--color-border);
+}
+
+.settingsLabel {
+  color: var(--color-text-primary);
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+/* Toggle Switch */
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.toggleInput {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-gray-300);
+  transition: 0.3s;
+  border-radius: 24px;
+}
+
+.toggleSlider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+.toggleInput:checked + .toggleSlider {
+  background: var(--color-primary);
+}
+
+.toggleInput:checked + .toggleSlider:before {
+  transform: translateX(26px);
+}
+
+/* Data Section */
+.dataSection {
+  padding: 1rem;
+  background: var(--color-surface-secondary);
+  border-radius: 8px;
+  border: 1.5px solid var(--color-border);
+  margin-bottom: 1rem;
+}
+
+.sectionLabel {
+  display: block;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+/* Format Selector */
+.formatSelector {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: var(--color-surface-primary);
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+}
+
+.formatSelector label {
+  color: var(--color-text-primary);
+  font-weight: 500;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.formatSelect {
+  flex: 1;
+  padding: 0.5rem;
+  background: var(--color-surface-primary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.formatSelect:hover {
+  border-color: var(--color-primary);
+}
+
+.formatSelect:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.dataButtons {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.exportBtn,
+.importBtn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exportBtn {
+  background: var(--color-primary);
+  color: white;
+}
+
+.exportBtn:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.importBtn {
+  background: var(--color-primary);
+  color: white;
+}
+
+.importBtn:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+/* Import Status */
+.importStatus {
+  padding: 1rem;
+  background: rgba(34, 197, 94, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.importInfo {
+  color: var(--color-text-primary);
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.confirmImportBtn {
+  width: 100%;
+  padding: 0.75rem;
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
+}
+
+.confirmImportBtn:hover:not(:disabled) {
+  background: #16a34a;
+  transform: translateY(-1px);
+}
+
+.confirmImportBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Logout Section */
+.logoutSection {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.logoutBtn {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  align-self: flex-end;
+  width: auto;
+  min-width: 120px;
+  transition: background-color 0.2s;
+}
+
+.logoutBtn:hover {
+  background-color: #b91c1c;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .settingsCard {
+    padding: 1rem;
+  }
+
+  .settingsContent {
+    gap: 1rem;
+  }
+
+  .settingsItem {
+    padding: 0.75rem;
+  }
+
+  .dataButtons {
+    flex-direction: column;
+  }
+
+  .exportBtn,
+  .importBtn {
+    flex: none;
+  }
+}

@@ -1,0 +1,119 @@
+/* src/components/Goals/NextGoalWidget.module.css (Phiên bản Ngang) */
+
+.widgetContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, var(--color-background), #f7f9fc);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  height: 80px; /* Đặt chiều cao cố định */
+  width: 100%;
+}
+
+.iconWrapper {
+  flex-shrink: 0; /* Không bị co lại */
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #eef2ff; /* Màu nền nhẹ cho icon */
+}
+
+.icon {
+  font-size: 2rem;
+  color: #4f46e5;
+}
+
+.contentWrapper {
+  flex-grow: 1; /* Chiếm hết không gian còn lại */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0; /* Fix lỗi flexbox với text dài */
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deadline {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-error-primary); /* Màu đỏ để nhấn mạnh */
+  flex-shrink: 0;
+}
+
+.progressInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progressBar {
+  flex-grow: 1;
+  height: 6px;
+  background-color: var(--color-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #60a5fa, #3b82f6);
+  border-radius: 3px;
+  transition: width 0.5s ease-in-out;
+}
+
+.progressPercent {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.amountInfo {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.currentAmount {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.targetAmount {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface-secondary);
+  border-radius: 12px;
+}

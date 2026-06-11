@@ -1,0 +1,135 @@
+/* src/components/Common/PageContentContainer.module.css */
+
+.contentContainer {
+  background: var(--color-surface-primary);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Header row chứa title và controls */
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.titleIcon {
+  font-size: 1.5rem;
+  margin-right: 0;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  transition: all 0.2s ease;
+}
+
+.title {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.controlsSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Layout cho nội dung */
+.defaultContentLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.customContentLayout {
+  /* Layout tùy chỉnh - để page tự định nghĩa */
+  display: block;
+}
+
+/* Responsive cho desktop - 2 cột */
+@media (min-width: 992px) {
+  .defaultContentLayout {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  
+  .defaultContentLayout > :first-child {
+    flex: 1;
+    min-width: 280px;
+  }
+  
+  .defaultContentLayout > :last-child {
+    flex: 2.5;
+    min-width: 0;
+  }
+}
+
+/* Responsive cho tablet và mobile */
+@media (max-width: 768px) {
+  .contentContainer {
+    padding: 20px;
+    gap: 20px;
+  }
+  
+  .headerRow {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .titleSection {
+    justify-content: center;
+  }
+  
+  .controlsSection {
+    justify-content: center;
+  }
+  
+  .title {
+    font-size: 1.375rem;
+    font-weight: 700;
+  }
+  
+  .titleIcon {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .contentContainer {
+    padding: 16px;
+    gap: 16px;
+  }
+  
+  .title {
+    font-size: 1.375rem;
+    font-weight: 700;
+  }
+  
+  .titleIcon {
+    font-size: 1.2rem;
+  }
+}

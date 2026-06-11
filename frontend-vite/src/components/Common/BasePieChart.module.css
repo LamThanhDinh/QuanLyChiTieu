@@ -1,0 +1,407 @@
+/* BasePieChart.module.css */
+
+.chartCard {
+  background: linear-gradient(135deg, var(--color-background) 0%, #f8fafc 100%);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(229, 231, 235, 0.6);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: visible; /* Đảm bảo nút không bị cắt */
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.chartCard:hover {
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.08),
+    0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.chartTitle {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.chartTitle h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+  background: linear-gradient(135deg, #1f2937 0%, var(--color-text-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chartContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 500px;
+  overflow: visible; /* Đảm bảo nút "Xem chi tiết" không bị cắt */
+}
+
+.centerLabel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-base);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+  max-width: 120px;
+  min-width: 80px;
+}
+
+.centerLabel span {
+  display: block;
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.centerLabel strong {
+  display: block;
+  font-size: 13px;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+/* Styles for active slice center display */
+.centerLabelActive {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.98);
+  padding: 10px 14px;
+  border-radius: 12px;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  pointer-events: auto;
+  cursor: pointer;
+  max-width: 140px;
+  min-width: 100px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.3;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.centerLabelActive:hover {
+  background: rgba(248, 250, 252, 0.98);
+  box-shadow: 
+    0 6px 16px rgba(0, 0, 0, 0.12),
+    0 3px 6px rgba(0, 0, 0, 0.08);
+  transform: translate(-50%, -50%) scale(1.02);
+}
+
+/* Visual indicator for clickable center label */
+.centerLabelActive::after {
+  content: "✕";
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 18px;
+  height: 18px;
+  background: var(--color-error-primary);
+  color: white;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  transition: all 0.2s ease;
+}
+
+.centerLabelActive:hover::after {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.centerLabelActive .categoryName {
+  display: block;
+  font-size: 12px;
+  color: var(--color-text-primary);
+  font-weight: 600;
+  margin-bottom: 4px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.3;
+  max-height: 3.3em; /* Allow up to 2.5 lines */
+  overflow: hidden;
+  text-align: center;
+}
+
+.centerLabelActive .categoryAmount {
+  display: block;
+  font-size: 15px;
+  color: #1f2937;
+  font-weight: 700;
+  margin-top: 2px;
+  text-align: center;
+}
+
+/* Text handling for long category names */
+.centerLabelActive .categoryName.longText {
+  font-size: 13px;
+  line-height: 1.2;
+  max-height: 4.8em; /* Allow up to 4 lines */
+}
+
+.centerLabelActive .categoryName.veryLongText {
+  font-size: 12px;
+  line-height: 1.1;
+  max-height: 5.5em; /* Allow up to 5 lines for very long text */
+}
+
+.detailsLink {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 20;
+}
+
+.detailsLinkButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 2px 4px rgba(59, 130, 246, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.detailsLinkButton:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 8px rgba(59, 130, 246, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.detailsLinkButton:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 2px 4px rgba(59, 130, 246, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.detailsLinkArrow {
+  font-size: 14px;
+  transition: transform 0.2s ease;
+}
+
+.detailsLinkButton:hover .detailsLinkArrow {
+  transform: translateX(2px);
+}
+
+.customTooltip {
+  background: rgba(255, 255, 255, 0.98);
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    0 4px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  backdrop-filter: blur(12px);
+  font-size: 13px;
+  line-height: 1.5;
+  min-width: 180px;
+}
+
+.customTooltip > div:not(:last-child) {
+  margin-bottom: 6px;
+}
+
+.customTooltip b {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.loadingText {
+  text-align: center;
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  padding: 40px;
+  background: var(--color-surface-secondary);
+  border-radius: 12px;
+  border: 2px dashed var(--color-border);
+  margin: 20px 0;
+  font-weight: 500;
+}
+
+.errorText {
+  text-align: center;
+  font-size: 16px;
+  color: var(--color-error-secondary);
+  padding: 40px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, #fecaca 100%);
+  border-radius: 12px;
+  border: 1px solid #fca5a5;
+  margin: 20px 0;
+  font-weight: 500;
+}
+
+.noDataText {
+  text-align: center;
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  padding: 40px;
+  background: linear-gradient(135deg, var(--color-surface-secondary) 0%, var(--color-border-light) 100%);
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  margin: 20px 0;
+  font-weight: 500;
+}
+
+/* Animation for chart loading */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hover effects for interactive elements */
+.chartCard:hover .detailsLinkButton {
+  box-shadow: 
+    0 4px 12px rgba(59, 130, 246, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .chartCard {
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .chartTitle h3 {
+    font-size: 18px;
+  }
+  
+  .chartContainer {
+    min-height: 400px;
+  }
+  
+  .centerLabel {
+    padding: 8px 14px;
+    max-width: 120px;
+    min-width: 90px;
+  }
+  
+  .centerLabel span {
+    font-size: 11px;
+  }
+  
+  .centerLabel strong {
+    font-size: 14px;
+  }
+  
+  .centerLabelActive {
+    padding: 10px 14px;
+    max-width: 160px;
+    min-width: 100px;
+  }
+  
+  .centerLabelActive .categoryName {
+    font-size: 12px;
+    max-height: 2.4em;
+  }
+  
+  .centerLabelActive .categoryAmount {
+    font-size: 15px;
+  }
+  
+  .detailsLink {
+    bottom: 12px;
+    right: 12px;
+  }
+  
+  .detailsLinkButton {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chartCard {
+    padding: 12px;
+  }
+  
+  .chartTitle {
+    margin-bottom: 16px;
+  }
+  
+  .chartTitle h3 {
+    font-size: 16px;
+  }
+  
+  .chartContainer {
+    min-height: 350px;
+  }
+  
+  .centerLabel {
+    padding: 6px 12px;
+    max-width: 100px;
+    min-width: 80px;
+  }
+  
+  .centerLabel span {
+    font-size: 10px;
+  }
+  
+  .centerLabel strong {
+    font-size: 13px;
+  }
+  
+  .centerLabelActive {
+    padding: 8px 12px;
+    max-width: 140px;
+    min-width: 90px;
+  }
+  
+  .centerLabelActive .categoryName {
+    font-size: 11px;
+    max-height: 2.2em;
+  }
+  
+  .centerLabelActive .categoryAmount {
+    font-size: 14px;
+  }
+}

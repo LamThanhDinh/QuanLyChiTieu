@@ -1,0 +1,461 @@
+/* src/components/Categories/CategoryList.module.css */
+.categoryListContainer {
+  background-color: var(--color-background);
+  padding: 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%; /* Ngăn tràn ngang */
+}
+
+.tableScroll {
+  overflow-y: auto;
+  overflow-x: hidden; /* Ngăn cuộn ngang */
+  max-height: 600px;
+  flex: 1;
+  padding: 6px; /* Tăng padding để tránh bị cắt khi có border */
+  box-sizing: border-box; /* Đảm bảo padding được tính trong kích thước */
+}
+
+.table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  max-width: 100%; /* Đảm bảo không vượt quá container */
+}
+
+.table th,
+.table td {
+  padding: 12px 16px;
+  text-align: left;
+  background: var(--color-background);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.3s ease;
+  max-width: 0; /* Buộc cell tuân theo width đã định */
+  box-sizing: border-box; /* Đảm bảo padding và border được tính trong kích thước */
+  margin: 0; /* Đảm bảo không có margin gây offset */
+}
+
+.table th {
+  position: sticky;
+  top: 0;
+  background: linear-gradient(135deg, var(--color-surface-secondary) 0%, #e9ecef 100%);
+  z-index: 2;
+  font-weight: 700;
+  color: #495057;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table tbody tr {
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Đảm bảo highlight row không bị ảnh hưởng bởi hover */
+.table tbody tr.highlight {
+  cursor: pointer;
+  /* Không có transition để giữ nguyên trạng thái highlight */
+}
+
+/* Hover effects - CHỈ áp dụng cho các row CHƯA được highlight */
+.table tbody tr:hover:not(.highlight) {
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+  /* Loại bỏ translateX để tránh dịch chuyển layout */
+  /* transform: translateX(3px); */
+  box-shadow: 0 3px 10px rgba(79, 70, 229, 0.12);
+  border-radius: 4px;
+}
+
+.table tbody tr:hover:not(.highlight) .categoryIcon {
+  /* Loại bỏ scale để tránh tăng kích thước */
+  /* transform: scale(1.05); */
+  color: #4f46e5;
+}
+
+.table tbody tr:hover:not(.highlight) .categoryName {
+  color: #1e40af;
+  font-weight: 600;
+}
+
+.table tbody tr:hover:not(.highlight) .incomeAmount {
+  color: #059669 !important;
+  font-weight: 600 !important;
+}
+
+.table tbody tr:hover:not(.highlight) .expenseAmount {
+  color: var(--color-error-secondary) !important;
+  font-weight: 600 !important;
+}
+
+.table tbody tr:hover:not(.highlight) .transactionBadge {
+  /* Loại bỏ scale để tránh tăng kích thước */
+  /* transform: scale(1.02); */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Điều chỉnh lại width các cột để tránh tràn khi có border */
+.table th:first-child,
+.table td:first-child {
+  width: 38%; /* Giảm từ 40% để dành chỗ cho border */
+  padding-left: 20px;
+  min-width: 0; /* Cho phép co lại khi cần */
+}
+.table th:nth-child(2),
+.table td:nth-child(2) {
+  width: 25%; /* Giữ nguyên */
+  text-align: right;
+  min-width: 0;
+}
+.table th:nth-child(3),
+.table td:nth-child(3) {
+  width: 20%; /* Giữ nguyên */
+  text-align: center;
+  min-width: 0;
+}
+.table th:last-child,
+.table td:last-child {
+  width: 17%; /* Tăng từ 15% để đảm bảo đủ chỗ cho buttons */
+  text-align: center;
+  min-width: 0;
+}
+
+.categoryIcon {
+  font-size: 1.4rem;
+  color: #667eea;
+  width: 30px;
+  text-align: center;
+  transition: all 0.3s ease;
+  margin-right: 12px;
+}
+
+.categoryName {
+  font-size: 1.05rem;
+  color: var(--color-text-primary);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.incomeAmount {
+  color: #28a745 !important;
+}
+
+.expenseAmount {
+  color: #dc3545;
+}
+
+.transactionCount {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.categoryActions {
+  display: flex;
+  gap: 6px; /* Tăng gap một chút để đảm bảo không bị chen chúc */
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0; /* Không cho co lại */
+  width: 100%; /* Sử dụng hết không gian có sẵn */
+  box-sizing: border-box; /* Đảm bảo tính toán kích thước chính xác */
+}
+
+.actionButton {
+  background: none;
+  border: 1px solid #e9ecef;
+  cursor: pointer;
+  padding: 6px 8px; /* Tăng padding một chút */
+  font-size: 0.85rem; /* Giữ nguyên font size */
+  color: var(--color-text-secondary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px; /* Tăng min-width để đảm bảo đủ chỗ */
+  height: 32px; /* Tăng height để cân đối */
+  flex-shrink: 0;
+  box-sizing: border-box; /* Đảm bảo tính toán kích thước chính xác */
+}
+
+.actionButton:hover {
+  background-color: var(--color-surface-secondary);
+  border-color: #dee2e6;
+  /* Loại bỏ translateY để tránh dịch chuyển layout */
+  /* transform: translateY(-1px); */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.editButton:hover {
+  color: #007bff;
+  border-color: #007bff;
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.deleteButton:hover {
+  color: #dc3545;
+  border-color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.highlight {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(248, 250, 252, 0.9) 100%) !important;
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.15),
+    0 0 20px var(--slice-color-light, rgba(63, 81, 181, 0.3)),
+    inset 0 0 0 3px var(--slice-color, var(--color-primary)) !important; /* Viền bằng inset box-shadow */
+  border-radius: 8px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+}
+
+/* Viền được tạo bằng inset box-shadow ở trên, không cần ::before nữa */
+
+/* Thêm gradient border đẹp hơn với ::after */
+.highlight::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, 
+    var(--slice-color, var(--color-primary)) 0%, 
+    var(--slice-color-light, rgba(63, 81, 181, 0.8)) 30%, 
+    var(--slice-color, var(--color-primary)) 60%,
+    var(--slice-color-light, rgba(63, 81, 181, 0.8)) 100%);
+  border-radius: 8px;
+  z-index: -1;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Đảm bảo cells hiển thị trên viền */
+.highlight td {
+  position: relative;
+  z-index: 2;
+  border-radius: 8px; /* Bo góc cho cell đầu và cuối */
+}
+
+/* Bo góc cho cell đầu tiên */
+.highlight td:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+/* Bo góc cho cell cuối cùng */
+.highlight td:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.highlight .categoryIcon {
+  color: var(--slice-color, var(--color-primary)) !important;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  /* Loại bỏ scale để tránh tăng kích thước */
+  /* transform: scale(1.1); */
+  transition: all 0.3s ease;
+}
+
+.highlight .categoryName {
+  color: var(--slice-color, var(--color-text-primary)) !important;
+  font-weight: 700 !important;
+  font-size: 1.05rem !important;
+}
+
+/* Tắt tooltip để tránh gây dịch chuyển layout */
+/*
+.highlight::after {
+  content: attr(data-category-name);
+  position: absolute;
+  top: -35px;
+  left: 10px;
+  background: var(--slice-color, rgba(0, 0, 0, 0.9));
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 200;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+*/
+
+/* XÓA ANIMATION TOOLTIP - không cần thiết */
+
+.highlight .categoryIcon {
+  color: var(--slice-color, var(--color-primary)) !important; /* Icon có màu của pie slice */
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)) !important;
+  /* Loại bỏ scale để tránh tăng kích thước */
+  /* transform: scale(1.15) !important; */
+  text-shadow: 0 0 10px var(--slice-color, rgba(63, 81, 181, 0.5)) !important; /* Glow effect for icon */
+  /* Loại bỏ animation để tránh biến động kích thước */
+  /* animation: iconPulse 2s ease-in-out infinite alternate !important; */
+}
+
+.highlight .categoryName {
+  color: var(--slice-color, #1a1a1a) !important; /* Tên category cũng có màu slice */
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Animation cho icon khi được highlight - BỊ TẮT để tránh biến động kích thước */
+/*
+@keyframes iconPulse {
+  0% {
+    transform: scale(1.15);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  }
+  100% {
+    transform: scale(1.2);
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+  }
+}
+*/
+
+.highlight .incomeAmount {
+  color: var(--color-success-secondary) !important; /* GIỮ NGUYÊN MÀU XANH CHO THU NHẬP */
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 0 8px rgba(22, 163, 74, 0.3) !important;
+}
+
+.highlight .expenseAmount {
+  color: var(--color-error-secondary) !important; /* GIỮ NGUYÊN MÀU ĐỎ CHO CHI TIÊU */
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 0 8px rgba(220, 38, 38, 0.3) !important;
+}
+
+/* Đảm bảo button vẫn nhìn thấy được */
+.highlight .actionButton {
+  color: #666 !important;
+  border-color: var(--slice-color, #ccc) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.highlight .actionButton:hover {
+  color: #333 !important;
+  background: rgba(255, 255, 255, 1) !important;
+  border-color: var(--slice-color-dark, #333) !important;
+  /* Loại bỏ translateY để tránh dịch chuyển layout */
+  /* transform: translateY(-1px) !important; */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.loadingMessage,
+.errorMessage,
+.noCategoriesMessage {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+}
+
+.errorMessage {
+  color: #dc3545;
+}
+
+.inlineError {
+  color: #dc3545;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid #f5c6cb;
+  padding: 10px 15px;
+  border-radius: 4px;
+  margin: 10px 15px;
+  text-align: center;
+}
+
+/* Selected state enhancements - XÓA ĐI */
+
+.selectedBadge {
+  background: var(--slice-color, var(--color-primary)) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px var(--slice-color-light, rgba(63, 81, 181, 0.4)) !important;
+  border: 2px solid rgba(255, 255, 255, 0.8) !important;
+  /* Loại bỏ scale để tránh tăng kích thước */
+  /* transform: scale(1.05) !important; */
+  transition: all 0.3s ease !important;
+}
+
+.selectedBadge:hover {
+  background: var(--slice-color-dark, var(--color-primary-hover)) !important;
+  box-shadow: 0 6px 18px var(--slice-color-light, rgba(63, 81, 181, 0.5)) !important;
+  /* Loại bỏ scale để tránh tăng kích thước */
+  /* transform: scale(1.1) translateY(-2px) !important; */
+}
+
+.totalAmount {
+  transition: all 0.3s ease;
+}
+
+/* Badge styling for smooth transitions */
+.transactionBadge {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.transactionBadge:hover {
+  /* Loại bỏ scale để tránh tăng kích thước */
+  /* transform: scale(1.05) translateY(-1px); */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .table th,
+  .table td {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  .categoryIcon {
+    font-size: 1.2rem;
+    margin-right: 8px;
+  }
+
+  .categoryName {
+    font-size: 0.95rem;
+  }
+
+  .actionButton {
+    min-width: 30px;
+    height: 30px;
+    padding: 5px 7px;
+  }
+
+  /* Điều chỉnh lại width các cột cho mobile */
+  .table th:first-child,
+  .table td:first-child {
+    width: 35%;
+    padding-left: 16px;
+  }
+  .table th:nth-child(2),
+  .table td:nth-child(2) {
+    width: 25%;
+  }
+  .table th:nth-child(3),
+  .table td:nth-child(3) {
+    width: 22%;
+  }
+  .table th:last-child,
+  .table td:last-child {
+    width: 18%;
+  }
+}

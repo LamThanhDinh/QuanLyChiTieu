@@ -1,0 +1,76 @@
+/* File: SummaryWidget.module.css */
+
+.widgetContainer {
+  display: flex;
+  flex-direction: row; /* THAY ĐỔI: Xếp ngang */
+  align-items: center; /* Căn giữa các item theo chiều dọc */
+  background-color: #fcfdfe;
+  border: 1.5px solid #e0e7ef;
+  border-radius: 12px;
+  padding: 0.75rem 1rem; /* THAY ĐỔI: Giảm padding */
+  gap: 1rem; /* THAY ĐỔI: Điều chỉnh khoảng cách cho layout ngang */
+  box-shadow: 0 2px 8px rgba(63, 81, 181, 0.04);
+  min-width: 280px; /* THAY ĐỔI: Giảm chiều rộng tối thiểu */
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem; /* THAY ĐỔI: Giảm khoảng cách */
+}
+
+/* Các style khác của .icon, .details, .amount, .label không thay đổi */
+.iconIncome,
+.iconExpense {
+  width: 32px; /* THAY ĐỔI: Giảm kích thước icon */
+  height: 32px; /* THAY ĐỔI: Giảm kích thước icon */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-background);
+  flex-shrink: 0; /* Không cho icon co lại */
+}
+
+.iconIncome {
+  background-color: #28a745;
+}
+.iconExpense {
+  background-color: #dc3545;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 0.75rem; /* THAY ĐỔI: Giảm cỡ chữ */
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.amountIncome,
+.amountExpense {
+  font-size: 1rem; /* THAY ĐỔI: Giảm cỡ chữ */
+  font-weight: 600;
+}
+
+.amountIncome {
+  color: #28a745;
+}
+.amountExpense {
+  color: #dc3545;
+}
+
+.comparison {
+  font-size: 0.65rem; /* THAY ĐỔI: Giảm cỡ chữ */
+  color: var(--color-text-secondary);
+}
+
+/* THAY ĐỔI: Chuyển thành đường phân cách dọc */
+.divider {
+  width: 1px;
+  align-self: stretch; /* Kéo dài bằng chiều cao của container */
+  background-color: #e0e7ef;
+}

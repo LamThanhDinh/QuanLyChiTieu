@@ -1,0 +1,326 @@
+/* Spending Reminder Settings Styles - Following app design pattern */
+
+.reminderContainer {
+  background: var(--color-surface-primary);
+  border-radius: 8px;
+  border: 1.5px solid var(--color-border);
+  overflow: hidden;
+}
+
+.reminderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--color-surface-primary);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.reminderHeader:hover {
+  background: var(--color-surface-secondary);
+}
+
+.reminderLabel {
+  color: var(--color-text-primary);
+  font-weight: 500;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chevronIcon {
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  transition: transform 0.2s ease;
+}
+
+.reminderContent {
+  padding: 1.5rem;
+  background: var(--color-surface-primary);
+}
+
+/* Message Display */
+.message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.message.success {
+  background-color: rgba(34, 197, 94, 0.9);
+  color: white;
+  border: 1px solid var(--color-success-secondary, #22c55e);
+}
+
+.message.error {
+  background-color: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: 1px solid var(--color-error-secondary, #ef4444);
+}
+
+/* Setting Groups */
+.settingGroup {
+  margin-bottom: 1rem;
+}
+
+.settingGroupInline {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.settingLabel {
+  display: block;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  margin-bottom: 6px;
+  font-size: 0.875rem;
+}
+
+.settingInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-input-background);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.settingInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
+}
+
+/* Slider */
+.settingSlider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-gray-300);
+  outline: none;
+  appearance: none;
+  margin: 0.5rem 0;
+}
+
+.settingSlider::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.settingSlider::-webkit-slider-thumb:hover {
+  background: var(--color-primary-hover);
+}
+
+.settingSlider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.settingSlider::-moz-range-thumb:hover {
+  background: var(--color-primary-hover);
+}
+
+.sliderLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin-top: 0.25rem;
+}
+
+/* Checkbox */
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.settingCheckbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-input-background);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.settingCheckbox:checked {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.settingCheckbox:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.checkboxLabel {
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
+}
+
+/* Save Button */
+.saveButtonContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+  padding-top: 1rem;
+  border-top: 1.5px solid var(--color-border);
+}
+
+.saveButton {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  width: auto;
+  min-width: 120px;
+  transition: background-color 0.2s;
+}
+
+.saveButton:hover {
+  background: var(--color-primary-hover);
+}
+
+.saveButton:active {
+  transform: translateY(0);
+}
+
+/* Test Mode Styles */
+.testModeContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--color-surface-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}
+
+.testModeHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.testIcon {
+  color: var(--color-accent);
+  font-size: 1rem;
+}
+
+.testModeDescription {
+  margin: 8px 0 0 0;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+  padding: 8px 12px;
+  background: var(--color-surface-tertiary);
+  border-radius: 6px;
+  border-left: 3px solid var(--color-accent);
+}
+
+/* Toggle Switch for Test Mode */
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+}
+
+.toggleInput {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #bdbdbd; /* Màu xám đậm hơn, dễ nhìn hơn khi chưa bật */
+  transition: 0.3s ease;
+  border-radius: 28px;
+}
+
+.toggleSlider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background: var(--color-background);
+  transition: 0.3s ease;
+  border-radius: 50%;
+}
+
+.toggleInput:checked + .toggleSlider {
+  background: #ff9800;
+}
+
+.toggleInput:checked + .toggleSlider:before {
+  transform: translateX(22px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .reminderContent {
+    padding: 1rem;
+  }
+
+  .settingGroup {
+    margin-bottom: 1rem;
+  }
+
+  .settingGroupInline {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .saveButtonContainer {
+    margin-top: 1.5rem;
+  }
+
+  .saveButton {
+    width: 100%;
+  }
+}

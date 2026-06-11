@@ -1,0 +1,27 @@
+/* src/components/Goals/GoalControls.module.css */
+/* Style được sao chép và điều chỉnh từ DateRangeNavigator.module.css */
+
+.goalControlsFieldset {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  margin: 0;
+  padding: 0; /* Xóa padding khỏi fieldset để div bên trong kiểm soát */
+  background-color: #fcfcfe;
+}
+
+.goalControlsLegend {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  padding: 3px 10px;
+  margin-left: 1rem; /* Đẩy legend vào trong một chút */
+}
+
+/* Container bọc các nút điều khiển bên trong */
+.controlsGroup {
+  display: flex;
+  flex-wrap: wrap; /* Cho phép xuống dòng trên màn hình nhỏ */
+  gap: 1rem; /* Khoảng cách giữa cụm lọc và cụm sắp xếp */
+  align-items: center;
+  padding: 0.75rem 1rem 1rem; /* Padding cho nội dung bên trong */
+}

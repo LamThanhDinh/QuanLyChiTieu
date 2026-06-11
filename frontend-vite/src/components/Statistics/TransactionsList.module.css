@@ -1,0 +1,358 @@
+/* TransactionsList.module.css */
+
+.container {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.titleSection {
+  flex-grow: 1;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filterIndicator {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: var(--color-border-light);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  font-weight: 500;
+}
+
+.clearFilterButton {
+  background: var(--color-surface-secondary);
+  color: #3b82f6;
+  border: 1px solid var(--color-border-light);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.clearFilterButton:hover {
+  background: #dbeafe;
+  color: #2563eb;
+  transform: translateY(-1px);
+}
+
+/* Loading State */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 16px;
+}
+
+.loadingSpinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border);
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingText {
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Error State */
+.errorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.errorText {
+  color: var(--color-error-primary);
+  font-size: 0.95rem;
+  text-align: center;
+  margin: 0;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  color: var(--color-border);
+  margin-bottom: 16px;
+}
+
+.emptyTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 8px 0;
+}
+
+.emptyDescription {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+/* Transactions List */
+.transactionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.transactionsList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.transactionsList::-webkit-scrollbar-track {
+  background: var(--color-surface-secondary);
+  border-radius: 3px;
+}
+
+.transactionsList::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.transactionsList::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Transaction Item */
+.transactionItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.transactionItem:hover {
+  border-color: var(--color-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+/* Type Indicator */
+.typeIndicator {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.typeIndicator.income {
+  background: rgba(16, 185, 129, 0.1);
+  border: 2px solid rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.typeIndicator.expense {
+  background: rgba(239, 68, 68, 0.1);
+  border: 2px solid rgba(239, 68, 68, 0.2);
+  color: var(--color-error-primary);
+}
+
+.typeIcon {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+/* Transaction Info */
+.transactionInfo {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mainInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.description {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.category {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+.categoryIcon {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.metaInfo {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.date,
+.account {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+.dateIcon,
+.accountIcon {
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+/* Amount */
+.amount {
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: right;
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.incomeAmount {
+  color: #10b981;
+}
+
+.expenseAmount {
+  color: var(--color-error-primary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .clearFilterButton {
+    align-self: flex-start;
+  }
+
+  .transactionItem {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .typeIndicator {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .metaInfo {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .amount {
+    font-size: 0.95rem;
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .transactionItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .transactionInfo {
+    width: 100%;
+  }
+
+  .amount {
+    align-self: flex-end;
+    font-size: 1.1rem;
+    min-width: auto;
+  }
+
+  .description {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: initial;
+  }
+}

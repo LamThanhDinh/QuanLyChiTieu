@@ -1,0 +1,496 @@
+/* Reset toàn cục */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Inter", sans-serif;
+  background: var(--color-background) 7f0;
+  /* overflow: hidden; */
+}
+
+/* Toàn bố cục login */
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 0 24px;
+  column-gap: 40px;
+}
+
+/* Bên trái: logo + mô tả */
+.login-left {
+  width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.login-logo {
+  width: 240px;
+  margin-bottom: 24px;
+}
+
+.login-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #892e50;
+  margin-bottom: 12px;
+}
+
+.login-desc {
+  font-size: 16px;
+  color: #5a5a5a;
+  max-width: 320px;
+  line-height: 1.6;
+}
+
+.login-form-box {
+  background: var(--color-background);
+  border: 1px solid #1e90ff;
+  border-radius: 12px;
+  padding: 80px 24px 28px 24px;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-form-box label {
+  font-weight: 600;
+  font-size: 15px;
+  color: #2c3e50;
+  margin-bottom: 6px;
+  display: block;
+  position: relative;
+}
+
+.login-form-box label::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #1e90ff, #187bd1);
+  transition: width 0.3s ease;
+}
+
+/* Label focus state when corresponding input is focused */
+.login-form-box label.focused::after {
+  width: 30px;
+}
+
+.login-form-box input {
+  padding: 14px 16px;
+  border: 2px solid #e1e5e9;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  background-color: #fafbfc;
+  font-family: inherit;
+}
+
+.login-form-box input:focus {
+  border-color: #1e90ff;
+  background-color: var(--color-background);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.login-form-box input::placeholder {
+  color: #9ca3af;
+  transition: opacity 0.3s ease;
+}
+
+.login-form-box input:focus::placeholder {
+  opacity: 0.7;
+}
+
+/* Nút đăng nhập */
+.login-button {
+  margin-top: 8px;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #1e90ff 0%, #1a7bb8 100%);
+  color: var(--color-background);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  min-height: 52px;
+}
+
+.login-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.login-button:hover::before {
+  left: 100%;
+}
+
+.login-button:hover {
+  background: linear-gradient(135deg, #187bd1 0%, #155a99 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(30, 144, 255, 0.3);
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+.login-button:disabled {
+  background: #e0e0e0;
+  color: #aaa;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.login-button:disabled::before {
+  display: none;
+}
+
+/* Loading state cho button */
+.login-button.loading {
+  pointer-events: none;
+  position: relative;
+}
+
+.login-button.loading .button-text {
+  opacity: 0;
+}
+
+.login-button.loading::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top: 2px solid var(--color-background);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Thông báo lỗi/thành công */
+.login-message {
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-weight: 500;
+  text-align: center;
+  font-size: 14px;
+  animation: slideIn 0.3s ease-out;
+  backdrop-filter: blur(10px);
+}
+
+.login-message.success {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  box-shadow: 0 4px 12px rgba(21, 87, 36, 0.15);
+}
+
+.login-message.error {
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.1) 0%,
+    rgba(245, 198, 203, 0.2) 100%
+  );
+  color: var(--color-error-primary, #dc3545);
+  border: 1px solid #f5c6cb;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.15);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dòng chuyển hướng */
+.login-bottom {
+  text-align: center;
+  font-size: 14px;
+  color: #444;
+  margin-top: 16px;
+}
+
+.login-bottom span {
+  cursor: pointer;
+  color: #1e90ff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.login-bottom span:hover {
+  color: #187bd1;
+  border-bottom-color: #187bd1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+    gap: 24px;
+    padding: 20px 16px;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .login-left {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .login-form-box {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: 16px 12px;
+  }
+
+  .login-logo {
+    width: 200px;
+  }
+
+  .login-title {
+    font-size: 24px;
+  }
+
+  .login-desc {
+    font-size: 14px;
+  }
+}
+
+/* ❄️ YETI SVG STYLES */
+.svgContainer {
+  display: flex;
+  justify-content: center;
+  /* margin-top: -75px;
+  margin-bottom: -15px; */
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.mySVG {
+  width: 120px;
+  height: 120px;
+  transition: all 0.3s ease;
+}
+
+.mySVG:hover {
+  transform: scale(1.05);
+}
+
+/* Body elements */
+.body .bodyBGnormal {
+  transition: all 0.45s ease;
+}
+
+.body .bodyBGchanged {
+  transition: all 0.45s ease;
+}
+
+/* Ear styles */
+.earL .outerEar,
+.earR .outerEar {
+  transition: all 1s ease;
+}
+
+.earL .earHair,
+.earR .earHair {
+  transition: all 1s ease;
+}
+
+/* Face elements */
+.face {
+  transition: all 1s ease;
+}
+
+.chin {
+  transition: all 1s ease;
+}
+
+.hair {
+  transition: all 1s ease;
+}
+
+.eyebrow {
+  transition: all 1s ease;
+}
+
+/* Eye movement */
+.eyeL circle,
+.eyeR circle {
+  transition: all 1s ease;
+}
+
+/* Mouth and nose */
+.mouth .mouthBG,
+.mouth .mouthOutline,
+.nose {
+  transition: all 1s ease;
+}
+
+/* Arms animation */
+.arms .armL,
+.arms .armR {
+  transition: all 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.arms .armL {
+  transform-origin: top left;
+}
+
+.arms .armR {
+  transform-origin: top right;
+}
+
+/* Two fingers animation for covering eyes */
+.twoFingers {
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Arm states */
+.armL.hidden {
+  transform: translate(-93px, 220px) rotate(105deg);
+}
+
+.armR.hidden {
+  transform: translate(-93px, 220px) rotate(-105deg);
+}
+
+.armL.covering {
+  transform: translate(-93px, 10px) rotate(0deg);
+}
+
+.armR.covering {
+  transform: translate(-93px, 10px) rotate(0deg);
+}
+
+/* Loading animation */
+.mySVG.loading {
+  animation: yetiSpin 2s linear infinite;
+}
+
+@keyframes yetiSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Happy animation */
+.mySVG.happy {
+  animation: yetiBounce 0.6s ease-in-out;
+}
+
+@keyframes yetiBounce {
+  0%,
+  20%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  80% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Sad animation */
+.mySVG.sad {
+  animation: yetiShake 0.8s ease-in-out;
+}
+
+@keyframes yetiShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-3px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+/* Responsive Yeti */
+@media (max-width: 768px) {
+  .svgContainer {
+    margin-bottom: 16px;
+  }
+
+  .mySVG {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mySVG {
+    width: 90px;
+    height: 90px;
+  }
+}

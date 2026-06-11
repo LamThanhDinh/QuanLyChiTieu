@@ -1,0 +1,584 @@
+/* ProfilePage.module.css - Updated for balanced layout */
+
+.pageWrapper {
+  width: 100%;
+  padding: var(--page-gap) 0; /* Chỉ có padding top/bottom */
+  background-color: var(--page-background);
+  min-height: calc(100vh - 140px);
+}
+
+.contentContainer {
+  width: 100%;
+  padding: 0 var(--page-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-gap);
+}
+
+.profilePageHeader {
+  /* Styles inherited from HeaderCard */
+}
+
+/* Content Grid Layout - 2 cards side by side cân đối */
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: unset;
+}
+
+/* Base Card Style - Đồng bộ hoàn toàn */
+.profileCard,
+.settingsCard {
+  background: var(--color-surface-primary);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+
+  max-height: none;
+  overflow: visible;
+}
+
+/* Card Title - Đồng bộ */
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--color-border-light);
+}
+
+.cardTitle svg {
+  color: var(--color-primary);
+  font-size: 1.2rem;
+}
+
+/* Avatar Section - Cân đối */
+.avatarSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 12px;
+  border: 3px solid var(--color-border-light);
+}
+
+.changeAvatarBtn {
+  background: var(--color-surface-secondary);
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.changeAvatarBtn:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+/* Form Section - Đồng bộ spacing */
+.formSection {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 20px;
+}
+
+/* Security Grid - Đồng bộ layout */
+.securityGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex-grow: 1;
+}
+
+.securityRow {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.securityCard {
+  background: transparent;
+  padding: 0;
+  flex-grow: 1;
+}
+
+.securityCard h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.securityCardDanger {
+  background: transparent;
+  padding: 0;
+  margin-top: auto;
+}
+
+.securityCardDanger h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-error-secondary);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #fecaca;
+}
+
+/* Form Group - Đồng bộ spacing */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.formGroupWithValidation {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+}
+
+.formGroup input {
+  padding: 12px 16px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
+}
+
+.formGroup input:disabled {
+  background-color: var(--color-surface-secondary);
+  color: var(--color-text-secondary);
+}
+
+/* Input with Icon - Đồng bộ */
+.inputWithIcon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputWithIcon input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.editIcon {
+  position: absolute;
+  right: 12px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.editIcon:hover {
+  color: var(--color-primary);
+}
+
+/* Password Validation */
+.passwordError {
+  color: var(--color-error-secondary);
+  font-size: 0.75rem;
+  margin-top: 4px;
+}
+
+.passwordSuccess {
+  color: #059669;
+  font-size: 0.75rem;
+  margin-top: 4px;
+}
+
+/* Message Styles - Đồng bộ */
+.message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.message.success {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: var(--color-success-primary);
+  border: 1px solid #bbf7d0;
+}
+
+.message.error {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--color-error-secondary);
+  border: 1px solid #fecaca;
+}
+
+.message.info {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+/* Save Button - Cân đối */
+.saveButton {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 32px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: auto;
+  width: fit-content;
+  align-self: flex-end;
+}
+
+.saveButton:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.saveButton:disabled {
+  background: var(--color-gray-400);
+  cursor: not-allowed;
+}
+
+/* History List - Cân đối */
+.historyList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.historyItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border-light);
+  gap: 12px;
+}
+
+.historyItem:last-child {
+  border-bottom: none;
+}
+
+.historyInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.historyInfo strong {
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  word-break: break-word;
+}
+
+.historyInfo span {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.historyTime {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Danger Zone - Cân đối */
+.dangerZone {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #fecaca;
+}
+
+.dangerZone div {
+  margin-bottom: 16px;
+}
+
+.dangerZone strong {
+  display: block;
+  color: var(--color-error-secondary);
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: 1rem;
+}
+
+.dangerZone p {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.dangerButton {
+  background: var(--color-error-secondary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: fit-content;
+}
+
+.dangerButton:hover {
+  background: #b91c1c;
+}
+
+/* Settings Items - Cân đối với profile */
+.settingsItem {
+  font-size: 1rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border-light);
+  margin-bottom: 0;
+}
+
+.settingsItem:last-child {
+  border-bottom: none;
+}
+
+.settingsContent {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 8px; /* Thêm gap nhỏ giữa các mục chính */
+}
+
+/* Toggle Switch */
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  vertical-align: middle;
+}
+
+.toggleSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.3s;
+  border-radius: 24px;
+}
+
+.toggleSlider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+.toggleInput:checked + .toggleSlider {
+  background-color: #1a4fa3;
+}
+
+.toggleInput:checked + .toggleSlider:before {
+  transform: translateX(20px);
+}
+
+/* Export/Import Buttons */
+.exportBtn {
+  background: #2d3e50;
+  color: var(--color-background);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.exportBtn:hover {
+  background: #1a4fa3;
+}
+
+.logoutBtn {
+  background: var(--color-background);
+  color: var(--color-error-primary);
+  border: 1.5px solid var(--color-error-primary);
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+  transition:
+    background 0.2s,
+    color 0.2s;
+  align-self: flex-start;
+}
+
+.logoutBtn:hover {
+  background: var(--color-error-primary);
+  color: var(--color-background);
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .pageWrapper {
+    padding: 16px;
+  }
+
+  .contentContainer {
+    gap: 16px;
+  }
+
+  .contentGrid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pageWrapper {
+    padding: 12px;
+  }
+
+  .contentContainer {
+    gap: 12px;
+  }
+
+  .profileCard,
+  .settingsCard {
+    padding: 16px;
+  }
+
+  .cardTitle {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .profileCard,
+  .settingsCard {
+    padding: 16px;
+  }
+
+  .cardTitle {
+    font-size: 1.125rem;
+    margin-bottom: 16px;
+  }
+
+  .avatar {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* In ProfilePage.module.css */
+
+/* 1. Nâng cấp .settingsContent để có khoảng cách tốt hơn */
+.settingsContent {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 8px; /* Thêm gap nhỏ giữa các mục chính */
+}
+
+/* 2. Thêm class mới cho khu vực Xuất/Nhập dữ liệu */
+.dataSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background-color: var(
+    --color-surface-secondary
+  ); /* Màu nền hơi khác để phân biệt */
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  margin-top: 8px;
+}
+
+/* 3. Thêm class cho nhóm các nút Xuất/Nhập */
+.dataButtons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* 4. Thêm class cho phần thông báo khi đã chọn file */
+.importStatus {
+  margin-top: 15px;
+  width: 100%;
+}
+
+.importStatus p {
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  margin: 0 0 10px 0;
+}
+
+/* 5. Thêm class cho container của nút Đăng xuất */
+.logoutContainer {
+  margin-top: auto; /* Quan trọng: Đẩy nút xuống dưới cùng */
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-light);
+  display: flex;
+  justify-content: flex-end; /* Đẩy nút sang phải */
+}

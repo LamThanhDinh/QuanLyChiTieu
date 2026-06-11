@@ -1,0 +1,237 @@
+/* AI Message Renderer Styles */
+
+.messageContainer {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+
+.messageLine {
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.messageLine:last-child {
+  margin-bottom: 0;
+}
+
+/* Header lines with emoji */
+.headerLine {
+  font-weight: 600;
+  font-size: 1.1em;
+  color: #1f2937;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Strong/Bold text */
+.ai_strong {
+  font-weight: 700;
+  color: #1f2937;
+  font-size: 1.05em;
+}
+
+/* Emphasis/Italic text */
+.ai_emphasis {
+  font-style: italic;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  background-color: var(--color-surface-secondary);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+}
+
+/* Income - Green styling */
+.ai_income {
+  color: #065f46;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  border: 2px solid #10b981;
+  font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace;
+  box-shadow: 0 1px 3px rgba(16, 185, 129, 0.2);
+  display: inline-block;
+  min-width: fit-content;
+}
+
+/* Expense - Red styling */
+.ai_expense {
+  color: #991b1b;
+  font-weight: 700;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, #fecaca 100%);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--color-error-primary);
+  font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace;
+  box-shadow: 0 1px 3px rgba(239, 68, 68, 0.2);
+  display: inline-block;
+  min-width: fit-content;
+}
+
+/* Balance - Blue styling */
+.ai_balance {
+  color: #1e40af;
+  font-weight: 700;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  border: 2px solid #3b82f6;
+  font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace;
+  box-shadow: 0 1px 3px rgba(59, 130, 246, 0.2);
+  display: inline-block;
+  min-width: fit-content;
+}
+
+/* Positive amounts - Enhanced Green */
+.ai_positive {
+  color: #065f46;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ecfdf5 0%, #a7f3d0 100%);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  border: 2px solid #10b981;
+  font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+  display: inline-block;
+  min-width: fit-content;
+  transform: scale(1.02);
+}
+
+/* Negative amounts - Enhanced Red */
+.ai_negative {
+  color: #991b1b;
+  font-weight: 700;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, #fca5a5 100%);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--color-error-primary);
+  font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+  display: inline-block;
+  min-width: fit-content;
+  transform: scale(1.02);
+}
+
+/* Progress - Purple styling */
+.ai_progress {
+  color: #7c3aed;
+  font-weight: 700;
+  background: linear-gradient(135deg, #f3e8ff 0%, #ddd6fe 100%);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  border: 2px solid #8b5cf6;
+  font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace;
+  box-shadow: 0 1px 3px rgba(139, 92, 246, 0.2);
+  display: inline-block;
+  min-width: fit-content;
+}
+
+/* Hover effects for interactive elements */
+.ai_income:hover,
+.ai_expense:hover,
+.ai_balance:hover,
+.ai_positive:hover,
+.ai_negative:hover,
+.ai_progress:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+}
+
+/* Add pulse animation for positive/negative */
+.ai_positive {
+  animation: pulse-green 2s infinite;
+}
+
+.ai_negative {
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-green {
+  0%,
+  100% {
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.5);
+  }
+}
+
+@keyframes pulse-red {
+  0%,
+  100% {
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.5);
+  }
+}
+
+/* Line divider styling for goal separators */
+.lineDivider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-border), transparent);
+  margin: 0.75rem 0;
+  opacity: 0.6;
+}
+
+/* Style for lines containing only dash characters */
+.messageLine:has-text("────") {
+  display: block;
+  text-align: center;
+  color: var(--color-border);
+  margin: 0.75rem 0;
+  font-family: monospace;
+  letter-spacing: 2px;
+  opacity: 0.6;
+}
+
+/* Alternative approach - detect dash-only lines */
+.dashLine {
+  display: block;
+  text-align: center;
+  color: var(--color-border);
+  margin: 0.75rem 0;
+  font-family: monospace;
+  letter-spacing: 2px;
+  opacity: 0.6;
+  transform: scaleY(0.5);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .messageLine {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.375rem;
+  }
+
+  .ai_income,
+  .ai_expense,
+  .ai_balance,
+  .ai_positive,
+  .ai_negative,
+  .ai_progress {
+    font-size: 0.875rem;
+    padding: 0.2rem 0.4rem;
+    width: auto;
+    min-width: fit-content;
+  }
+
+  .headerLine {
+    font-size: 1rem;
+  }
+
+  .dashLine {
+    margin: 0.5rem 0;
+    letter-spacing: 1px;
+  }
+}

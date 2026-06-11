@@ -1,0 +1,37 @@
+/* src/components/Goals/GoalsList.module.css */
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: var(--color-background);
+  border: 2px dashed var(--color-border);
+  border-radius: 12px;
+  margin-top: 2rem;
+}
+
+.emptyState h2 {
+  font-size: 1.5rem;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.emptyState p {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+}
+
+/* Đây chỉ là style tạm thời để chúng ta thấy được dữ liệu */
+.tempCard {
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  font-size: 1.2rem;
+  font-weight: 600;
+}

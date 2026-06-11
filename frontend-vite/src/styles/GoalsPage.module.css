@@ -1,0 +1,46 @@
+/* src/styles/GoalsPage.module.css */
+
+/* src/styles/GoalsPage.module.css - Updated for ExtendedHeaderCard */
+
+.pageWrapper {
+  width: 100%;
+  padding: var(--page-gap) 0; /* Chỉ có padding top/bottom */
+  background-color: var(--page-background);
+  min-height: calc(100vh - 140px);
+}
+
+.contentContainer {
+  width: 100%;
+  padding: 0 var(--page-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-gap);
+}
+
+/* Remove old header styles since we use ExtendedHeaderCard now */
+
+/* XÓA .addButton vì đã dùng Button chuẩn */
+
+.addIcon {
+  font-size: 0.8rem;
+}
+
+.content {
+  margin-top: 1rem;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface-secondary);
+  border-radius: 8px;
+}
+
+.error {
+  color: #dc3545;
+}
+
+/* Responsive design - global variables handle padding */

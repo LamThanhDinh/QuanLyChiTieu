@@ -1,0 +1,8 @@
+{
+  "appId": "com.quanlychitieu.app",
+  "appName": "Quan Ly Chi Tieu",
+  "webDir": "dist",
+  "server": {
+    "cleartext": true
+  }
+}
