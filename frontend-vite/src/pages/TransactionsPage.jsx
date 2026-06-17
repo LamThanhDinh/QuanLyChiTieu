@@ -26,6 +26,7 @@ import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
 import HeaderCard from "../components/Common/HeaderCard";
 import PageContentContainer from "../components/Common/PageContentContainer";
+import FloatingActionButton from "../components/Common/FloatingActionButton";
 import TransactionCalendar from "../components/Transactions/TransactionCalendar";
 import TransactionFilterPanel from "../components/Transactions/TransactionFilterPanel";
 import TransactionList from "../components/Transactions/TransactionList";
@@ -490,6 +491,9 @@ const TransactionsPage = () => {
         message="Bạn có chắc chắn muốn xóa giao dịch này không? Hành động này không thể hoàn tác."
       />
       <Footer />
+
+      {/* FAB for mobile - add transaction */}
+      <FloatingActionButton onClick={handleAddRequest} />
     </div>
   );
 };

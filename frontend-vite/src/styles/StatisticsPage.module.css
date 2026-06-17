@@ -452,61 +452,45 @@
 }
 
 @media (max-width: 768px) {
+  .pageWrapper {
+    padding: 12px 0;
+    min-height: calc(100vh - 80px);
+  }
+
   .contentContainer {
-    padding: 0 var(--page-padding-mobile);
+    padding: 0 var(--page-padding, 16px);
+    gap: 12px;
+  }
+
+  .header {
+    padding: 24px 16px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+  }
+
+  .pageTitle {
+    font-size: 1.5rem;
+  }
+
+  .pageDescription {
+    font-size: 0.9rem;
   }
 
   .statsGrid {
     grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .tabs {
-    flex-wrap: wrap;
-    padding: 0 16px;
-  }
-
-  .tabs button {
-    padding: 12px 16px;
-    font-size: 0.9rem;
-  }
-
-  .tabContent {
-    padding: 24px 16px;
-  }
-
-  .headerActions {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .contextRow {
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-start;
+    gap: 12px;
   }
 
   .statsCardsRow {
     grid-template-columns: 1fr;
-    gap: 16px;
-    margin: 24px 0;
-  }
-}
-
-@media (max-width: 480px) {
-  .subTabs {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .subTabs button {
-    padding: 10px 16px;
-  }
-
-  .listHeader {
-    flex-direction: column;
     gap: 12px;
-    align-items: flex-start;
+    margin: 16px 0;
+  }
+
+  .statsCardsRow .statCard {
+    padding: 16px;
+    min-height: 80px;
+    border-radius: 16px;
   }
 
   .cardIconWrapper {
@@ -520,6 +504,100 @@
   }
 
   .cardAmount {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
+  }
+
+  .cardDescription {
+    font-size: 0.7rem;
+  }
+
+  .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 0 12px;
+    gap: 0;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tabs button {
+    padding: 12px 14px;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    min-height: 44px;
+    gap: 6px;
+  }
+
+  .tabContent {
+    padding: 16px 12px;
+    min-height: 300px;
+    gap: 16px;
+  }
+
+  .sectionTitle {
+    font-size: 1.15rem;
+    margin: 0 0 12px 0;
+  }
+
+  .subTabs {
+    gap: 0;
+    padding: 3px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+
+  .subTabs button {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    min-height: 40px;
+    flex: 1;
+    text-align: center;
+  }
+
+  .headerActions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .contextRow {
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  .contextText {
+    font-size: 0.82rem;
+  }
+
+  .analysisSection {
+    border-radius: 16px;
+  }
+
+  .trendChartContainer,
+  .categoryChartContainer {
+    padding: 12px;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 375px) {
+  .contentContainer {
+    padding: 0 12px;
+  }
+
+  .tabs button {
+    padding: 10px 10px;
+    font-size: 0.78rem;
+  }
+
+  .tabContent {
+    padding: 12px 8px;
+  }
+
+  .cardAmount {
+    font-size: 1.05rem;
   }
 }

@@ -417,45 +417,161 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Responsive */
+/* ===== MOBILE CARD LAYOUT ===== */
+/* Hide table on mobile, show card layout */
 @media (max-width: 768px) {
-  .table th,
-  .table td {
-    padding: 8px 12px;
-    font-size: 0.9rem;
+  .tableScroll {
+    overflow: visible;
+    max-height: none;
   }
 
-  .categoryIcon {
+  .table {
+    display: none !important; /* Hide table on mobile */
+  }
+
+  .categoryListContainer {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    gap: 10px;
+    padding: 0;
+  }
+}
+
+/* Mobile card styles - applied via JSX conditional rendering */
+.mobileCardList {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobileCardList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0;
+  }
+
+  .mobileCard {
+    background: var(--color-background, #fff);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--color-border, #e9ecef);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobileCard:active {
+    transform: scale(0.98);
+  }
+
+  .mobileCard.highlight {
+    border-color: var(--slice-color, var(--color-primary));
+    box-shadow: 0 4px 16px var(--slice-color-light, rgba(63, 81, 181, 0.2));
+  }
+
+  .mobileCardHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .mobileCardIcon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--color-primary-light, #e8eaf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 1.2rem;
-    margin-right: 8px;
+    color: var(--color-primary, #3f51b5);
+    flex-shrink: 0;
   }
 
-  .categoryName {
+  .mobileCardInfo {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .mobileCardName {
     font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  .actionButton {
-    min-width: 30px;
-    height: 30px;
-    padding: 5px 7px;
+  .mobileCardMeta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 2px;
   }
 
-  /* Điều chỉnh lại width các cột cho mobile */
-  .table th:first-child,
-  .table td:first-child {
-    width: 35%;
-    padding-left: 16px;
+  .mobileCardAmount {
+    font-size: 0.85rem;
+    font-weight: 600;
   }
-  .table th:nth-child(2),
-  .table td:nth-child(2) {
-    width: 25%;
+
+  .mobileCardAmount.income {
+    color: #28a745;
   }
-  .table th:nth-child(3),
-  .table td:nth-child(3) {
-    width: 22%;
+
+  .mobileCardAmount.expense {
+    color: #dc3545;
   }
-  .table th:last-child,
-  .table td:last-child {
-    width: 18%;
+
+  .mobileCardTransactions {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+  }
+
+  .mobileCardActions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-border, #f0f0f0);
+  }
+
+  .mobileActionBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border, #e9ecef);
+    background: var(--color-background, #fff);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    min-height: 36px;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobileActionBtn:active {
+    transform: scale(0.95);
+  }
+
+  .mobileActionBtn.edit:hover,
+  .mobileActionBtn.edit:active {
+    color: #007bff;
+    border-color: #007bff;
+    background: rgba(0, 123, 255, 0.05);
+  }
+
+  .mobileActionBtn.delete:hover,
+  .mobileActionBtn.delete:active {
+    color: #dc3545;
+    border-color: #dc3545;
+    background: rgba(220, 53, 69, 0.05);
   }
 }

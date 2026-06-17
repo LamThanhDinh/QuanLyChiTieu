@@ -53,8 +53,16 @@ const Settings = ({
       </h3>
 
       {/* Message display */}
-      {message.text && (
-        <div className={`${styles.message} ${styles[message.type]}`}>
+      {message?.text && (
+        <div
+          className={`${styles.message} ${
+            message.type === "success"
+              ? styles.messageSuccess
+              : message.type === "error"
+              ? styles.messageError
+              : styles.messageInfo
+          }`}
+        >
           {message.text}
         </div>
       )}

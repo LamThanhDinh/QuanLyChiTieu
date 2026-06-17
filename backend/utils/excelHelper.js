@@ -20,7 +20,7 @@ const createExcelWorkbook = (data) => {
       'ID': acc._id?.toString() || '',
       'Tên Tài Khoản': acc.name || '',
       'Loại': acc.type || '',
-      'Số Dư': acc.balance || 0,
+      'Số Dư': acc.initialBalance ?? acc.balance ?? 0,
       'Icon': acc.icon || '',
       'Ngày Tạo': acc.createdAt ? new Date(acc.createdAt).toLocaleDateString('vi-VN') : '',
     }));
@@ -92,6 +92,36 @@ const exportToExcelBuffer = (data) => {
 };
 
 /**
+ * Safely parse date from Excel row (either string, Date object, or Excel serial number)
+ * @param {any} dateVal - Date value from Excel row
+ * @returns {Date} - JS Date object
+ */
+const parseDateString = (dateVal) => {
+  if (!dateVal) return new Date();
+  if (dateVal instanceof Date) return dateVal;
+
+  // If Excel parsed it as a number (serial date)
+  if (typeof dateVal === 'number') {
+    return new Date((dateVal - 25569) * 86400 * 1000);
+  }
+
+  // If string, handle DD/MM/YYYY Vietnamese format
+  if (typeof dateVal === 'string') {
+    const parts = dateVal.split('/');
+    if (parts.length === 3) {
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1; // 0-indexed month
+      const year = parseInt(parts[2], 10);
+      const d = new Date(year, month, day);
+      if (!isNaN(d.getTime())) return d;
+    }
+  }
+
+  const parsed = new Date(dateVal);
+  return isNaN(parsed.getTime()) ? new Date() : parsed;
+};
+
+/**
  * Parse Excel file buffer to data object
  * @param {Buffer} buffer - Excel file buffer
  * @returns {Object} - Parsed data object
@@ -119,7 +149,7 @@ const parseExcelBuffer = (buffer) => {
         result.accounts = data.map(row => ({
           name: row['Tên Tài Khoản'] || row.name || '',
           type: row['Loại'] || row.type || '',
-          balance: parseFloat(row['Số Dư'] || row.balance || 0),
+          initialBalance: parseFloat(row['Số Dư'] ?? row.initialBalance ?? row.balance ?? 0),
           icon: row['Icon'] || row.icon || 'fa-wallet',
         }));
         break;
@@ -136,7 +166,7 @@ const parseExcelBuffer = (buffer) => {
           type: row['Loại'] || row.type || '',
           name: row['Tên'] || row.name || '',
           amount: parseFloat(row['Số Tiền'] || row.amount || 0),
-          date: row['Ngày'] || row.date || new Date(),
+          date: parseDateString(row['Ngày'] || row.date),
           accountId: { name: row['Tài Khoản'] || row.accountId || '' },
           categoryId: { name: row['Danh Mục'] || row.categoryId || '' },
           note: row['Ghi Chú'] || row.note || '',
@@ -147,7 +177,7 @@ const parseExcelBuffer = (buffer) => {
           name: row['Tên Mục Tiêu'] || row.name || '',
           targetAmount: parseFloat(row['Mục Tiêu'] || row.targetAmount || 0),
           currentAmount: parseFloat(row['Đã Có'] || row.currentAmount || 0),
-          deadline: row['Hạn Chót'] || row.deadline || new Date(),
+          deadline: parseDateString(row['Hạn Chót'] || row.deadline),
           icon: row['Icon'] || row.icon || '🎯',
           status: row['Trạng Thái'] || row.status || 'in-progress',
           isPinned: (row['Đã Ghim'] || row.isPinned) === 'Có' || false,

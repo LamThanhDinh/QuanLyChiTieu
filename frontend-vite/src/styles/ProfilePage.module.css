@@ -480,53 +480,122 @@
 
 /* Responsive Design */
 @media (max-width: 992px) {
-  .pageWrapper {
-    padding: 16px;
-  }
-
-  .contentContainer {
-    gap: 16px;
-  }
-
   .contentGrid {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 16px;
   }
 }
 
 @media (max-width: 768px) {
   .pageWrapper {
-    padding: 12px;
+    padding: 12px 0;
+    min-height: calc(100vh - 80px);
   }
 
   .contentContainer {
+    padding: 0 var(--page-padding, 16px);
+    gap: 12px;
+  }
+
+  .contentGrid {
+    grid-template-columns: 1fr;
     gap: 12px;
   }
 
   .profileCard,
   .settingsCard {
     padding: 16px;
+    border-radius: 16px;
   }
 
   .cardTitle {
-    font-size: 1.1rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .profileCard,
-  .settingsCard {
-    padding: 16px;
-  }
-
-  .cardTitle {
-    font-size: 1.125rem;
+    font-size: 1.05rem;
     margin-bottom: 16px;
+    padding-bottom: 10px;
   }
 
   .avatar {
-    width: 60px;
-    height: 60px;
+    width: 64px;
+    height: 64px;
+  }
+
+  .changeAvatarBtn {
+    padding: 10px 20px;
+    min-height: 44px;
+    font-size: 0.85rem;
+  }
+
+  .formGroup input {
+    padding: 12px 14px;
+    min-height: 44px;
+    font-size: 1rem;
+    border-radius: 12px;
+  }
+
+  .saveButton {
+    width: 100%;
+    padding: 14px 24px;
+    min-height: 44px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    align-self: stretch;
+  }
+
+  .dangerButton {
+    min-height: 44px;
+    padding: 12px 20px;
+    border-radius: 12px;
+  }
+
+  .settingsItem {
+    padding: 14px 0;
+    font-size: 0.92rem;
+  }
+
+  .exportBtn {
+    padding: 12px 18px;
+    min-height: 44px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  .logoutBtn {
+    min-height: 44px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  .historyItem {
+    padding: 10px 0;
+    gap: 8px;
+  }
+
+  .message {
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 375px) {
+  .contentContainer {
+    padding: 0 12px;
+    gap: 10px;
+  }
+
+  .profileCard,
+  .settingsCard {
+    padding: 14px;
+  }
+
+  .avatar {
+    width: 56px;
+    height: 56px;
   }
 }
 

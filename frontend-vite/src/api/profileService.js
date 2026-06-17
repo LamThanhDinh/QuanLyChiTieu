@@ -42,6 +42,7 @@ export const importUserDataExcel = async (file, clearExisting = true) => {
   
   const response = await axiosInstance.post("/users/import-excel", formData, {
     headers: { "Content-Type": "multipart/form-data" },
+    timeout: 120000,
   });
   return response.data;
 };

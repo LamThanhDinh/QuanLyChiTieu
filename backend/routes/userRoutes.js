@@ -65,6 +65,38 @@ const {
 } = require("../controllers/userController");
 const verifyToken = require("../middleware/verifyToken"); // Dùng middleware `verifyToken` bạn đã có
 const upload = require("../middleware/uploadAvatar");
+const multer = require("multer");
+
+// Middleware upload Excel sử dụng memoryStorage để parse buffer trực tiếp
+const uploadExcel = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: (req, file, cb) => {
+    const filename = file.originalname.toLowerCase();
+    const isExcel =
+      file.mimetype === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      file.mimetype === "application/vnd.ms-excel" ||
+      file.mimetype === "application/octet-stream" ||
+      filename.endsWith(".xlsx") ||
+      filename.endsWith(".xls");
+    if (isExcel) {
+      cb(null, true);
+    } else {
+      cb(new Error("Chỉ cho phép upload file Excel (.xlsx, .xls)!"), false);
+    }
+  },
+});
+
+const uploadSingleExcel = (req, res, next) => {
+  uploadExcel.single("file")(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ message: `Lỗi upload: ${err.message}` });
+    } else if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    next();
+  });
+};
+
 
 /**
  * @swagger
@@ -224,7 +256,7 @@ router.get("/login-history", verifyToken, getLoginHistory);
 router.get("/export", verifyToken, exportUserData);
 router.post("/import", verifyToken, importUserData);
 router.get("/export-excel", verifyToken, exportUserDataExcel); // ✅ Export Excel
-router.post("/import-excel", verifyToken, upload.single("file"), importUserDataExcel); // ✅ Import Excel
+router.post("/import-excel", verifyToken, uploadSingleExcel, importUserDataExcel); // ✅ Import Excel
 router.delete("/clear-data", verifyToken, clearUserData); // ✅ Add clear data route
 
 router.delete("/me", verifyToken, deleteUserAccount);

@@ -175,22 +175,47 @@
 @media (max-width: 768px) {
   .filterContainer {
     padding: 16px;
-    border-radius: 12px;
+    border-radius: 16px;
+    margin-bottom: 12px;
+  }
+
+  .filterContainer:hover {
+    transform: none;
+  }
+
+  .filterHeader {
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+  }
+
+  .filterHeaderTitle {
+    font-size: 1rem;
   }
 
   .filterGrid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 12px;
+  }
+
+  .formInput {
+    padding: 12px 14px;
+    min-height: 44px;
+    font-size: 1rem;
+    border-radius: 12px;
   }
 
   .buttonGroup {
     flex-direction: column;
     gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
   }
 
   .button {
     width: 100%;
     justify-content: center;
+    min-height: 44px;
+    border-radius: 12px;
   }
 }
 

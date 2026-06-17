@@ -176,12 +176,28 @@
 }
 
 @media (max-width: 768px) {
+  .pageWrapper {
+    padding: 12px 0;
+    min-height: calc(100vh - 80px);
+  }
+
+  .contentContainer {
+    padding: 0 var(--page-padding, 16px);
+    gap: 12px;
+  }
+
+  .analyticsSection {
+    padding: 16px;
+    border-radius: 16px;
+    gap: 14px;
+  }
+
   .container {
     padding: 12px;
   }
 
   .contentRow {
-    gap: 16px;
+    gap: 12px;
   }
 
   .typeFilterButtons {
@@ -189,14 +205,59 @@
     width: 100%;
   }
 
+  .typeFilterButtons button {
+    flex: 1;
+    padding: 8px 12px;
+    font-size: 0.82rem;
+    min-height: 36px;
+    text-align: center;
+  }
+
   .typeFilterBox {
     padding: 6px 4px;
     min-width: 0;
+    margin-bottom: 12px;
+    border-radius: 12px;
   }
 
   .typeFilterTitle {
-    font-size: 1rem;
-    min-width: 120px;
+    font-size: 0.88rem;
+    min-width: auto;
+  }
+
+  .typeFilterFieldset {
+    padding: 0.5rem 0.75rem 0.75rem;
+    border-radius: 12px;
+  }
+
+  .typeFilterLegend {
+    font-size: 0.85rem;
+    padding: 2px 8px;
+    margin-left: 0.75rem;
+  }
+
+  .filtersContainer {
+    gap: 10px;
+  }
+
+  .loading, .error {
+    min-height: 200px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .contentContainer {
+    padding: 0 12px;
+  }
+
+  .analyticsSection {
+    padding: 12px;
+  }
+
+  .typeFilterButtons button {
+    padding: 7px 8px;
+    font-size: 0.78rem;
   }
 }
 

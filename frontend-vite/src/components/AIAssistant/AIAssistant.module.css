@@ -831,7 +831,7 @@
 
 @media (max-width: 768px) {
   .floatingButton {
-    bottom: max(72px, env(safe-area-inset-bottom));
+    bottom: calc(var(--bottom-nav-height, 64px) + 24px);
     right: 16px;
     width: 48px;
     height: 48px;

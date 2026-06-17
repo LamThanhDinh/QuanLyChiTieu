@@ -57,3 +57,28 @@
   padding: 8px;
   color: var(--color-text-secondary);
 }
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .paginationContainer {
+    gap: 8px;
+    padding: 16px 0;
+    flex-wrap: wrap;
+  }
+
+  .pageList {
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .pageButton,
+  .navButton {
+    min-width: 40px;
+    min-height: 40px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    -webkit-tap-highlight-color: transparent;
+  }
+}

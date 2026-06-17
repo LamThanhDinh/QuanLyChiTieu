@@ -2,6 +2,7 @@
 
 /* --- Design System --- */
 @import './styles/globals.css';
+@import './styles/mobile-responsive.css';
 
 /* --- Tailwind Directives --- */
 @tailwind base;

@@ -147,7 +147,7 @@ const exportUserData = asyncHandler(async (req, res) => {
         _id: account._id,
         name: account.name,
         type: account.type,
-        balance: account.balance,
+        initialBalance: account.initialBalance,
         icon: account.icon,
         createdAt: account.createdAt,
         updatedAt: account.updatedAt,
@@ -272,7 +272,7 @@ const importUserData = asyncHandler(async (req, res) => {
               userId,
               name: accountData.name,
               type: accountData.type,
-              balance: accountData.balance || 0,
+              initialBalance: accountData.initialBalance ?? accountData.balance ?? 0,
               icon: accountData.icon || "fa-wallet",
               createdAt: new Date(accountData.createdAt) || new Date(),
               updatedAt: new Date(accountData.updatedAt) || new Date(),
@@ -472,7 +472,7 @@ const exportUserDataExcel = asyncHandler(async (req, res) => {
         _id: account._id,
         name: account.name,
         type: account.type,
-        balance: account.balance,
+        initialBalance: account.initialBalance,
         icon: account.icon,
         createdAt: account.createdAt,
         updatedAt: account.updatedAt,
@@ -541,16 +541,31 @@ const exportUserDataExcel = asyncHandler(async (req, res) => {
 //  THÊM: Import user data from Excel
 const importUserDataExcel = asyncHandler(async (req, res) => {
   if (!req.file) {
-    res.status(400);
-    throw new Error("Vui lòng cung cấp file Excel");
+    return res.status(400).json({ success: false, message: "Vui lòng cung cấp file Excel" });
   }
 
   try {
     const userId = req.user.id;
-    const { clearExisting } = req.body;
+    const shouldClearExisting =
+      req.body.clearExisting === true || req.body.clearExisting === "true";
 
     // Parse Excel file
-    const data = parseExcelBuffer(req.file.buffer);
+    let data;
+    try {
+      data = parseExcelBuffer(req.file.buffer);
+      console.log("Parsed Excel data:", {
+        accounts: data.accounts?.length || 0,
+        categories: data.categories?.length || 0,
+        goals: data.goals?.length || 0,
+        transactions: data.transactions?.length || 0,
+      });
+    } catch (parseError) {
+      console.error("Excel parse error:", parseError.message);
+      return res.status(400).json({
+        success: false,
+        message: "Không thể đọc file Excel: " + parseError.message,
+      });
+    }
 
     let importStats = {
       accounts: 0,
@@ -561,7 +576,7 @@ const importUserDataExcel = asyncHandler(async (req, res) => {
     };
 
     //  Clear existing data first if requested
-    if (clearExisting) {
+    if (shouldClearExisting) {
       console.log("Clearing existing data for user:", userId);
       await Transaction.deleteMany({ userId });
       await Goal.deleteMany({ user: userId });
@@ -575,6 +590,7 @@ const importUserDataExcel = asyncHandler(async (req, res) => {
     if (data.accounts && Array.isArray(data.accounts)) {
       for (const accountData of data.accounts) {
         try {
+          if (!accountData.name) continue; // Bỏ qua row rỗng
           const existingAccount = await Account.findOne({
             userId,
             name: accountData.name,
@@ -586,7 +602,7 @@ const importUserDataExcel = asyncHandler(async (req, res) => {
               userId,
               name: accountData.name,
               type: accountData.type,
-              balance: accountData.balance || 0,
+              initialBalance: accountData.initialBalance ?? accountData.balance ?? 0,
               icon: accountData.icon || "fa-wallet",
               createdAt: new Date(),
               updatedAt: new Date(),
@@ -605,6 +621,7 @@ const importUserDataExcel = asyncHandler(async (req, res) => {
     if (data.categories && Array.isArray(data.categories)) {
       for (const categoryData of data.categories) {
         try {
+          if (!categoryData.name) continue; // Bỏ qua row rỗng
           const existingCategory = await Category.findOne({
             userId,
             name: categoryData.name,
@@ -635,6 +652,7 @@ const importUserDataExcel = asyncHandler(async (req, res) => {
     if (data.goals && Array.isArray(data.goals)) {
       for (const goalData of data.goals) {
         try {
+          if (!goalData.name) continue; // Bỏ qua row rỗng
           const existingGoal = await Goal.findOne({
             user: userId,
             name: goalData.name,
@@ -642,12 +660,13 @@ const importUserDataExcel = asyncHandler(async (req, res) => {
           });
 
           if (!existingGoal) {
+            const deadline = goalData.deadline ? new Date(goalData.deadline) : null;
             await Goal.create({
               user: userId,
               name: goalData.name,
               targetAmount: goalData.targetAmount,
               currentAmount: goalData.currentAmount || 0,
-              deadline: new Date(goalData.deadline),
+              deadline: deadline,
               icon: goalData.icon || "🎯",
               status: goalData.status || "in-progress",
               isPinned: goalData.isPinned || false,
@@ -665,42 +684,32 @@ const importUserDataExcel = asyncHandler(async (req, res) => {
       }
     }
 
+    const [importedAccounts, importedCategories] = await Promise.all([
+      Account.find({ userId }).select("_id name"),
+      Category.find({ userId }).select("_id name"),
+    ]);
+    const accountMap = new Map(
+      importedAccounts.map((account) => [account.name, account._id])
+    );
+    const categoryMap = new Map(
+      importedCategories.map((category) => [category.name, category._id])
+    );
+
     //  Import Transactions (after accounts and categories)
     if (data.transactions && Array.isArray(data.transactions)) {
       for (const transactionData of data.transactions) {
         try {
-          let accountId = null;
-          let categoryId = null;
-
-          // Find account by name
-          if (transactionData.accountId) {
-            const accountName =
-              typeof transactionData.accountId === "object"
-                ? transactionData.accountId.name
-                : transactionData.accountId;
-            if (accountName) {
-              const account = await Account.findOne({
-                userId,
-                name: accountName,
-              });
-              accountId = account ? account._id : null;
-            }
-          }
-
-          // Find category by name
-          if (transactionData.categoryId) {
-            const categoryName =
-              typeof transactionData.categoryId === "object"
-                ? transactionData.categoryId.name
-                : transactionData.categoryId;
-            if (categoryName) {
-              const category = await Category.findOne({
-                userId,
-                name: categoryName,
-              });
-              categoryId = category ? category._id : null;
-            }
-          }
+          if (!transactionData.name) continue; // Bỏ qua row rỗng
+          const accountName =
+            typeof transactionData.accountId === "object"
+              ? transactionData.accountId.name
+              : transactionData.accountId;
+          const categoryName =
+            typeof transactionData.categoryId === "object"
+              ? transactionData.categoryId.name
+              : transactionData.categoryId;
+          const accountId = accountMap.get(accountName) || null;
+          const categoryId = categoryMap.get(categoryName) || null;
 
           if (accountId && categoryId) {
             await Transaction.create({
@@ -718,7 +727,7 @@ const importUserDataExcel = asyncHandler(async (req, res) => {
             importStats.transactions++;
           } else {
             importStats.errors.push(
-              `Transaction "${transactionData.name}": Cannot find matching account or category`
+              `Transaction "${transactionData.name}": Không tìm thấy tài khoản "${accountName}" hoặc danh mục "${categoryName}"`
             );
           }
         } catch (error) {
@@ -729,15 +738,18 @@ const importUserDataExcel = asyncHandler(async (req, res) => {
       }
     }
 
-    res.status(200).json({
+    console.log("Import Excel done. Stats:", importStats);
+    return res.status(200).json({
       success: true,
       message: "Nhập dữ liệu Excel thành công",
       stats: importStats,
     });
   } catch (error) {
-    console.error("Excel import error:", error);
-    res.status(500);
-    throw new Error("Lỗi khi nhập dữ liệu Excel");
+    console.error("Excel import error:", error.message, error.stack);
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi khi nhập dữ liệu Excel: " + (error.message || "Lỗi không xác định"),
+    });
   }
 });
 

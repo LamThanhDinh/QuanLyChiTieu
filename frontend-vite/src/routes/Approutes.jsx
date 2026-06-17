@@ -14,11 +14,12 @@ import StatisticsPage from "../pages/StatisticsPage";
 import ProfilePage from "../pages/ProfilePage";
 import AdminDashboard from "../pages/AdminDashboard";
 import AIAssistant from "../components/AIAssistant/AIAssistant";
+import BottomNav from "../components/BottomNav/BottomNav";
 
 export default function AppRoutes() {
   const location = useLocation();
   
-  // Danh sách các trang không hiển thị AI Assistant
+  // Danh sách các trang không hiển thị AI Assistant và BottomNav
   const hideAIRoutes = ["/", "/login", "/register", "/forgot-password", "/reset-password"];
   const shouldShowAI = !hideAIRoutes.includes(location.pathname);
 
@@ -42,6 +43,10 @@ export default function AppRoutes() {
 
       {/* AI Assistant - chỉ hiển thị trên các trang đã đăng nhập */}
       {shouldShowAI && <AIAssistant />}
+
+      {/* Bottom Navigation - chỉ hiển thị trên mobile (CSS controlled) */}
+      {shouldShowAI && <BottomNav />}
     </>
   );
 }
+

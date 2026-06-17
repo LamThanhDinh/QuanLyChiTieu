@@ -44,3 +44,33 @@
 }
 
 /* Responsive design - global variables handle padding */
+
+@media (max-width: 768px) {
+  .pageWrapper {
+    padding: 12px 0;
+    min-height: calc(100vh - 80px);
+  }
+
+  .contentContainer {
+    padding: 0 var(--page-padding, 16px);
+    gap: 12px;
+  }
+
+  .content {
+    margin-top: 0.5rem;
+  }
+
+  .loading,
+  .error {
+    padding: 24px;
+    font-size: 0.95rem;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 375px) {
+  .contentContainer {
+    padding: 0 12px;
+    gap: 10px;
+  }
+}

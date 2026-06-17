@@ -351,6 +351,76 @@ const CategoryList = ({
             </table>
           </div>
         )}
+
+        {/* Mobile Card Layout */}
+        {categories.length > 0 && (
+          <div className={styles.mobileCardList}>
+            {categories.map((category) => {
+              const isSelected =
+                activeCategoryId &&
+                (category._id || category.id) === activeCategoryId;
+
+              const chartEntry = chartData?.find(
+                (c) => c.id === (category._id || category.id)
+              );
+              const sliceColor = chartEntry?.color || "#3f51b5";
+              const hexToRgb = (hex) => {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result
+                  ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) }
+                  : null;
+              };
+              const rgb = hexToRgb(sliceColor);
+              const sliceColorLight = rgb
+                ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`
+                : "rgba(63, 81, 181, 0.15)";
+
+              return (
+                <div
+                  key={`mobile-${category._id || category.id}`}
+                  className={`${styles.mobileCard} ${isSelected ? styles.highlight : ""}`}
+                  onClick={() => handleCategoryClick(category)}
+                  style={isSelected ? { "--slice-color": sliceColor, "--slice-color-light": sliceColorLight } : {}}
+                >
+                  <div className={styles.mobileCardHeader}>
+                    <div className={styles.mobileCardIcon}>
+                      <FontAwesomeIcon icon={getIconObject(category.icon)} />
+                    </div>
+                    <div className={styles.mobileCardInfo}>
+                      <p className={styles.mobileCardName}>{category.name}</p>
+                      <div className={styles.mobileCardMeta}>
+                        <span
+                          className={`${styles.mobileCardAmount} ${
+                            category.type === "THUNHAP" ? styles.income : styles.expense
+                          }`}
+                        >
+                          {formatCurrency(category.totalAmount)}
+                        </span>
+                        <span className={styles.mobileCardTransactions}>
+                          {category.transactionCount || 0} giao dịch
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.mobileCardActions}>
+                    <button
+                      className={`${styles.mobileActionBtn} ${styles.edit}`}
+                      onClick={(e) => { e.stopPropagation(); handleEditCategory(category); }}
+                    >
+                      <FontAwesomeIcon icon={faEdit} /> Sửa
+                    </button>
+                    <button
+                      className={`${styles.mobileActionBtn} ${styles.delete}`}
+                      onClick={(e) => { e.stopPropagation(); requestDeleteCategory(category._id || category.id, category.name); }}
+                    >
+                      <FontAwesomeIcon icon={faTrashAlt} /> Xóa
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
       <ConfirmDialog
         isOpen={isConfirmOpen}

@@ -94,3 +94,10 @@
     /* Đã được căn phải do justify-content: space-between của .footerContent */
   }
 }
+
+/* Hide footer on mobile - BottomNav replaces it */
+@media (max-width: 768px) {
+  .footer {
+    display: none;
+  }
+}

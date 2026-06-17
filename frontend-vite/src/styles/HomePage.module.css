@@ -75,12 +75,42 @@
 }
 
 @media (max-width: 768px) {
+  .pageWrapper {
+    padding: 12px 0;
+    min-height: calc(100vh - 80px);
+  }
+
+  .contentContainer {
+    padding: 0 var(--page-padding, 16px);
+    gap: 12px;
+  }
+
   .mainContent {
-    gap: 16px;
+    gap: 12px;
   }
 
   .statsOverviewWrapper {
     max-width: 100%;
     justify-content: flex-start;
+    padding: 0;
+  }
+
+  .contextText {
+    font-size: 0.82rem;
+  }
+
+  .moodEmoji {
+    font-size: 1rem;
+  }
+
+  .miniStats {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .contentContainer {
+    padding: 0 12px;
+    gap: 10px;
   }
 }

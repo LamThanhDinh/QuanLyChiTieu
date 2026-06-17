@@ -173,3 +173,33 @@
     transform: scale(1);
   }
 }
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .button {
+    min-height: 44px;
+    font-size: 0.88rem;
+    border-radius: 12px;
+    padding: 0 16px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .primary:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .primary:active:not(:disabled) {
+    transform: scale(0.96);
+  }
+
+  .secondary {
+    min-height: 40px;
+    height: auto;
+  }
+
+  .accent,
+  .success {
+    min-height: 40px;
+    height: auto;
+  }
+}

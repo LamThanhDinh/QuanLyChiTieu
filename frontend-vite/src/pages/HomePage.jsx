@@ -12,6 +12,7 @@ import Footer from "../components/Footer/Footer";
 import HeaderCard from "../components/Common/HeaderCard";
 import Button from "../components/Common/Button";
 import AddEditTransactionModal from "../components/Transactions/AddEditTransactionModal";
+import FloatingActionButton from "../components/Common/FloatingActionButton";
 import { getStatsOverview } from "../api/homePageService";
 import { getTransactions, deleteTransaction } from "../api/transactionsService";
 import { getProfile } from "../api/profileService";
@@ -290,6 +291,9 @@ const HomePage = () => {
       </main>
 
       <Footer />
+
+      {/* FAB for mobile - add transaction */}
+      <FloatingActionButton onClick={handleAddRequest} />
 
       {/* Modal thêm/sửa giao dịch */}
       <AddEditTransactionModal

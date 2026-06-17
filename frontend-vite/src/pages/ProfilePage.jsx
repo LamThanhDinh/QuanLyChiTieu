@@ -101,6 +101,7 @@ const ProfilePage = () => {
   const [importedExcelFile, setImportedExcelFile] = useState(null);
   const [isImportingExcel, setIsImportingExcel] = useState(false);
   const fileImportExcelRef = useRef(null);
+  const [importType, setImportType] = useState(null); // "json" or "excel"
 
   // Load reminder setting from localStorage
   useEffect(() => {
@@ -148,11 +149,11 @@ const ProfilePage = () => {
 
     // Chỉ hiển thị thông báo khi BẬT, không hiển thị khi TẮT
     if (newValue) {
-      setMessage({
+      setSettingsMessage({
         text: "Đã bật nhắc nhở chi tiêu",
         type: "success",
       });
-      setTimeout(() => setMessage({ text: "", type: "" }), 2000);
+      setTimeout(() => setSettingsMessage({ text: "", type: "" }), 2000);
     }
   };
 
@@ -315,7 +316,7 @@ const ProfilePage = () => {
       const exportResult = await exportUserData();
       console.log("Export API response:", exportResult);
 
-      const exportData = exportResult.data;
+      const exportData = exportResult.data?.data || exportResult.data;
 
       // ✅ THÊM: Debug log exported data structure
       console.log("Exported data structure:", {
@@ -380,6 +381,7 @@ const ProfilePage = () => {
       });
       return;
     }
+    setImportType("json");
     setIsImportWarningDialogOpen(true);
     setDialogError("");
   };
@@ -387,7 +389,6 @@ const ProfilePage = () => {
   const handleImportDataConfirm = async () => {
     setDialogProcessing(true);
     setDialogError("");
-    setIsImportWarningDialogOpen(false);
     setIsImporting(true);
 
     console.clear(); // ✅ Clear console để dễ debug
@@ -429,13 +430,20 @@ const ProfilePage = () => {
         type: "success",
       });
 
+      setIsImportWarningDialogOpen(false);
+      setIsImportDialogOpen(false);
+
       // ✅ Refresh data sau khi import
       setTimeout(() => {
         window.location.reload(); // Reload để cập nhật UI với data mới
       }, 2000);
-
-      setIsImportDialogOpen(false);
     } catch (err) {
+      setSettingsMessage({
+        text:
+          "Nhập dữ liệu thất bại: " +
+          (err?.response?.data?.message || err.message),
+        type: "error",
+      });
       setDialogError(
         "Có lỗi khi nhập dữ liệu: " +
           (err?.response?.data?.message || err.message)
@@ -508,46 +516,61 @@ const ProfilePage = () => {
       });
       return;
     }
+    setImportType("excel");
     setIsImportWarningDialogOpen(true);
     setDialogError("");
   };
 
   const handleImportExcelDataConfirm = async () => {
+    // Lưu file reference trước khi đóng dialog (tránh state bị reset)
+    const fileToImport = importedExcelFile;
+    if (!fileToImport) {
+      setDialogError("Không tìm thấy file Excel. Vui lòng chọn lại file.");
+      return;
+    }
+
     setDialogProcessing(true);
     setDialogError("");
-    setIsImportWarningDialogOpen(false);
     setIsImportingExcel(true);
+    // Đóng dialog trước để tránh giao diện bị kẹt
+    setIsImportWarningDialogOpen(false);
 
     setSettingsMessage({
-      text: "Bắt đầu quá trình nhập dữ liệu Excel...",
+      text: "⏳ Đang nhập dữ liệu Excel, vui lòng chờ...",
       type: "info",
     });
 
     try {
-      const importResult = await importUserDataExcel(importedExcelFile, true);
+      const importResult = await importUserDataExcel(fileToImport, true);
       console.log("Excel import result:", importResult);
 
-      setSettingsMessage({
-        text: `Nhập dữ liệu Excel thành công! Đã nhập ${importResult.stats?.goals || 0} mục tiêu, ${importResult.stats?.accounts || 0} tài khoản, ${importResult.stats?.categories || 0} danh mục, ${importResult.stats?.transactions || 0} giao dịch.`,
-        type: "success",
-      });
-
-      // Reset file and imported data
+      // Reset file sau khi import thành công
       setImportedExcelFile(null);
       if (fileImportExcelRef.current) {
         fileImportExcelRef.current.value = "";
       }
 
-      // Refresh data after import
+      const stats = importResult?.stats || {};
+      setSettingsMessage({
+        text: `✅ Nhập dữ liệu Excel thành công! Đã nhập: ${stats.accounts || 0} tài khoản, ${stats.categories || 0} danh mục, ${stats.goals || 0} mục tiêu, ${stats.transactions || 0} giao dịch.`,
+        type: "success",
+      });
+
+      // Cho user đọc thông báo 3 giây rồi mới reload
       setTimeout(() => {
         window.location.reload();
-      }, 2000);
+      }, 3000);
     } catch (err) {
-      setDialogError(
-        "Có lỗi khi nhập dữ liệu Excel: " +
-          (err?.response?.data?.message || err.message)
-      );
       console.error("Lỗi nhập dữ liệu Excel:", err);
+      const errMsg =
+        err?.response?.data?.message ||
+        (err.code === "ECONNABORTED" ? "Quá thời gian chờ (timeout). File có thể quá lớn, hãy thử lại." : err.message) ||
+        "Lỗi không xác định";
+      setSettingsMessage({
+        text: "❌ Nhập dữ liệu Excel thất bại: " + errMsg,
+        type: "error",
+      });
+      setDialogError("Có lỗi khi nhập dữ liệu Excel: " + errMsg);
     } finally {
       setIsImportingExcel(false);
       setDialogProcessing(false);
@@ -733,7 +756,7 @@ const ProfilePage = () => {
           setIsImportWarningDialogOpen(false);
           setDialogError("");
         }}
-        onConfirm={handleImportDataConfirm}
+        onConfirm={importType === "excel" ? handleImportExcelDataConfirm : handleImportDataConfirm}
         title="⚠️ CẢNH BÁO QUAN TRỌNG"
         message="Hành động này sẽ XÓA TOÀN BỘ dữ liệu hiện tại của bạn (tài khoản, giao dịch, danh mục, mục tiêu) và thay thế bằng dữ liệu từ file backup. Thao tác này KHÔNG THỂ HOÀN TÁC. Bạn có chắc chắn muốn tiếp tục không?"
         confirmText="Tôi hiểu và muốn tiếp tục"
