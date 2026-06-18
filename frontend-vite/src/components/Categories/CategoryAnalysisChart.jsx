@@ -98,10 +98,10 @@ const CategoryAnalysisChart = ({
       const categoryData =
         newIndex !== null
           ? {
-              id: sliceData._id || sliceData.id,
-              color: sliceData.color,
-              name: sliceData.name,
-            }
+            id: sliceData._id || sliceData.id,
+            color: sliceData.color,
+            name: sliceData.name,
+          }
           : null;
       onActiveCategoryChange(categoryData);
     }
@@ -189,9 +189,8 @@ const _renderCustomizedLabel = ({
   return (
     <g textAnchor={isLeft ? "end" : "start"}>
       <path
-        d={`M${cx + (outerRadius + 5) * Math.cos(-midAngle * RADIAN)},${
-          cy + (outerRadius + 5) * Math.sin(-midAngle * RADIAN)
-        } L${x},${y}`}
+        d={`M${cx + (outerRadius + 5) * Math.cos(-midAngle * RADIAN)},${cy + (outerRadius + 5) * Math.sin(-midAngle * RADIAN)
+          } L${x},${y}`}
         stroke="#999"
         fill="none"
         strokeWidth={1}

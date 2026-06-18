@@ -140,7 +140,7 @@ const updateCategory = async (req, res) => {
     if (!category) {
       return res.status(404).json({ message: "Không tìm thấy danh mục" });
     }
-star
+
     category.name = name || category.name;
     category.type = type || category.type;
     category.icon = icon || category.icon;
