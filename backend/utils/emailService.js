@@ -3,14 +3,18 @@ const nodemailer = require("nodemailer");
 // Tạo transporter với Gmail
 const createTransporter = () => {
   return nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // STARTTLS (port 587), không phải SSL (port 465)
     auth: {
       user: process.env.EMAIL_USER, // Email Gmail của bạn
       pass: process.env.EMAIL_PASS, // App Password của Gmail
     },
     tls: {
-      rejectUnauthorized: false, // Giải quyết SSL certificate issues
+      rejectUnauthorized: false,
     },
+    // Force IPv4 để tránh lỗi kết nối IPv6 trên Render
+    family: 4,
   });
 };
 
