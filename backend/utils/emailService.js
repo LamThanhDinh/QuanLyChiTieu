@@ -1,32 +1,49 @@
 const nodemailer = require("nodemailer");
 
+const getEmailConfig = () => {
+  const user = process.env.EMAIL_USER?.trim();
+  const pass = process.env.EMAIL_PASS?.replace(/\s+/g, "");
+
+  if (!user || !pass) {
+    throw new Error("Missing EMAIL_USER or EMAIL_PASS environment variable.");
+  }
+
+  return { user, pass };
+};
+
 // Tạo transporter với Gmail
 const createTransporter = () => {
+  const { user, pass } = getEmailConfig();
+
   return nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
     secure: false, // STARTTLS (port 587), không phải SSL (port 465)
     auth: {
-      user: process.env.EMAIL_USER, // Email Gmail của bạn
-      pass: process.env.EMAIL_PASS, // App Password của Gmail
+      user: user, // Email Gmail của bạn
+      pass: pass, // App Password của Gmail
     },
     tls: {
       rejectUnauthorized: false,
     },
     // Force IPv4 để tránh lỗi kết nối IPv6 trên Render
     family: 4,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
   });
 };
 
 // Gửi email với mã xác thực
 const sendResetPasswordEmail = async (email, resetToken, username) => {
   try {
+    const { user, pass } = getEmailConfig();
     const transporter = createTransporter();
 
     const mailOptions = {
       from: {
         name: "Két Sắt Số",
-        address: process.env.EMAIL_USER,
+        address: user,
       },
       to: email,
       subject: "Mã xác thực đặt lại mật khẩu - Két Sắt Số",
@@ -187,6 +204,13 @@ Trân trọng,
 KÉT SẮT SỐ Team
       `,
     };
+
+    console.log("Email config loaded:", {
+      user,
+      passLength: pass.length,
+      host: "smtp.gmail.com",
+      port: 587,
+    });
 
     const info = await transporter.sendMail(mailOptions);
     console.log(" Email sent successfully:", info.messageId);
