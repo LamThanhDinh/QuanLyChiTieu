@@ -155,7 +155,7 @@ const sendResetPasswordEmail = async (email, resetToken, username) => {
               
               <p>Nếu bạn gặp khó khăn, vui lòng liên hệ với chúng tôi để được hỗ trợ.</p>
               
-              <p style="margin-top: 30px;">Trân trọng,<br><strong>KÉT SẮT SỐ Team</strong></p>
+              <p style="margin-top: 30px;">Trân trọng,<br><strong>KÉT SẮT SỐ</strong></p>
             </div>
             
             <div class="email-footer">
