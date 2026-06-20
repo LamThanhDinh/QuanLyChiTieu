@@ -21,14 +21,18 @@ const Header = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
+    const syncUserFromStorage = () => {
+      const storedUser = localStorage.getItem("user");
+      if (!storedUser) return;
+
       try {
         setUserInfo(JSON.parse(storedUser));
       } catch (err) {
-        console.error("Lỗi đọc user:", err);
+        console.error("Loi doc user:", err);
       }
-    }
+    };
+
+    syncUserFromStorage();
 
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -42,8 +46,12 @@ const Header = () => {
       }
     };
 
+    window.addEventListener("userUpdated", syncUserFromStorage);
+    window.addEventListener("storage", syncUserFromStorage);
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
+      window.removeEventListener("userUpdated", syncUserFromStorage);
+      window.removeEventListener("storage", syncUserFromStorage);
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
@@ -59,7 +67,6 @@ const Header = () => {
     return animalAvatars[index];
   }, []);
 
-  // Sửa logic để avatar có thể là đường dẫn từ server
   const finalAvatar = userInfo.avatar
     ? getAvatarUrl(userInfo.avatar)
     : fallbackAvatar;
@@ -107,6 +114,9 @@ const Header = () => {
             src={finalAvatar}
             alt={`${userInfo.fullname}'s avatar`}
             className={styles.avatar}
+            onError={(event) => {
+              event.currentTarget.src = fallbackAvatar;
+            }}
           />
           <span className={styles.userName}>{userInfo.fullname}</span>
           {isDropdownOpen && (

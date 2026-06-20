@@ -1,4 +1,5 @@
 import axiosInstance from "./axiosConfig";
+import defaultAvatar from "../assets/avatars/cat1.png";
 
 export const getProfile = () => axiosInstance.get("/users/profile");
 export const updateProfile = (fullname, email) => {
@@ -49,13 +50,19 @@ export const importUserDataExcel = async (file, clearExisting = true) => {
 
 // Get avatar URL through API service instead of direct localhost access
 export const getAvatarUrl = (avatarPath) => {
-  if (!avatarPath) return "/default-avatar.png";
+  if (!avatarPath) return defaultAvatar;
 
-  // If it's already a full URL, return as is
-  if (avatarPath.startsWith("http")) return avatarPath;
+  // If it's already a browser-ready URL, return as is
+  if (
+    avatarPath.startsWith("http") ||
+    avatarPath.startsWith("data:") ||
+    avatarPath.startsWith("blob:")
+  ) {
+    return avatarPath;
+  }
 
   // Use the base URL from axiosInstance to ensure consistency
-  const baseURL = axiosInstance.defaults.baseURL.replace("/api", ""); // Remove /api suffix for static files
+  const baseURL = axiosInstance.defaults.baseURL.replace(/\/api\/?$/, ""); // Remove /api suffix for static files
   return `${baseURL}${avatarPath}`;
 };
 

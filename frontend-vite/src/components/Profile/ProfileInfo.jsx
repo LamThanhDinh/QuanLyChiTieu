@@ -39,6 +39,9 @@ const ProfileInfo = ({
           src={getAvatarUrl(user.avatar)}
           alt="Avatar"
           className={styles.avatar}
+          onError={(event) => {
+            event.currentTarget.src = getAvatarUrl("");
+          }}
         />
         <input
           type="file"

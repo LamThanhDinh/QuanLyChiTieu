@@ -97,6 +97,21 @@ const uploadSingleExcel = (req, res, next) => {
   });
 };
 
+const uploadSingleAvatar = (req, res, next) => {
+  upload.single("avatar")(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      const message =
+        err.code === "LIMIT_FILE_SIZE"
+          ? "Ảnh avatar không được vượt quá 2MB."
+          : `Lỗi upload: ${err.message}`;
+      return res.status(400).json({ message });
+    } else if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    next();
+  });
+};
+
 
 /**
  * @swagger
@@ -246,7 +261,7 @@ router.get("/profile", verifyToken, getUserProfile);
 router.put("/profile", verifyToken, updateUserProfile);
 
 // Upload avatar
-router.put("/avatar", verifyToken, upload.single("avatar"), updateAvatar);
+router.put("/avatar", verifyToken, uploadSingleAvatar, updateAvatar);
 
 // Đổi mật khẩu
 router.put("/change-password", verifyToken, changePassword);

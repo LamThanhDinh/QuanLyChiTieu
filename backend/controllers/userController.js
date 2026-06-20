@@ -75,7 +75,9 @@ const updateAvatar = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Không tìm thấy người dùng.");
   }
-  user.avatar = `/uploads/avatars/${req.file.filename}`;
+  user.avatar = `data:${req.file.mimetype};base64,${req.file.buffer.toString(
+    "base64"
+  )}`;
   await user.save();
   res.json({ message: "Cập nhật avatar thành công", avatar: user.avatar });
 });

@@ -197,7 +197,7 @@ const ProfilePage = () => {
     try {
       const { data } = await updateProfile(fullname, email);
       setProfileMessage({ text: "Cập nhật thành công!", type: "success" });
-      const storedUser = JSON.parse(localStorage.getItem("user"));
+      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
       const updatedUser = {
         ...storedUser,
         fullname: data.fullname,
@@ -205,6 +205,7 @@ const ProfilePage = () => {
       };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
+      window.dispatchEvent(new Event("userUpdated"));
       // Cân nhắc không reload lại trang để trải nghiệm người dùng tốt hơn
     } catch (error) {
       setProfileMessage({
@@ -219,21 +220,31 @@ const ProfilePage = () => {
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      setProfileMessage({
+        text: "Ảnh avatar không được vượt quá 2MB.",
+        type: "error",
+      });
+      e.target.value = "";
+      return;
+    }
     const formData = new FormData();
     formData.append("avatar", file);
     try {
       const { data } = await updateAvatar(formData);
       setProfileMessage({ text: "Đổi avatar thành công!", type: "success" });
-      const storedUser = JSON.parse(localStorage.getItem("user"));
+      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
       const updatedUser = { ...storedUser, avatar: data.avatar };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
-      window.dispatchEvent(new Event("storage")); // Bắn sự kiện để Header cập nhật
+      window.dispatchEvent(new Event("userUpdated"));
     } catch (error) {
       setProfileMessage({
         text: error.response?.data?.message || "Upload ảnh thất bại.",
         type: "error",
       });
+    } finally {
+      e.target.value = "";
     }
   };
 
