@@ -204,7 +204,7 @@ const forgotPassword = async (req, res) => {
       console.error("❌ Email sending failed:", emailError.message);
       
       return res.status(500).json({
-        message: "Không thể gửi email xác thực. Vui lòng kiểm tra email hoặc liên hệ admin.",
+        message: "Không thể gửi email xác thực. Vui lòng kiểm tra email.",
       });
     }
   } catch (err) {

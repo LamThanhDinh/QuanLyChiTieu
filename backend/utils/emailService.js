@@ -17,8 +17,8 @@ const createTransporter = () => {
 
   return nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // STARTTLS (port 587), không phải SSL (port 465)
+    port: 465,
+    secure: true, // SSL port 465 is more reliable on some hosts than STARTTLS 587.
     auth: {
       user: user, // Email Gmail của bạn
       pass: pass, // App Password của Gmail
@@ -209,7 +209,7 @@ KÉT SẮT SỐ Team
       user,
       passLength: pass.length,
       host: "smtp.gmail.com",
-      port: 587,
+      port: 465,
     });
 
     const info = await transporter.sendMail(mailOptions);
