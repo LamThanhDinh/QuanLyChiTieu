@@ -535,12 +535,15 @@ class UtilsHelper {
       }
 
       // Lấy goals
-      const goals = await Goal.find({ userId: userObjectId });
+      const goals = await Goal.find({
+        user: userObjectId,
+        archived: false,
+      });
 
       // Lấy accounts
       const accounts = await Account.find({ userId: userObjectId });
       const totalBalance = accounts.reduce(
-        (sum, acc) => sum + (acc.balance || 0),
+        (sum, acc) => sum + (acc.initialBalance || acc.balance || 0),
         0
       );
 
@@ -584,9 +587,61 @@ class UtilsHelper {
       habits: [],
     };
 
+    const expenseHistory = monthsData
+      .map((month) => month.totalExpense || 0)
+      .filter((amount) => amount > 0);
+    const incomeHistory = monthsData
+      .map((month) => month.totalIncome || 0)
+      .filter((amount) => amount > 0);
+    const avgMonthlyExpense =
+      expenseHistory.length > 0
+        ? expenseHistory.reduce((sum, amount) => sum + amount, 0) /
+          expenseHistory.length
+        : 0;
+    const avgMonthlyIncome =
+      incomeHistory.length > 0
+        ? incomeHistory.reduce((sum, amount) => sum + amount, 0) /
+          incomeHistory.length
+        : 0;
+    const today = new Date();
+    const currentDay = today.getDate();
+    const daysInCurrentMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      0
+    ).getDate();
+    const projectedExpense =
+      currentDay > 0
+        ? (current.totalExpense / currentDay) * daysInCurrentMonth
+        : current.totalExpense;
+    const projectedBalance = avgMonthlyIncome - projectedExpense;
+    const recommendedMonthlySaving = Math.max(avgMonthlyIncome * 0.2, 0);
+
     let responseText = `🔍 <strong>Phân tích tài chính của bạn:</strong>\n\n`;
 
     // 1. Phân tích xu hướng chi tiêu
+    responseText += `📈 <strong>Dự báo cuối tháng:</strong>\n`;
+    responseText += `• Chi tiêu dự kiến: ${Math.round(
+      projectedExpense
+    ).toLocaleString()}đ\n`;
+    if (avgMonthlyExpense > 0) {
+      const forecastDiff =
+        ((projectedExpense - avgMonthlyExpense) / avgMonthlyExpense) * 100;
+      const forecastText = forecastDiff >= 0 ? "cao hơn" : "thấp hơn";
+      responseText += `• So với trung bình 3 tháng: ${forecastText} ${Math.abs(
+        forecastDiff
+      ).toFixed(1)}%\n`;
+
+      if (forecastDiff > 15) {
+        insights.warnings.push("Dự báo chi tiêu cuối tháng cao hơn trung bình");
+      } else if (forecastDiff < -10) {
+        insights.positive.push("Dự báo chi tiêu cuối tháng thấp hơn trung bình");
+      }
+    }
+    responseText += `• Số dư dự kiến theo thu nhập trung bình: <span class="balance ${
+      projectedBalance >= 0 ? "positive" : "negative"
+    }">${Math.round(projectedBalance).toLocaleString()}đ</span>\n\n`;
+
     const expenseTrend =
       current.totalExpense > last.totalExpense ? "tăng" : "giảm";
     const expenseChangePercent =
@@ -652,9 +707,12 @@ class UtilsHelper {
     // 4. Thói quen chi tiêu
     responseText += `🎯 <strong>Thói quen tài chính:</strong>\n`;
 
+    const spendingDays = Object.keys(current.expenseByDay).length;
+    const dailyExpenses = Object.values(current.expenseByDay);
     const avgDailyExpense =
-      current.totalExpense / Object.keys(current.expenseByDay).length;
-    const maxDailyExpense = Math.max(...Object.values(current.expenseByDay));
+      spendingDays > 0 ? current.totalExpense / spendingDays : 0;
+    const maxDailyExpense =
+      dailyExpenses.length > 0 ? Math.max(...dailyExpenses) : 0;
 
     if (maxDailyExpense > avgDailyExpense * 3) {
       insights.habits.push("Có ngày chi tiêu đột biến");
@@ -664,9 +722,10 @@ class UtilsHelper {
 
     // Check consistency
     const isConsistent =
+      last.totalExpense > 0 &&
       Math.abs(current.totalExpense - last.totalExpense) /
         last.totalExpense <
-      0.15;
+        0.15;
     if (isConsistent) {
       insights.positive.push("Chi tiêu ổn định");
       responseText += `✅ Chi tiêu hàng tháng khá ổn định và có thể dự đoán\n`;
@@ -690,6 +749,68 @@ class UtilsHelper {
       responseText += `• Đặt mục tiêu tiết kiệm ít nhất 20% mỗi tháng\n`;
     }
 
+    const activeGoals = goals
+      .filter((goal) => goal.status !== "completed")
+      .map((goal) => {
+        const remaining = Math.max(
+          (goal.targetAmount || 0) - (goal.currentAmount || 0),
+          0
+        );
+        const daysLeft = goal.deadline
+          ? Math.ceil(
+              (new Date(goal.deadline).getTime() - Date.now()) /
+                (1000 * 60 * 60 * 24)
+            )
+          : null;
+        const monthsLeft =
+          daysLeft && daysLeft > 0 ? Math.max(daysLeft / 30, 1) : null;
+        const monthlyNeed = monthsLeft ? remaining / monthsLeft : remaining;
+
+        return {
+          name: goal.name,
+          remaining,
+          daysLeft,
+          monthlyNeed,
+        };
+      })
+      .filter((goal) => goal.remaining > 0);
+
+    if (activeGoals.length > 0) {
+      responseText += `\n🎯 <strong>Kế hoạch tiết kiệm theo mục tiêu:</strong>\n`;
+      activeGoals.slice(0, 3).forEach((goal) => {
+        responseText += `• ${goal.name}: còn ${Math.round(
+          goal.remaining
+        ).toLocaleString()}đ`;
+        if (goal.daysLeft && goal.daysLeft > 0) {
+          responseText += `, nên dành khoảng ${Math.ceil(
+            goal.monthlyNeed
+          ).toLocaleString()}đ/tháng trong ${goal.daysLeft} ngày tới`;
+        } else {
+          responseText += `, nên chia nhỏ thành khoản tiết kiệm hằng tháng phù hợp`;
+        }
+        responseText += `\n`;
+      });
+
+      const totalMonthlyGoalNeed = activeGoals.reduce(
+        (sum, goal) => sum + goal.monthlyNeed,
+        0
+      );
+
+      if (
+        recommendedMonthlySaving > 0 &&
+        totalMonthlyGoalNeed > recommendedMonthlySaving
+      ) {
+        insights.suggestions.push(
+          "Mục tiêu tiết kiệm hiện tại cần nhiều hơn mức 20% thu nhập trung bình"
+        );
+        responseText += `• Tổng cần tiết kiệm theo mục tiêu khoảng ${Math.ceil(
+          totalMonthlyGoalNeed
+        ).toLocaleString()}đ/tháng, cao hơn mức gợi ý 20% thu nhập (${Math.ceil(
+          recommendedMonthlySaving
+        ).toLocaleString()}đ/tháng). Nên kéo dài hạn hoặc ưu tiên mục tiêu quan trọng nhất.\n`;
+      }
+    }
+
     if (goals.length === 0) {
       responseText += `• Tạo mục tiêu tài chính để có động lực tiết kiệm\n`;
     }
@@ -698,7 +819,16 @@ class UtilsHelper {
 
     return {
       text: responseText,
-      data: insights,
+      data: {
+        ...insights,
+        forecast: {
+          avgMonthlyExpense,
+          avgMonthlyIncome,
+          projectedExpense,
+          projectedBalance,
+        },
+        savingsPlan: activeGoals,
+      },
     };
   }
 }

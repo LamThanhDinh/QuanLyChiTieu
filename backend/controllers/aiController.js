@@ -900,7 +900,7 @@ SYSTEM: Bạn là AI assistant chuyên về tài chính cá nhân. Phân tích y
 
 4. **ANALYZE_FINANCES** - Phân tích sức khỏe tài chính và đưa ra insights
    - Entities: không cần
-   - Patterns: "phân tích tài chính", "đánh giá tài chính", "tình hình tài chính", "sức khỏe tài chính", "insights", "nhận xét", "gợi ý chi tiêu", "thói quen chi tiêu", "cảnh báo tài chính"
+   - Patterns: "phân tích tài chính", "đánh giá tài chính", "tình hình tài chính", "sức khỏe tài chính", "insights", "nhận xét", "gợi ý chi tiêu", "thói quen chi tiêu", "cảnh báo tài chính", "dự báo chi tiêu", "kế hoạch tiết kiệm", "khuyến nghị tài chính", "nên tiết kiệm bao nhiêu"
 
 5. **VIEW_ACCOUNTS** - Xem danh sách tài khoản và số dư
    - Entities: specificAccount (tên tài khoản cụ thể), bankFilter (ngân hàng cụ thể)
@@ -1019,6 +1019,24 @@ ${
   // Thử xử lý local trước khi gọi Gemini
   async tryLocalProcessing(message, userId) {
     const lowerMessage = message.toLowerCase().trim();
+
+    if (
+      lowerMessage.includes("dự báo") ||
+      lowerMessage.includes("du bao") ||
+      lowerMessage.includes("kế hoạch tiết kiệm") ||
+      lowerMessage.includes("ke hoach tiet kiem") ||
+      lowerMessage.includes("khuyến nghị") ||
+      lowerMessage.includes("khuyen nghi") ||
+      lowerMessage.includes("gợi ý tiết kiệm") ||
+      lowerMessage.includes("goi y tiet kiem") ||
+      lowerMessage.includes("phân tích tài chính") ||
+      lowerMessage.includes("phan tich tai chinh") ||
+      lowerMessage.includes("tình hình tài chính") ||
+      lowerMessage.includes("tinh hinh tai chinh")
+    ) {
+      console.log("Local processing: ANALYZE_FINANCES");
+      return await this.utilsHelper.analyzeFinancialHealth(userId);
+    }
 
     // Pattern cho compare expenses
     if (
