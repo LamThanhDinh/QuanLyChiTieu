@@ -1,4 +1,7 @@
+const dns = require("dns");
 const nodemailer = require("nodemailer");
+
+dns.setDefaultResultOrder?.("ipv4first");
 
 const getEmailConfig = () => {
   const user = process.env.EMAIL_USER?.trim();
@@ -28,6 +31,9 @@ const createTransporter = () => {
     },
     // Force IPv4 để tránh lỗi kết nối IPv6 trên Render
     family: 4,
+    lookup: (hostname, options, callback) => {
+      dns.lookup(hostname, { ...options, family: 4 }, callback);
+    },
     connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 15000,
