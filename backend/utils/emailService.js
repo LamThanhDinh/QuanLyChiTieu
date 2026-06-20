@@ -1,59 +1,30 @@
-const dns = require("dns");
-const nodemailer = require("nodemailer");
-
-dns.setDefaultResultOrder?.("ipv4first");
-
 const getEmailConfig = () => {
-  const user = process.env.EMAIL_USER?.trim();
-  const pass = process.env.EMAIL_PASS?.replace(/\s+/g, "");
+  const apiKey = process.env.BREVO_API_KEY?.trim();
+  const senderEmail = process.env.BREVO_SENDER_EMAIL?.trim();
+  const senderName = process.env.BREVO_SENDER_NAME?.trim() || "Ket Sat So";
 
-  if (!user || !pass) {
-    throw new Error("Missing EMAIL_USER or EMAIL_PASS environment variable.");
+  if (!apiKey || !senderEmail) {
+    throw new Error(
+      "Missing BREVO_API_KEY or BREVO_SENDER_EMAIL environment variable."
+    );
   }
 
-  return { user, pass };
-};
-
-// Tạo transporter với Gmail
-const createTransporter = () => {
-  const { user, pass } = getEmailConfig();
-
-  return nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true, // SSL port 465 is more reliable on some hosts than STARTTLS 587.
-    auth: {
-      user: user, // Email Gmail của bạn
-      pass: pass, // App Password của Gmail
-    },
-    tls: {
-      rejectUnauthorized: false,
-    },
-    // Force IPv4 để tránh lỗi kết nối IPv6 trên Render
-    family: 4,
-    lookup: (hostname, options, callback) => {
-      dns.lookup(hostname, { ...options, family: 4 }, callback);
-    },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
-  });
+  return { apiKey, senderEmail, senderName };
 };
 
 // Gửi email với mã xác thực
 const sendResetPasswordEmail = async (email, resetToken, username) => {
   try {
-    const { user, pass } = getEmailConfig();
-    const transporter = createTransporter();
+    const { apiKey, senderEmail, senderName } = getEmailConfig();
 
     const mailOptions = {
-      from: {
-        name: "Két Sắt Số",
-        address: user,
+      sender: {
+        name: senderName,
+        email: senderEmail,
       },
-      to: email,
+      to: [{ email, name: username || email }],
       subject: "Mã xác thực đặt lại mật khẩu - Két Sắt Số",
-      html: `
+      htmlContent: `
         <!DOCTYPE html>
         <html>
         <head>
@@ -195,7 +166,7 @@ const sendResetPasswordEmail = async (email, resetToken, username) => {
         </body>
         </html>
       `,
-      text: `
+      textContent: `
 Xin chào ${username || "bạn"}!
 
 Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.
@@ -211,16 +182,32 @@ KÉT SẮT SỐ Team
       `,
     };
 
-    console.log("Email config loaded:", {
-      user,
-      passLength: pass.length,
-      host: "smtp.gmail.com",
-      port: 465,
+    console.log("Brevo email config loaded:", {
+      senderEmail,
+      hasApiKey: Boolean(apiKey),
     });
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log(" Email sent successfully:", info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "api-key": apiKey,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(mailOptions),
+    });
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      console.error("Brevo email error:", response.status, result);
+      throw new Error(
+        result.message || "Brevo could not send the reset password email."
+      );
+    }
+
+    console.log("Brevo email sent successfully:", result.messageId);
+    return { success: true, messageId: result.messageId };
   } catch (error) {
     console.error(" Error sending email:", error);
     throw new Error("Không thể gửi email. Vui lòng thử lại sau.");
