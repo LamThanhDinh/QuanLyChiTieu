@@ -17,6 +17,11 @@ import { format, formatDistanceToNow, parseISO } from "date-fns";
 import { vi } from "date-fns/locale";
 import { FaTrophy, FaExclamationCircle } from "react-icons/fa";
 import { renderIcon } from "../../utils/iconMap";
+import {
+  getGoalProgress,
+  isGoalCompleted,
+  isGoalOverdue,
+} from "../../utils/goalStatus";
 
 // Helper Functions
 const formatCurrency = (amount) =>
@@ -53,15 +58,11 @@ export default function GoalCard({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  const isCompleted = goal.currentAmount >= goal.targetAmount;
-  const isOverdue =
-    !isCompleted && goal.deadline && new Date(goal.deadline) < new Date();
+  const isCompleted = isGoalCompleted(goal);
+  const isOverdue = isGoalOverdue(goal);
   const isArchived = goal.archived;
   const isPinned = goal.isPinned; // Đã có sẵn
-  const progress =
-    goal.targetAmount > 0
-      ? Math.min((goal.currentAmount / goal.targetAmount) * 100, 100)
-      : 0;
+  const progress = getGoalProgress(goal);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

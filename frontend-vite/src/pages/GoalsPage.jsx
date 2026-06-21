@@ -27,6 +27,11 @@ import { getGreeting, getFullDate } from "../utils/timeHelpers";
 import PageContentContainer from "../components/Common/PageContentContainer";
 import GoalControls from "../components/Goals/GoalControls";
 import NextGoalWidget from "../components/Goals/NextGoalWidget";
+import {
+  compareGoals,
+  isGoalCompleted,
+  isGoalOverdue,
+} from "../utils/goalStatus";
 
 export default function GoalsPage() {
   const queryClient = useQueryClient();
@@ -138,51 +143,36 @@ export default function GoalsPage() {
     setGoalToDelete(null);
   };
 
-  // ✅ SỬA LỖI: Logic lọc goals được cải tiến
   const filteredGoals = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    let filteredResults = [];
+    let filteredResults;
 
     switch (goalFilter) {
       case "IN_PROGRESS":
         filteredResults = goals.filter(
-          (g) =>
-            !g.archived &&
-            g.currentAmount < g.targetAmount &&
-            (!g.deadline || new Date(g.deadline) >= today)
+          (g) => !g.archived && !isGoalCompleted(g) && !isGoalOverdue(g)
         );
         break;
       case "COMPLETED":
-        filteredResults = goals.filter(
-          (g) => !g.archived && g.currentAmount >= g.targetAmount
-        );
+        filteredResults = goals.filter((g) => !g.archived && isGoalCompleted(g));
         break;
       case "OVERDUE":
         filteredResults = goals.filter(
-          (g) =>
-            !g.archived &&
-            g.currentAmount < g.targetAmount &&
-            g.deadline &&
-            new Date(g.deadline) < today
+          (g) => !g.archived && isGoalOverdue(g)
         );
         break;
       case "ARCHIVED":
-        // Chỉ trả về goals đã lưu trữ
-        return goals.filter((g) => g.archived);
+        filteredResults = goals.filter((g) => g.archived);
+        break;
       case "ALL":
       default:
         filteredResults = goals.filter((g) => !g.archived);
         break;
     }
 
-    // Sắp xếp: Goals được ghim lên đầu, sau đó đến goals thường
-    const pinnedGoals = filteredResults.filter((g) => g.isPinned);
-    const unpinnedGoals = filteredResults.filter((g) => !g.isPinned);
-
-    return [...pinnedGoals, ...unpinnedGoals];
-  }, [goals, goalFilter]);
+    return [...filteredResults].sort((a, b) =>
+      compareGoals(a, b, sortType, sortDirection)
+    );
+  }, [goals, goalFilter, sortType, sortDirection]);
 
   const getSmartContext = () => {
     if (isLoading) return "Đang tải mục tiêu của bạn...";
@@ -191,9 +181,7 @@ export default function GoalsPage() {
     if (activeGoals.length === 0) {
       return "Bạn chưa có mục tiêu nào. Hãy tạo một mục tiêu ngay!";
     }
-    const ongoingGoals = activeGoals.filter(
-      (g) => g.currentAmount < g.targetAmount
-    ).length;
+    const ongoingGoals = activeGoals.filter((g) => !isGoalCompleted(g)).length;
     const completedGoals = activeGoals.length - ongoingGoals;
     return `Bạn có ${ongoingGoals} mục tiêu đang thực hiện và đã hoàn thành ${completedGoals} mục tiêu. Cố lên!`;
   };
@@ -204,7 +192,7 @@ export default function GoalsPage() {
       .filter(
         (g) =>
           !g.archived &&
-          g.currentAmount < g.targetAmount &&
+          !isGoalCompleted(g) &&
           g.deadline &&
           new Date(g.deadline) >= now
       )

@@ -359,8 +359,90 @@ const fixGoalCategoriesIcon = asyncHandler(async (req, res) => {
   }
 });
 
+const getGoalsFixed = asyncHandler(async (req, res) => {
+  const {
+    page = 1,
+    limit = 10,
+    filter,
+    sortType = "CREATED",
+    sortDirection = "desc",
+  } = req.query;
+
+  const normalizedFilter = filter ? filter.toUpperCase() : "ALL";
+  const normalizedSortType = sortType ? sortType.toUpperCase() : "CREATED";
+  const normalizedSortDirection = sortDirection === "asc" ? "asc" : "desc";
+  const now = new Date();
+
+  const query = {
+    user: req.user.id,
+    archived: false,
+  };
+
+  if (normalizedFilter === "ARCHIVED") {
+    query.archived = true;
+  } else if (normalizedFilter === "COMPLETED") {
+    query.$expr = { $gte: ["$currentAmount", "$targetAmount"] };
+  } else if (normalizedFilter === "OVERDUE") {
+    query.deadline = { $lt: now };
+    query.$expr = { $lt: ["$currentAmount", "$targetAmount"] };
+  } else if (
+    normalizedFilter === "IN_PROGRESS" ||
+    normalizedFilter === "ACTIVE"
+  ) {
+    query.$expr = { $lt: ["$currentAmount", "$targetAmount"] };
+    query.$or = [
+      { deadline: { $exists: false } },
+      { deadline: null },
+      { deadline: { $gte: now } },
+    ];
+  }
+
+  const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
+  const limitNumber = Math.max(parseInt(limit, 10) || 10, 1);
+  const startIndex = (pageNumber - 1) * limitNumber;
+  const allGoals = await Goal.find(query).lean();
+
+  const getProgress = (goal) => {
+    if (!goal.targetAmount || goal.targetAmount <= 0) return 0;
+    return Math.min((goal.currentAmount || 0) / goal.targetAmount, 1);
+  };
+
+  const getSortValue = (goal) => {
+    if (normalizedSortType === "PROGRESS") return getProgress(goal);
+    if (normalizedSortType === "DEADLINE") {
+      return goal.deadline ? new Date(goal.deadline).getTime() : null;
+    }
+    return goal.createdAt ? new Date(goal.createdAt).getTime() : 0;
+  };
+
+  const direction = normalizedSortDirection === "asc" ? 1 : -1;
+  const sortedGoals = allGoals.sort((a, b) => {
+    if (Boolean(a.isPinned) !== Boolean(b.isPinned)) {
+      return a.isPinned ? -1 : 1;
+    }
+
+    const valueA = getSortValue(a);
+    const valueB = getSortValue(b);
+
+    if (valueA === null && valueB === null) return 0;
+    if (valueA === null) return 1;
+    if (valueB === null) return -1;
+
+    return (valueA - valueB) * direction;
+  });
+
+  const goals = sortedGoals.slice(startIndex, startIndex + limitNumber);
+
+  res.status(200).json({
+    data: goals,
+    currentPage: pageNumber,
+    totalPages: Math.ceil(sortedGoals.length / limitNumber),
+    totalGoals: sortedGoals.length,
+  });
+});
+
 module.exports = {
-  getGoals,
+  getGoals: getGoalsFixed,
   createGoal,
   updateGoal,
   deleteGoal,
