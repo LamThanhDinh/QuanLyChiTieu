@@ -42,6 +42,22 @@ class AIService {
     }
   }
 
+  async getFinancialAlerts() {
+    try {
+      const response = await axiosInstance.get("/ai-assistant/alerts");
+      return response.data;
+    } catch (error) {
+      console.error("AI alerts error:", error);
+      return {
+        success: false,
+        data: {
+          alerts: [],
+          hasInsights: false,
+        },
+      };
+    }
+  }
+
   // Phân tích intent từ tin nhắn người dùng
   analyzeIntent(message) {
     const lowerMessage = message.toLowerCase();

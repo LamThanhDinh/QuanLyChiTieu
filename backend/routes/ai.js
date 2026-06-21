@@ -228,6 +228,13 @@ const aiController = new AIController();
 // Route xử lý tin nhắn AI - Frontend gọi POST /api/ai-assistant
 router.post("/", verifyToken, aiController.processMessage.bind(aiController));
 
+// Route lấy cảnh báo tài chính chủ động cho AI Assistant
+router.get(
+  "/alerts",
+  verifyToken,
+  aiController.getFinancialAlerts.bind(aiController)
+);
+
 // Route để upload ảnh/PDF hóa đơn và tự động tách khoản thu/chi
 router.post(
   "/analyze-invoice",

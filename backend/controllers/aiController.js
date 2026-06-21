@@ -589,6 +589,55 @@ SYSTEM: Bạn là AI assistant chuyên tách hóa đơn thành các khoản thu/
     }
   }
 
+  async getFinancialAlerts(req, res) {
+    try {
+      const userId = req.user?.id;
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          message: "Người dùng chưa đăng nhập",
+        });
+      }
+
+      const analysis = await this.utilsHelper.analyzeFinancialHealth(userId);
+      const insights = analysis?.data?.insights || {};
+      const alertItems = [
+        ...(insights.warnings || []).map((text) => ({
+          type: "warning",
+          text,
+        })),
+        ...(insights.suggestions || []).map((text) => ({
+          type: "suggestion",
+          text,
+        })),
+        ...(insights.positive || []).map((text) => ({
+          type: "positive",
+          text,
+        })),
+      ].slice(0, 3);
+
+      return res.json({
+        success: true,
+        action: "FINANCIAL_ALERTS",
+        data: {
+          alerts: alertItems,
+          totalBalance: analysis?.data?.totalBalance || 0,
+          currentMonth: analysis?.data?.monthsData?.[0] || null,
+          hasInsights: alertItems.length > 0,
+        },
+      });
+    } catch (error) {
+      console.error("Error getting financial alerts:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Có lỗi xảy ra khi lấy cảnh báo tài chính",
+        error:
+          process.env.NODE_ENV === "development" ? error.message : undefined,
+      });
+    }
+  }
+
   // --- HÀM XỬ LÝ RESPONSE CẢI TIẾN ---
   async handleAIResponse(aiResponse, userId) {
     const { intent, transaction, category, goal, responseForUser, entities } =

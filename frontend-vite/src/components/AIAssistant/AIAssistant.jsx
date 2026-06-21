@@ -20,6 +20,8 @@ const AIAssistant = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [invoiceFile, setInvoiceFile] = useState(null);
+  const [financialAlerts, setFinancialAlerts] = useState([]);
+  const [alertsLoading, setAlertsLoading] = useState(false);
   const recognition = useRef(null);
   const messagesEndRef = useRef(null);
   const invoiceFileInputRef = useRef(null);
@@ -97,6 +99,38 @@ const AIAssistant = () => {
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    let isMounted = true;
+
+    const loadFinancialAlerts = async () => {
+      setAlertsLoading(true);
+      try {
+        const result = await aiService.getFinancialAlerts();
+        if (!isMounted) return;
+
+        const alerts = result?.data?.alerts || [];
+        setFinancialAlerts(alerts);
+      } catch (error) {
+        console.error("Error loading financial alerts:", error);
+        if (isMounted) {
+          setFinancialAlerts([]);
+        }
+      } finally {
+        if (isMounted) {
+          setAlertsLoading(false);
+        }
+      }
+    };
+
+    loadFinancialAlerts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen]);
 
   const handleSpeechToggle = () => {
     if (isListening) {
@@ -539,6 +573,16 @@ ${data.formatted.isPositive ? "✅ Tháng này bạn đã tiết kiệm được
     setMessage(command);
   };
 
+  const handleAnalyzeAlerts = () => {
+    setMessage("phân tích tài chính của tôi và giải thích các cảnh báo");
+  };
+
+  const getAlertIcon = (type) => {
+    if (type === "warning") return "⚠️";
+    if (type === "positive") return "✅";
+    return "💡";
+  };
+
   const getSampleCommands = () => [
     "chi 50k ăn sáng",
     "xem thống kê tháng này",
@@ -633,6 +677,47 @@ ${data.formatted.isPositive ? "✅ Tháng này bạn đã tiết kiệm được
 
             {/* Messages */}
             <div className={styles.messagesContainer}>
+              {(alertsLoading || financialAlerts.length > 0) && (
+                <div className={styles.alertsPanel}>
+                  <div className={styles.alertsHeader}>
+                    <div>
+                      <span className={styles.alertsEyebrow}>
+                        Cảnh báo tài chính
+                      </span>
+                      <h4>AI đã soi nhanh tháng này</h4>
+                    </div>
+                    <button
+                      type="button"
+                      className={styles.alertsAction}
+                      onClick={handleAnalyzeAlerts}
+                      disabled={alertsLoading}
+                    >
+                      Phân tích kỹ
+                    </button>
+                  </div>
+                  {alertsLoading ? (
+                    <div className={styles.alertSkeleton}>
+                      Đang kiểm tra dữ liệu...
+                    </div>
+                  ) : (
+                    <ul className={styles.alertsList}>
+                      {financialAlerts.map((alert, index) => (
+                        <li
+                          key={`${alert.type}-${index}`}
+                          className={`${styles.alertItem} ${
+                            styles[alert.type] || ""
+                          }`}
+                        >
+                          <span className={styles.alertIcon}>
+                            {getAlertIcon(alert.type)}
+                          </span>
+                          <span>{alert.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
               {messages.length === 0 ? (
                 <div className={styles.welcomeMessage}>
                   <h4>Xin chào! Tôi có thể giúp bạn:</h4>

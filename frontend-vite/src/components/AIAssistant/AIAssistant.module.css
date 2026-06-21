@@ -222,6 +222,112 @@
   text-align: left;
 }
 
+.alertsPanel {
+  margin-bottom: 16px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.07);
+  text-align: left;
+}
+
+.alertsHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.alertsEyebrow {
+  display: block;
+  margin-bottom: 3px;
+  color: #5c7cfa;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.alertsHeader h4 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.alertsAction {
+  border: none;
+  border-radius: 8px;
+  background: #eef2ff;
+  color: #4c63d2;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 10px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.alertsAction:hover:not(:disabled) {
+  background: #dfe6ff;
+  transform: translateY(-1px);
+}
+
+.alertsAction:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.alertsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.alertItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 10px 11px;
+  border-radius: 10px;
+  color: #374151;
+  font-size: 13px;
+  line-height: 1.45;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.alertItem.warning {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+
+.alertItem.suggestion {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.alertItem.positive {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.alertIcon {
+  flex-shrink: 0;
+}
+
+.alertSkeleton {
+  padding: 11px;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 13px;
+}
+
 .message {
   margin-bottom: 16px;
   display: flex;
@@ -899,6 +1005,16 @@
   .cancelButton {
     width: 100%;
     min-height: 44px;
+  }
+
+  .alertsHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .alertsAction {
+    width: 100%;
+    min-height: 40px;
   }
 
   .filePreview {
