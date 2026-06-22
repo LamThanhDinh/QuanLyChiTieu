@@ -448,6 +448,45 @@
   opacity: 0.55;
 }
 
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.pagination button {
+  min-width: 86px;
+  min-height: 38px;
+  border: none;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #334155;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 800;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.pagination span {
+  color: #475569;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
 @media (min-width: 1280px) {
   .recurringCard {
     grid-template-columns: minmax(180px, 1fr) minmax(128px, auto) minmax(96px, auto) minmax(170px, auto);
@@ -576,6 +615,15 @@
   .formActions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+  }
+
+  .pagination button {
+    flex: 1;
+    min-width: 120px;
   }
 
   .historyHeader,

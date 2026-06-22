@@ -76,6 +76,8 @@ const isRecurringExpired = (item) => {
   return new Date(item.nextRunDate) > new Date(item.endDate);
 };
 
+const ITEMS_PER_PAGE = 5;
+
 const RecurringTransactionsPage = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [accounts, setAccounts] = useState([]);
@@ -92,6 +94,7 @@ const RecurringTransactionsPage = () => {
   const [historyLoadingId, setHistoryLoadingId] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleteError, setDeleteError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const userName = userProfile?.fullname || "Bạn";
   const userAvatar = userProfile?.avatar || null;
@@ -170,6 +173,27 @@ const RecurringTransactionsPage = () => {
       monthlyFixedCost,
     };
   }, [recurringTransactions]);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(recurringTransactions.length / ITEMS_PER_PAGE)
+  );
+
+  const paginatedRecurringTransactions = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return recurringTransactions.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [currentPage, recurringTransactions]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    setHistoryPanel(null);
+  }, [statusFilter]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -606,7 +630,7 @@ const RecurringTransactionsPage = () => {
               </div>
             ) : (
               <div className={styles.recurringList}>
-                {recurringTransactions.map((item) => {
+                {paginatedRecurringTransactions.map((item) => {
                   const expired = isRecurringExpired(item);
 
                   return (
@@ -710,6 +734,30 @@ const RecurringTransactionsPage = () => {
                   </article>
                   );
                 })}
+              </div>
+            )}
+
+            {!isLoading && recurringTransactions.length > ITEMS_PER_PAGE && (
+              <div className={styles.pagination}>
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Trước
+                </button>
+                <span>
+                  Trang {currentPage} / {totalPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setCurrentPage((page) => Math.min(totalPages, page + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                >
+                  Sau
+                </button>
               </div>
             )}
 
