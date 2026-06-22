@@ -284,7 +284,7 @@
 
 .recurringCard {
   display: grid;
-  grid-template-columns: minmax(220px, 1.1fr) minmax(150px, 0.7fr) minmax(110px, 0.45fr) auto;
+  grid-template-columns: minmax(180px, 1.1fr) minmax(130px, 0.65fr) minmax(100px, 0.45fr) minmax(104px, 132px);
   align-items: center;
   gap: 14px;
   padding: 14px;
@@ -376,6 +376,7 @@
 .dueBadge,
 .autoBadge,
 .pausedBadge,
+.expiredBadge,
 .countBadge {
   padding: 5px 8px;
   border-radius: 999px;
@@ -398,6 +399,11 @@
   color: #475569;
 }
 
+.expiredBadge {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
 .countBadge {
   background: #ecfdf5;
   color: #047857;
@@ -405,16 +411,19 @@
 
 .cardActions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 6px;
+  min-width: 0;
+  max-width: 132px;
 }
 
 .cardActions button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 8px;
   background: #f1f5f9;
   color: #475569;

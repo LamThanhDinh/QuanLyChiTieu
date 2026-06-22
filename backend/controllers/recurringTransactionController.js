@@ -101,12 +101,16 @@ const enrichRecurring = (recurring) => {
   const nextRunDate = object.nextRunDate ? new Date(object.nextRunDate) : null;
   const endDate = object.endDate ? new Date(object.endDate) : null;
   const isEnded = Boolean(endDate && endDate < now);
-  const isDue = Boolean(object.isActive && !isEnded && nextRunDate <= now);
+  const isExpired = Boolean(endDate && nextRunDate && nextRunDate > endDate);
+  const isDue = Boolean(
+    object.isActive && !isEnded && !isExpired && nextRunDate <= now
+  );
 
   return {
     ...object,
     isDue,
     isEnded,
+    isExpired,
   };
 };
 
@@ -171,6 +175,12 @@ const createRecurringTransaction = async (req, res) => {
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
       return res.status(400).json({
         message: "Số tiền giao dịch định kỳ phải lớn hơn 0",
+      });
+    }
+
+    if (parsedEndDate && parsedNextRunDate > parsedEndDate) {
+      return res.status(400).json({
+        message: "Ngày kết thúc phải sau hoặc bằng ngày chạy tiếp theo",
       });
     }
 
@@ -302,6 +312,16 @@ const updateRecurringTransaction = async (req, res) => {
       updates.endDate = null;
     }
 
+    const effectiveNextRunDate = updates.nextRunDate || recurring.nextRunDate;
+    const effectiveEndDate =
+      updates.endDate !== undefined ? updates.endDate : recurring.endDate;
+
+    if (effectiveEndDate && effectiveNextRunDate > effectiveEndDate) {
+      return res.status(400).json({
+        message: "Ngày kết thúc phải sau hoặc bằng ngày chạy tiếp theo",
+      });
+    }
+
     const effectiveFrequency = updates.frequency || recurring.frequency;
     if (effectiveFrequency === "daily" || effectiveFrequency === "weekly") {
       updates.dayOfMonth = null;
@@ -421,6 +441,16 @@ const runRecurringTransaction = async (req, res) => {
     }
 
     // Kiểm tra ngày kết thúc trước khi cho phép tạo thủ công
+    if (
+      recurring.endDate &&
+      recurring.nextRunDate &&
+      recurring.nextRunDate > recurring.endDate
+    ) {
+      return res.status(400).json({
+        message: "Mẫu định kỳ đã hết hạn vì ngày chạy tiếp theo vượt ngày kết thúc",
+      });
+    }
+
     const now = new Date();
     if (recurring.endDate && new Date(recurring.endDate) < now) {
       return res.status(400).json({

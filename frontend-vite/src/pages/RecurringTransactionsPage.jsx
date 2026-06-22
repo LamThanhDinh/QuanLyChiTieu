@@ -69,6 +69,13 @@ const formatInputAmount = (value) => {
   return raw ? Number(raw).toLocaleString("vi-VN") : "";
 };
 
+const isRecurringExpired = (item) => {
+  if (!item) return false;
+  if (item.isExpired || item.isEnded) return true;
+  if (!item.endDate || !item.nextRunDate) return false;
+  return new Date(item.nextRunDate) > new Date(item.endDate);
+};
+
 const RecurringTransactionsPage = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [accounts, setAccounts] = useState([]);
@@ -599,12 +606,15 @@ const RecurringTransactionsPage = () => {
               </div>
             ) : (
               <div className={styles.recurringList}>
-                {recurringTransactions.map((item) => (
+                {recurringTransactions.map((item) => {
+                  const expired = isRecurringExpired(item);
+
+                  return (
                   <article
                     key={item._id}
                     className={`${styles.recurringCard} ${
                       item.isDue ? styles.due : ""
-                    } ${!item.isActive ? styles.paused : ""}`}
+                    } ${!item.isActive || expired ? styles.paused : ""}`}
                   >
                     <div className={styles.cardMain}>
                       <span className={styles.categoryIcon}>
@@ -640,7 +650,10 @@ const RecurringTransactionsPage = () => {
                       {item.autoCreate && (
                         <span className={styles.autoBadge}>Tự động</span>
                       )}
-                      {!item.isActive && (
+                      {expired && (
+                        <span className={styles.expiredBadge}>Hết hạn</span>
+                      )}
+                      {!item.isActive && !expired && (
                         <span className={styles.pausedBadge}>Tạm dừng</span>
                       )}
                       <span className={styles.countBadge}>
@@ -657,14 +670,16 @@ const RecurringTransactionsPage = () => {
                       >
                         <FontAwesomeIcon icon={faHistory} />
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => handleRunNow(item._id)}
-                        disabled={isSaving || !item.isActive}
-                        title="Tạo giao dịch ngay"
-                      >
-                        <FontAwesomeIcon icon={faCirclePlay} />
-                      </button>
+                      {!expired && (
+                        <button
+                          type="button"
+                          onClick={() => handleRunNow(item._id)}
+                          disabled={isSaving || !item.isActive}
+                          title="Tạo giao dịch ngay"
+                        >
+                          <FontAwesomeIcon icon={faCirclePlay} />
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => handleEdit(item)}
@@ -673,14 +688,16 @@ const RecurringTransactionsPage = () => {
                       >
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => handleToggleActive(item)}
-                        disabled={isSaving}
-                        title={item.isActive ? "Tạm dừng" : "Bật lại"}
-                      >
-                        <FontAwesomeIcon icon={item.isActive ? faPause : faPlay} />
-                      </button>
+                      {!expired && (
+                        <button
+                          type="button"
+                          onClick={() => handleToggleActive(item)}
+                          disabled={isSaving}
+                          title={item.isActive ? "Tạm dừng" : "Bật lại"}
+                        >
+                          <FontAwesomeIcon icon={item.isActive ? faPause : faPlay} />
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => handleRequestDelete(item)}
@@ -691,7 +708,8 @@ const RecurringTransactionsPage = () => {
                       </button>
                     </div>
                   </article>
-                ))}
+                  );
+                })}
               </div>
             )}
 
