@@ -3,6 +3,7 @@ import {
   faCalendarAlt,
   faChartLine,
   faCheck,
+  faEdit,
   faMagic,
   faPiggyBank,
   faPlus,
@@ -21,8 +22,10 @@ import {
   getBudgetSuggestions,
   getBudgets,
   saveBudget,
+  updateBudget,
 } from "../api/budgetService";
 import { getGreeting } from "../utils/timeHelpers";
+import { getIconObject } from "../utils/iconMap";
 import styles from "../styles/BudgetsPage.module.css";
 
 const getCurrentPeriod = () => {
@@ -61,6 +64,8 @@ const BudgetsPage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isSuggesting, setIsSuggesting] = useState(false);
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("info");
+  const [editingBudget, setEditingBudget] = useState(null);
   const [formData, setFormData] = useState({
     categoryId: "",
     amount: "",
@@ -73,6 +78,7 @@ const BudgetsPage = () => {
   const fetchBudgets = useCallback(async () => {
     setIsLoading(true);
     setMessage("");
+    setMessageType("info");
 
     try {
       const [profileResponse, categoryResponse, budgetResponse] =
@@ -90,6 +96,7 @@ const BudgetsPage = () => {
     } catch (error) {
       console.error("Error loading budgets:", error);
       setMessage("Không thể tải dữ liệu ngân sách. Vui lòng thử lại.");
+      setMessageType("error");
     } finally {
       setIsLoading(false);
     }
@@ -154,6 +161,7 @@ const BudgetsPage = () => {
 
     setIsSaving(true);
     setMessage("");
+    setMessageType("info");
 
     try {
       await saveBudget({
@@ -166,25 +174,78 @@ const BudgetsPage = () => {
       setFormData({ categoryId: "", amount: "", threshold: 80 });
       await fetchBudgets();
       setMessage("Đã lưu ngân sách.");
+      setMessageType("success");
     } catch (error) {
       console.error("Error saving budget:", error);
       setMessage(error.response?.data?.message || "Không thể lưu ngân sách.");
+      setMessageType("error");
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleDeleteBudget = async (budgetId) => {
+    const shouldDelete = window.confirm(
+      "Bạn có chắc muốn xóa ngân sách này không?"
+    );
+    if (!shouldDelete) return;
+
     setIsSaving(true);
     setMessage("");
+    setMessageType("info");
 
     try {
       await deleteBudget(budgetId);
       await fetchBudgets();
       setMessage("Đã xóa ngân sách.");
+      setMessageType("success");
     } catch (error) {
       console.error("Error deleting budget:", error);
       setMessage("Không thể xóa ngân sách.");
+      setMessageType("error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleOpenEditBudget = (budget) => {
+    setEditingBudget({
+      id: budget._id,
+      categoryName: budget.categoryId?.name || "Danh mục",
+      amount: budget.amount || "",
+      threshold: budget.threshold || 80,
+    });
+    setMessage("");
+    setMessageType("info");
+  };
+
+  const handleCloseEditBudget = () => {
+    setEditingBudget(null);
+  };
+
+  const handleUpdateBudget = async (event) => {
+    event.preventDefault();
+    if (!editingBudget?.id || !editingBudget.amount) return;
+
+    setIsSaving(true);
+    setMessage("");
+    setMessageType("info");
+
+    try {
+      await updateBudget(editingBudget.id, {
+        amount: Number(editingBudget.amount),
+        threshold: Number(editingBudget.threshold),
+      });
+      setEditingBudget(null);
+      await fetchBudgets();
+      setMessage("Đã cập nhật ngân sách.");
+      setMessageType("success");
+    } catch (error) {
+      console.error("Error updating budget:", error);
+      setMessage(
+        error.response?.data?.message || "Không thể cập nhật ngân sách."
+      );
+      setMessageType("error");
     } finally {
       setIsSaving(false);
     }
@@ -194,15 +255,18 @@ const BudgetsPage = () => {
     const nextPeriod = getNextPeriod();
     setIsSuggesting(true);
     setMessage("");
+    setMessageType("info");
 
     try {
       const response = await getBudgetSuggestions(nextPeriod);
       setPeriod({ month: response.month, year: response.year });
       setSuggestions(response.suggestions || []);
       setMessage(response.summary || "");
+      setMessageType((response.suggestions || []).length > 0 ? "success" : "info");
     } catch (error) {
       console.error("Error getting budget suggestions:", error);
       setMessage("Không thể tạo đề xuất ngân sách.");
+      setMessageType("error");
     } finally {
       setIsSuggesting(false);
     }
@@ -213,6 +277,7 @@ const BudgetsPage = () => {
 
     setIsSaving(true);
     setMessage("");
+    setMessageType("info");
 
     try {
       await applyBudgetSuggestions({
@@ -223,9 +288,11 @@ const BudgetsPage = () => {
       setSuggestions([]);
       await fetchBudgets();
       setMessage("Đã áp dụng đề xuất ngân sách.");
+      setMessageType("success");
     } catch (error) {
       console.error("Error applying budget suggestions:", error);
       setMessage("Không thể áp dụng đề xuất ngân sách.");
+      setMessageType("error");
     } finally {
       setIsSaving(false);
     }
@@ -244,7 +311,7 @@ const BudgetsPage = () => {
             </span>
             <h1>{getGreeting()}, {userName}!</h1>
             <p>
-              Theo dõi ngân sách từng danh mục, cảnh báo khi gần vượt và để AI
+              Theo dõi ngân sách từng danh mục, cảnh báo khi gần vượt và
               đề xuất kế hoạch tháng tới từ lịch sử chi tiêu.
             </p>
           </div>
@@ -327,7 +394,7 @@ const BudgetsPage = () => {
               Số tiền ngân sách
               <input
                 type="number"
-                min="0"
+                min="1"
                 value={formData.amount}
                 placeholder="VD: 3000000"
                 onChange={(event) =>
@@ -412,7 +479,74 @@ const BudgetsPage = () => {
           </div>
         </section>
 
-        {message && <div className={styles.message}>{message}</div>}
+        {message && (
+          <div className={`${styles.message} ${styles[messageType]}`}>
+            {message}
+          </div>
+        )}
+
+        {editingBudget && (
+          <div className={styles.editOverlay} role="dialog" aria-modal="true">
+            <form className={styles.editDialog} onSubmit={handleUpdateBudget}>
+              <div className={styles.sectionHeader}>
+                <div>
+                  <h2>Sửa ngân sách</h2>
+                  <p>{editingBudget.categoryName}</p>
+                </div>
+                <FontAwesomeIcon icon={faEdit} />
+              </div>
+
+              <label>
+                Số tiền ngân sách
+                <input
+                  type="number"
+                  min="1"
+                  value={editingBudget.amount}
+                  onChange={(event) =>
+                    setEditingBudget((prev) => ({
+                      ...prev,
+                      amount: event.target.value,
+                    }))
+                  }
+                />
+              </label>
+
+              <label>
+                Ngưỡng cảnh báo (%)
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  value={editingBudget.threshold}
+                  onChange={(event) =>
+                    setEditingBudget((prev) => ({
+                      ...prev,
+                      threshold: event.target.value,
+                    }))
+                  }
+                />
+              </label>
+
+              <div className={styles.editActions}>
+                <button
+                  type="button"
+                  className={styles.secondaryButton}
+                  onClick={handleCloseEditBudget}
+                  disabled={isSaving}
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className={styles.primaryButton}
+                  disabled={isSaving || !editingBudget.amount}
+                >
+                  Lưu thay đổi
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
 
         <section className={styles.budgetListSection}>
           <div className={styles.sectionHeader}>
@@ -439,7 +573,9 @@ const BudgetsPage = () => {
                 <article key={budget._id} className={styles.budgetRow}>
                   <div className={styles.categoryCell}>
                     <span className={styles.categoryIcon}>
-                      {budget.categoryId?.name?.charAt(0) || "?"}
+                      <FontAwesomeIcon
+                        icon={getIconObject(budget.categoryId?.icon)}
+                      />
                     </span>
                     <div>
                       <strong>{budget.categoryId?.name || "Danh mục"}</strong>
@@ -475,15 +611,26 @@ const BudgetsPage = () => {
                     <strong>{formatCurrency(budget.remainingAmount)}</strong>
                   </div>
 
-                  <button
-                    type="button"
-                    className={styles.deleteButton}
-                    onClick={() => handleDeleteBudget(budget._id)}
-                    disabled={isSaving}
-                    title="Xóa ngân sách"
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </button>
+                  <div className={styles.rowActions}>
+                    <button
+                      type="button"
+                      className={styles.editButton}
+                      onClick={() => handleOpenEditBudget(budget)}
+                      disabled={isSaving}
+                      title="Sửa ngân sách"
+                    >
+                      <FontAwesomeIcon icon={faEdit} />
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.deleteButton}
+                      onClick={() => handleDeleteBudget(budget._id)}
+                      disabled={isSaving}
+                      title="Xóa ngân sách"
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  </div>
                 </article>
               ))}
             </div>

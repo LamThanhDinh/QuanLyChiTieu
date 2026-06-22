@@ -57,6 +57,7 @@
 .periodBadge,
 .aiButton,
 .suggestionsHeader button,
+.editButton,
 .deleteButton {
   border: none;
   font-family: inherit;
@@ -283,6 +284,102 @@
   font-weight: 700;
 }
 
+.message.success {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.message.error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.message.info {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.editOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(6px);
+}
+
+.editDialog {
+  width: min(440px, 100%);
+  padding: 20px;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+}
+
+.editDialog label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 14px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.editDialog input {
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  color: #0f172a;
+  font-size: 14px;
+  outline: none;
+}
+
+.editDialog input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.editActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: 40px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.primaryButton {
+  background: #4f46e5;
+  color: #ffffff;
+}
+
+.secondaryButton {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
 .budgetListSection {
   margin-top: 18px;
 }
@@ -303,7 +400,7 @@
 
 .budgetRow {
   display: grid;
-  grid-template-columns: minmax(180px, 0.8fr) minmax(260px, 1.4fr) minmax(120px, 0.4fr) 44px;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(260px, 1.4fr) minmax(120px, 0.4fr) 88px;
   align-items: center;
   gap: 16px;
   padding: 14px;
@@ -402,6 +499,14 @@
   white-space: nowrap;
 }
 
+.rowActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.editButton,
 .deleteButton {
   display: inline-flex;
   align-items: center;
@@ -414,6 +519,12 @@
   cursor: pointer;
 }
 
+.editButton {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.editButton:disabled,
 .deleteButton:disabled {
   cursor: not-allowed;
   opacity: 0.6;
@@ -442,6 +553,15 @@
     align-items: stretch;
   }
 
+  .deleteButton {
+    width: 100%;
+  }
+
+  .rowActions {
+    justify-content: stretch;
+  }
+
+  .editButton,
   .deleteButton {
     width: 100%;
   }
@@ -475,5 +595,14 @@
     grid-template-columns: 1fr;
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .editActions {
+    flex-direction: column;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
   }
 }

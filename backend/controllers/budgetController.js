@@ -140,9 +140,17 @@ const upsertBudget = async (req, res) => {
       isActive = true,
     } = req.body;
 
+    const numericAmount = Number(amount);
+
     if (!categoryId || amount === undefined || !month || !year) {
       return res.status(400).json({
         message: "Thiếu danh mục, số tiền, tháng hoặc năm ngân sách",
+      });
+    }
+
+    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+      return res.status(400).json({
+        message: "Số tiền ngân sách phải lớn hơn 0",
       });
     }
 
@@ -168,7 +176,7 @@ const upsertBudget = async (req, res) => {
         period: "monthly",
       },
       {
-        amount: Number(amount),
+        amount: numericAmount,
         threshold: Number(threshold),
         note,
         isActive,
@@ -198,7 +206,14 @@ const updateBudget = async (req, res) => {
       if (req.body[field] !== undefined) updates[field] = req.body[field];
     });
 
-    if (updates.amount !== undefined) updates.amount = Number(updates.amount);
+    if (updates.amount !== undefined) {
+      updates.amount = Number(updates.amount);
+      if (!Number.isFinite(updates.amount) || updates.amount <= 0) {
+        return res.status(400).json({
+          message: "Số tiền ngân sách phải lớn hơn 0",
+        });
+      }
+    }
     if (updates.threshold !== undefined) {
       updates.threshold = Number(updates.threshold);
     }
@@ -449,34 +464,40 @@ const applyBudgetSuggestions = async (req, res) => {
       });
     }
 
-    const savedBudgets = [];
-    for (const suggestion of suggestions) {
-      if (!suggestion.categoryId || !suggestion.suggestedAmount) continue;
+    const validSuggestions = suggestions.filter((suggestion) => {
+      const amount = Number(suggestion.suggestedAmount);
+      return (
+        suggestion.categoryId &&
+        Number.isFinite(amount) &&
+        amount > 0
+      );
+    });
 
-      const budget = await Budget.findOneAndUpdate(
-        {
-          userId,
-          categoryId: suggestion.categoryId,
-          month: Number(month),
-          year: Number(year),
-          period: "monthly",
-        },
-        {
-          amount: Number(suggestion.suggestedAmount),
-          threshold: 80,
-          note: suggestion.reason || "AI đề xuất từ lịch sử chi tiêu",
-          isActive: true,
-        },
-        {
-          new: true,
-          upsert: true,
-          runValidators: true,
-          setDefaultsOnInsert: true,
-        }
-      ).populate("categoryId", "name type icon");
-
-      savedBudgets.push(budget);
-    }
+    const savedBudgets = await Promise.all(
+      validSuggestions.map((suggestion) =>
+        Budget.findOneAndUpdate(
+          {
+            userId,
+            categoryId: suggestion.categoryId,
+            month: Number(month),
+            year: Number(year),
+            period: "monthly",
+          },
+          {
+            amount: Number(suggestion.suggestedAmount),
+            threshold: 80,
+            note: suggestion.reason || "AI đề xuất từ lịch sử chi tiêu",
+            isActive: true,
+          },
+          {
+            new: true,
+            upsert: true,
+            runValidators: true,
+            setDefaultsOnInsert: true,
+          }
+        ).populate("categoryId", "name type icon")
+      )
+    );
 
     const spentMap = await getSpentByCategory(toObjectId(userId), month, year);
 
