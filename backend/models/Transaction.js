@@ -28,6 +28,11 @@ const TransactionSchema = new mongoose.Schema(
       ref: "Goal",
       required: false,
     },
+    recurringTransactionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "RecurringTransaction",
+      required: false,
+    },
   },
   { timestamps: true }
 );

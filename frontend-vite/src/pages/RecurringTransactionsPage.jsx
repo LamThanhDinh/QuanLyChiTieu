@@ -1,0 +1,630 @@
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCalendarCheck,
+  faCheck,
+  faEdit,
+  faPause,
+  faPlay,
+  faPlus,
+  faRedoAlt,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import Header from "../components/Header/Header";
+import Navbar from "../components/Navbar/Navbar";
+import Footer from "../components/Footer/Footer";
+import Button from "../components/Common/Button";
+import { getAccounts } from "../api/accountsService";
+import { getCategories } from "../api/categoriesService";
+import { getProfile } from "../api/profileService";
+import {
+  createRecurringTransaction,
+  deleteRecurringTransaction,
+  getRecurringTransactions,
+  processDueRecurringTransactions,
+  runRecurringTransaction,
+  updateRecurringTransaction,
+} from "../api/recurringTransactionService";
+import { getGreeting } from "../utils/timeHelpers";
+import { getIconObject } from "../utils/iconMap";
+import styles from "../styles/RecurringTransactionsPage.module.css";
+
+const initialForm = {
+  name: "",
+  amount: "",
+  type: "CHITIEU",
+  accountId: "",
+  categoryId: "",
+  frequency: "monthly",
+  nextRunDate: new Date().toISOString().slice(0, 10),
+  endDate: "",
+  note: "",
+  autoCreate: false,
+  isActive: true,
+};
+
+const frequencyLabels = {
+  daily: "Hằng ngày",
+  weekly: "Hằng tuần",
+  monthly: "Hằng tháng",
+  yearly: "Hằng năm",
+};
+
+const formatCurrency = (amount) =>
+  `${Math.round(amount || 0).toLocaleString("vi-VN")} đ`;
+
+const formatDate = (date) => {
+  if (!date) return "Chưa đặt";
+  return new Date(date).toLocaleDateString("vi-VN");
+};
+
+const RecurringTransactionsPage = () => {
+  const [userProfile, setUserProfile] = useState(null);
+  const [accounts, setAccounts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [recurringTransactions, setRecurringTransactions] = useState([]);
+  const [formData, setFormData] = useState(initialForm);
+  const [editingId, setEditingId] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("info");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const userName = userProfile?.fullname || "Bạn";
+  const userAvatar = userProfile?.avatar || null;
+
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    setMessage("");
+
+    try {
+      const [profileResponse, accountResponse, categoryResponse, recurringResponse] =
+        await Promise.all([
+          getProfile().catch(() => null),
+          getAccounts({}),
+          getCategories({ includeGoalCategories: "false" }),
+          getRecurringTransactions({ status: statusFilter }),
+        ]);
+
+      setUserProfile(profileResponse?.data || null);
+      setAccounts(accountResponse || []);
+      setCategories(categoryResponse || []);
+      setRecurringTransactions(recurringResponse?.data || []);
+    } catch (error) {
+      console.error("Error loading recurring transactions:", error);
+      setMessage("Không thể tải dữ liệu giao dịch định kỳ.");
+      setMessageType("error");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [statusFilter]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const filteredCategories = useMemo(
+    () => categories.filter((category) => category.type === formData.type),
+    [categories, formData.type]
+  );
+
+  const stats = useMemo(() => {
+    const active = recurringTransactions.filter((item) => item.isActive).length;
+    const due = recurringTransactions.filter((item) => item.isDue).length;
+    const monthlyFixedCost = recurringTransactions
+      .filter((item) => item.isActive && item.type === "CHITIEU")
+      .reduce((sum, item) => {
+        if (item.frequency === "monthly") return sum + item.amount;
+        if (item.frequency === "weekly") return sum + item.amount * 4;
+        if (item.frequency === "daily") return sum + item.amount * 30;
+        if (item.frequency === "yearly") return sum + item.amount / 12;
+        return sum;
+      }, 0);
+
+    return {
+      total: recurringTransactions.length,
+      active,
+      due,
+      monthlyFixedCost,
+    };
+  }, [recurringTransactions]);
+
+  const handleInputChange = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+      ...(field === "type" ? { categoryId: "" } : {}),
+    }));
+  };
+
+  const resetForm = () => {
+    setFormData(initialForm);
+    setEditingId(null);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsSaving(true);
+    setMessage("");
+
+    const payload = {
+      ...formData,
+      amount: Number(formData.amount),
+      endDate: formData.endDate || "",
+    };
+
+    try {
+      if (editingId) {
+        await updateRecurringTransaction(editingId, payload);
+        setMessage("Đã cập nhật giao dịch định kỳ.");
+      } else {
+        await createRecurringTransaction(payload);
+        setMessage("Đã tạo giao dịch định kỳ.");
+      }
+
+      setMessageType("success");
+      resetForm();
+      await loadData();
+    } catch (error) {
+      console.error("Error saving recurring transaction:", error);
+      setMessage(
+        error.response?.data?.message || "Không thể lưu giao dịch định kỳ."
+      );
+      setMessageType("error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleEdit = (item) => {
+    setEditingId(item._id);
+    setFormData({
+      name: item.name || "",
+      amount: item.amount || "",
+      type: item.type || "CHITIEU",
+      accountId: item.accountId?._id || item.accountId || "",
+      categoryId: item.categoryId?._id || item.categoryId || "",
+      frequency: item.frequency || "monthly",
+      nextRunDate: item.nextRunDate
+        ? new Date(item.nextRunDate).toISOString().slice(0, 10)
+        : initialForm.nextRunDate,
+      endDate: item.endDate ? new Date(item.endDate).toISOString().slice(0, 10) : "",
+      note: item.note || "",
+      autoCreate: Boolean(item.autoCreate),
+      isActive: Boolean(item.isActive),
+    });
+    setMessage("");
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Bạn có chắc muốn xóa giao dịch định kỳ này không?")) {
+      return;
+    }
+
+    setIsSaving(true);
+    setMessage("");
+
+    try {
+      await deleteRecurringTransaction(id);
+      setMessage("Đã xóa giao dịch định kỳ.");
+      setMessageType("success");
+      await loadData();
+    } catch (error) {
+      console.error("Error deleting recurring transaction:", error);
+      setMessage("Không thể xóa giao dịch định kỳ.");
+      setMessageType("error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleToggleActive = async (item) => {
+    setIsSaving(true);
+    setMessage("");
+
+    try {
+      await updateRecurringTransaction(item._id, {
+        isActive: !item.isActive,
+      });
+      setMessage(item.isActive ? "Đã tạm dừng mẫu định kỳ." : "Đã bật lại mẫu định kỳ.");
+      setMessageType("success");
+      await loadData();
+    } catch (error) {
+      console.error("Error toggling recurring transaction:", error);
+      setMessage("Không thể cập nhật trạng thái.");
+      setMessageType("error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleRunNow = async (id) => {
+    setIsSaving(true);
+    setMessage("");
+
+    try {
+      await runRecurringTransaction(id);
+      setMessage("Đã tạo giao dịch thật từ mẫu định kỳ.");
+      setMessageType("success");
+      await loadData();
+    } catch (error) {
+      console.error("Error running recurring transaction:", error);
+      setMessage(
+        error.response?.data?.message || "Không thể tạo giao dịch từ mẫu."
+      );
+      setMessageType("error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleProcessDue = async () => {
+    setIsSaving(true);
+    setMessage("");
+
+    try {
+      const response = await processDueRecurringTransactions();
+      setMessage(response.message || "Đã xử lý các khoản đến hạn.");
+      setMessageType("success");
+      await loadData();
+    } catch (error) {
+      console.error("Error processing due recurring transactions:", error);
+      setMessage("Không thể xử lý các khoản đến hạn.");
+      setMessageType("error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div>
+      <Header userName={userName} userAvatar={userAvatar} />
+      <Navbar />
+
+      <main className={styles.page}>
+        <section className={styles.hero}>
+          <div>
+            <span className={styles.eyebrow}>
+              <FontAwesomeIcon icon={faRedoAlt} /> Giao dịch định kỳ
+            </span>
+            <h1>{getGreeting()}, {userName}!</h1>
+            <p>
+              Quản lý các khoản thu chi lặp lại như tiền nhà, lương, hóa đơn
+              và gói dịch vụ để không phải nhập thủ công mỗi tháng.
+            </p>
+          </div>
+          <button
+            type="button"
+            className={styles.processButton}
+            onClick={handleProcessDue}
+            disabled={isSaving}
+          >
+            Xử lý khoản đến hạn
+          </button>
+        </section>
+
+        <section className={styles.summaryGrid}>
+          <div className={styles.summaryItem}>
+            <span>Tổng mẫu</span>
+            <strong>{stats.total}</strong>
+          </div>
+          <div className={styles.summaryItem}>
+            <span>Đang hoạt động</span>
+            <strong>{stats.active}</strong>
+          </div>
+          <div className={styles.summaryItem}>
+            <span>Đến hạn</span>
+            <strong>{stats.due}</strong>
+          </div>
+          <div className={styles.summaryItem}>
+            <span>Chi cố định ước tính/tháng</span>
+            <strong>{formatCurrency(stats.monthlyFixedCost)}</strong>
+          </div>
+        </section>
+
+        <section className={styles.contentGrid}>
+          <form className={styles.formPanel} onSubmit={handleSubmit}>
+            <div className={styles.sectionHeader}>
+              <div>
+                <h2>{editingId ? "Sửa mẫu định kỳ" : "Tạo mẫu định kỳ"}</h2>
+                <p>Mẫu này sẽ dùng để tạo giao dịch thật khi đến ngày.</p>
+              </div>
+              <FontAwesomeIcon icon={editingId ? faEdit : faPlus} />
+            </div>
+
+            <label>
+              Tên giao dịch
+              <input
+                value={formData.name}
+                onChange={(event) => handleInputChange("name", event.target.value)}
+                placeholder="VD: Tiền nhà"
+              />
+            </label>
+
+            <div className={styles.inlineFields}>
+              <label>
+                Loại
+                <select
+                  value={formData.type}
+                  onChange={(event) => handleInputChange("type", event.target.value)}
+                >
+                  <option value="CHITIEU">Chi tiêu</option>
+                  <option value="THUNHAP">Thu nhập</option>
+                </select>
+              </label>
+
+              <label>
+                Số tiền
+                <input
+                  type="number"
+                  min="1"
+                  value={formData.amount}
+                  onChange={(event) => handleInputChange("amount", event.target.value)}
+                  placeholder="VD: 2500000"
+                />
+              </label>
+            </div>
+
+            <label>
+              Tài khoản
+              <select
+                value={formData.accountId}
+                onChange={(event) => handleInputChange("accountId", event.target.value)}
+              >
+                <option value="">Chọn tài khoản</option>
+                {accounts.map((account) => (
+                  <option key={account._id || account.id} value={account._id || account.id}>
+                    {account.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label>
+              Danh mục
+              <select
+                value={formData.categoryId}
+                onChange={(event) => handleInputChange("categoryId", event.target.value)}
+              >
+                <option value="">Chọn danh mục</option>
+                {filteredCategories.map((category) => (
+                  <option key={category._id} value={category._id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <div className={styles.inlineFields}>
+              <label>
+                Chu kỳ
+                <select
+                  value={formData.frequency}
+                  onChange={(event) =>
+                    handleInputChange("frequency", event.target.value)
+                  }
+                >
+                  <option value="daily">Hằng ngày</option>
+                  <option value="weekly">Hằng tuần</option>
+                  <option value="monthly">Hằng tháng</option>
+                  <option value="yearly">Hằng năm</option>
+                </select>
+              </label>
+
+              <label>
+                Ngày chạy tiếp theo
+                <input
+                  type="date"
+                  value={formData.nextRunDate}
+                  onChange={(event) =>
+                    handleInputChange("nextRunDate", event.target.value)
+                  }
+                />
+              </label>
+            </div>
+
+            <label>
+              Ngày kết thúc
+              <input
+                type="date"
+                value={formData.endDate}
+                onChange={(event) => handleInputChange("endDate", event.target.value)}
+              />
+            </label>
+
+            <label>
+              Ghi chú
+              <textarea
+                value={formData.note}
+                onChange={(event) => handleInputChange("note", event.target.value)}
+                placeholder="VD: Thanh toán đầu tháng"
+              />
+            </label>
+
+            <div className={styles.checkboxRow}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={formData.autoCreate}
+                  onChange={(event) =>
+                    handleInputChange("autoCreate", event.target.checked)
+                  }
+                />
+                Tự động tạo khi xử lý khoản đến hạn
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={formData.isActive}
+                  onChange={(event) =>
+                    handleInputChange("isActive", event.target.checked)
+                  }
+                />
+                Đang hoạt động
+              </label>
+            </div>
+
+            <div className={styles.formActions}>
+              {editingId && (
+                <button
+                  type="button"
+                  className={styles.secondaryButton}
+                  onClick={resetForm}
+                  disabled={isSaving}
+                >
+                  Hủy sửa
+                </button>
+              )}
+              <Button
+                type="submit"
+                icon={<FontAwesomeIcon icon={faCheck} />}
+                disabled={
+                  isSaving ||
+                  !formData.name ||
+                  !formData.amount ||
+                  !formData.accountId ||
+                  !formData.categoryId ||
+                  !formData.nextRunDate
+                }
+              >
+                {editingId ? "Lưu thay đổi" : "Tạo định kỳ"}
+              </Button>
+            </div>
+          </form>
+
+          <section className={styles.listPanel}>
+            <div className={styles.sectionHeader}>
+              <div>
+                <h2>Danh sách định kỳ</h2>
+                <p>Theo dõi các mẫu thu chi lặp lại và tạo giao dịch khi cần.</p>
+              </div>
+              <FontAwesomeIcon icon={faCalendarCheck} />
+            </div>
+
+            <div className={styles.filterGroup}>
+              {[
+                ["all", "Tất cả"],
+                ["active", "Hoạt động"],
+                ["due", "Đến hạn"],
+                ["paused", "Tạm dừng"],
+              ].map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  className={statusFilter === value ? styles.activeFilter : ""}
+                  onClick={() => setStatusFilter(value)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {message && (
+              <div className={`${styles.message} ${styles[messageType]}`}>
+                {message}
+              </div>
+            )}
+
+            {isLoading ? (
+              <div className={styles.emptyState}>Đang tải dữ liệu...</div>
+            ) : recurringTransactions.length === 0 ? (
+              <div className={styles.emptyState}>
+                Chưa có giao dịch định kỳ nào. Hãy tạo mẫu đầu tiên.
+              </div>
+            ) : (
+              <div className={styles.recurringList}>
+                {recurringTransactions.map((item) => (
+                  <article
+                    key={item._id}
+                    className={`${styles.recurringCard} ${
+                      item.isDue ? styles.due : ""
+                    } ${!item.isActive ? styles.paused : ""}`}
+                  >
+                    <div className={styles.cardMain}>
+                      <span className={styles.categoryIcon}>
+                        <FontAwesomeIcon
+                          icon={getIconObject(item.categoryId?.icon)}
+                        />
+                      </span>
+                      <div>
+                        <h3>{item.name}</h3>
+                        <p>
+                          {item.categoryId?.name || "Danh mục"} ·{" "}
+                          {item.accountId?.name || "Tài khoản"} ·{" "}
+                          {frequencyLabels[item.frequency]}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className={styles.cardMoney}>
+                      <strong
+                        className={
+                          item.type === "THUNHAP" ? styles.income : styles.expense
+                        }
+                      >
+                        {formatCurrency(item.amount)}
+                      </strong>
+                      <span>
+                        Tiếp theo: {formatDate(item.nextRunDate)}
+                      </span>
+                    </div>
+
+                    <div className={styles.badgeRow}>
+                      {item.isDue && <span className={styles.dueBadge}>Đến hạn</span>}
+                      {item.autoCreate && (
+                        <span className={styles.autoBadge}>Tự động</span>
+                      )}
+                      {!item.isActive && (
+                        <span className={styles.pausedBadge}>Tạm dừng</span>
+                      )}
+                    </div>
+
+                    <div className={styles.cardActions}>
+                      <button
+                        type="button"
+                        onClick={() => handleRunNow(item._id)}
+                        disabled={isSaving || !item.isActive}
+                        title="Tạo giao dịch ngay"
+                      >
+                        <FontAwesomeIcon icon={faPlay} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleEdit(item)}
+                        disabled={isSaving}
+                        title="Sửa"
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleActive(item)}
+                        disabled={isSaving}
+                        title={item.isActive ? "Tạm dừng" : "Bật lại"}
+                      >
+                        <FontAwesomeIcon icon={item.isActive ? faPause : faPlay} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(item._id)}
+                        disabled={isSaving}
+                        title="Xóa"
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        </section>
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default RecurringTransactionsPage;

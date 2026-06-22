@@ -11,6 +11,7 @@ import AccountPage from "../pages/AccountPage";
 import TransactionsPage from "../pages/TransactionsPage";
 import GoalsPage from "../pages/GoalsPage";
 import BudgetsPage from "../pages/BudgetsPage";
+import RecurringTransactionsPage from "../pages/RecurringTransactionsPage";
 import StatisticsPage from "../pages/StatisticsPage";
 import ProfilePage from "../pages/ProfilePage";
 import AdminDashboard from "../pages/AdminDashboard";
@@ -38,6 +39,10 @@ export default function AppRoutes() {
         <Route path="/transactions" element={<TransactionsPage />} />
         <Route path="/goals" element={<GoalsPage />} />
         <Route path="/budgets" element={<BudgetsPage />} />
+        <Route
+          path="/recurring-transactions"
+          element={<RecurringTransactionsPage />}
+        />
         <Route path="/statistics" element={<StatisticsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/admin" element={<AdminDashboard />} />
