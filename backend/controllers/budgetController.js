@@ -116,7 +116,10 @@ const getBudgets = async (req, res) => {
     res.json({
       month,
       year,
-      budgets: budgets.map((budget) => enrichBudget(budget, spentMap)),
+      budgets: budgets.map((budget) => {
+        console.log("[DEBUG backend] budget categoryId:", JSON.stringify(budget.categoryId));
+        return enrichBudget(budget, spentMap);
+      }),
     });
   } catch (error) {
     console.error("Error getting budgets:", error);

@@ -7,8 +7,8 @@ import {
   faMagic,
   faPiggyBank,
   faPlus,
+  faTimes,
   faTrash,
-  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Header from "../components/Header/Header";
@@ -106,7 +106,11 @@ const BudgetsPage = () => {
       setCategories(
         (categoryResponse || []).filter((category) => category.type === "CHITIEU")
       );
-      setBudgets(budgetResponse?.budgets || []);
+      const budgetList = budgetResponse?.budgets || [];
+      if (budgetList.length > 0) {
+        console.log("[DEBUG] First budget categoryId:", JSON.stringify(budgetList[0].categoryId));
+      }
+      setBudgets(budgetList);
     } catch (error) {
       console.error("Error loading budgets:", error);
       setMessage("Không thể tải dữ liệu ngân sách. Vui lòng thử lại.");
@@ -553,7 +557,7 @@ const BudgetsPage = () => {
                   onClick={handleCloseEditBudget}
                   disabled={isSaving}
                 >
-                  <FontAwesomeIcon icon={faXmark} style={{ marginRight: 6 }} />
+                  <FontAwesomeIcon icon={faTimes} style={{ marginRight: 6 }} />
                   Hủy
                 </button>
                 <button
