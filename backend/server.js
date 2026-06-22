@@ -61,6 +61,7 @@ const statisticsRoutes = require("./routes/statistics.routes");
 app.use("/api/statistics", statisticsRoutes);
 
 app.use("/api/goals", require("./routes/goalRoutes"));
+app.use("/api/budgets", require("./routes/budgetRoutes"));
 
 const aiRoutes = require("./routes/ai");
 app.use("/api/ai-assistant", aiRoutes);

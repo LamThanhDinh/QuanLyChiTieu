@@ -7,6 +7,7 @@ import {
   faExchangeAlt,
   faLayerGroup,
   faBullseye,
+  faWallet,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -15,6 +16,7 @@ const navItems = [
   { name: "Giao dịch", path: "/transactions", icon: faExchangeAlt },
   { name: "Danh mục", path: "/categories", icon: faLayerGroup },
   { name: "Mục tiêu", path: "/goals", icon: faBullseye },
+  { name: "Ngân sách", path: "/budgets", icon: faWallet },
   { name: "Cá nhân", path: "/profile", icon: faUser },
 ];
 

@@ -10,6 +10,7 @@ import CategoriesPage from "../pages/CategoriesPage";
 import AccountPage from "../pages/AccountPage";
 import TransactionsPage from "../pages/TransactionsPage";
 import GoalsPage from "../pages/GoalsPage";
+import BudgetsPage from "../pages/BudgetsPage";
 import StatisticsPage from "../pages/StatisticsPage";
 import ProfilePage from "../pages/ProfilePage";
 import AdminDashboard from "../pages/AdminDashboard";
@@ -36,6 +37,7 @@ export default function AppRoutes() {
         <Route path="/accounts" element={<AccountPage />} />
         <Route path="/transactions" element={<TransactionsPage />} />
         <Route path="/goals" element={<GoalsPage />} />
+        <Route path="/budgets" element={<BudgetsPage />} />
         <Route path="/statistics" element={<StatisticsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/admin" element={<AdminDashboard />} />
@@ -49,4 +51,3 @@ export default function AppRoutes() {
     </>
   );
 }
-
