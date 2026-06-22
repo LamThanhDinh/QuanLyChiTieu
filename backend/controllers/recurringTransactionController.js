@@ -13,6 +13,24 @@ const normalizeDate = (dateValue) => {
   return date;
 };
 
+const getStartOfUtcDay = (dateValue) => {
+  if (!dateValue) return null;
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return null;
+  date.setUTCHours(0, 0, 0, 0);
+  return date;
+};
+
+const getEndOfUtcDay = (dateValue) => {
+  if (!dateValue) return null;
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return null;
+  date.setUTCHours(23, 59, 59, 999);
+  return date;
+};
+
+const normalizeEndDate = (dateValue) => getEndOfUtcDay(dateValue);
+
 const getLastDayOfUtcMonth = (year, monthIndex) =>
   new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
 
@@ -99,7 +117,7 @@ const enrichRecurring = (recurring) => {
   const object = recurring.toObject ? recurring.toObject() : recurring;
   const now = new Date();
   const nextRunDate = object.nextRunDate ? new Date(object.nextRunDate) : null;
-  const endDate = object.endDate ? new Date(object.endDate) : null;
+  const endDate = object.endDate ? getEndOfUtcDay(object.endDate) : null;
   const isEnded = Boolean(endDate && endDate < now);
   const isExpired = Boolean(endDate && nextRunDate && nextRunDate > endDate);
   const isDue = Boolean(
@@ -125,7 +143,10 @@ const getRecurringTransactions = async (req, res) => {
     if (status === "due") {
       filter.isActive = true;
       filter.nextRunDate = { $lte: now };
-      filter.$or = [{ endDate: null }, { endDate: { $gte: now } }];
+      filter.$or = [
+        { endDate: null },
+        { endDate: { $gte: getStartOfUtcDay(now) } },
+      ];
     }
 
     const recurringTransactions = await RecurringTransaction.find(filter)
@@ -164,7 +185,7 @@ const createRecurringTransaction = async (req, res) => {
 
     const numericAmount = Number(amount);
     const parsedNextRunDate = normalizeDate(nextRunDate);
-    const parsedEndDate = endDate ? normalizeDate(endDate) : null;
+    const parsedEndDate = endDate ? normalizeEndDate(endDate) : null;
 
     if (!name || !accountId || !categoryId || !type || !parsedNextRunDate) {
       return res.status(400).json({
@@ -301,7 +322,7 @@ const updateRecurringTransaction = async (req, res) => {
     }
 
     if (updates.endDate !== undefined && updates.endDate !== "") {
-      const parsedEndDate = normalizeDate(updates.endDate);
+      const parsedEndDate = normalizeEndDate(updates.endDate);
       if (!parsedEndDate) {
         return res.status(400).json({
           message: "Ngày kết thúc không hợp lệ",
@@ -314,7 +335,9 @@ const updateRecurringTransaction = async (req, res) => {
 
     const effectiveNextRunDate = updates.nextRunDate || recurring.nextRunDate;
     const effectiveEndDate =
-      updates.endDate !== undefined ? updates.endDate : recurring.endDate;
+      updates.endDate !== undefined
+        ? updates.endDate
+        : getEndOfUtcDay(recurring.endDate);
 
     if (effectiveEndDate && effectiveNextRunDate > effectiveEndDate) {
       return res.status(400).json({
@@ -412,7 +435,10 @@ const createTransactionFromRecurring = async (recurring, runDate = null) => {
     recurring.dayOfMonth
   );
 
-  if (recurring.endDate && recurring.nextRunDate > recurring.endDate) {
+  if (
+    recurring.endDate &&
+    recurring.nextRunDate > getEndOfUtcDay(recurring.endDate)
+  ) {
     recurring.isActive = false;
   }
 
@@ -444,7 +470,7 @@ const runRecurringTransaction = async (req, res) => {
     if (
       recurring.endDate &&
       recurring.nextRunDate &&
-      recurring.nextRunDate > recurring.endDate
+      recurring.nextRunDate > getEndOfUtcDay(recurring.endDate)
     ) {
       return res.status(400).json({
         message: "Mẫu định kỳ đã hết hạn vì ngày chạy tiếp theo vượt ngày kết thúc",
@@ -452,7 +478,7 @@ const runRecurringTransaction = async (req, res) => {
     }
 
     const now = new Date();
-    if (recurring.endDate && new Date(recurring.endDate) < now) {
+    if (recurring.endDate && getEndOfUtcDay(recurring.endDate) < now) {
       return res.status(400).json({
         message: "Giao dịch định kỳ này đã hết hạn và không thể tạo thêm",
       });
@@ -530,7 +556,10 @@ const processDueRecurringTransactions = async (req, res) => {
       isActive: true,
       autoCreate: true,
       nextRunDate: { $lte: now },
-      $or: [{ endDate: null }, { endDate: { $gte: now } }],
+      $or: [
+        { endDate: null },
+        { endDate: { $gte: getStartOfUtcDay(now) } },
+      ],
     });
 
     const results = await Promise.allSettled(

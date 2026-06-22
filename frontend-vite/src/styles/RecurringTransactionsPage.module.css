@@ -284,10 +284,11 @@
 
 .recurringCard {
   display: grid;
-  grid-template-columns: minmax(180px, 1.1fr) minmax(130px, 0.65fr) minmax(100px, 0.45fr) minmax(104px, 132px);
+  grid-template-columns: minmax(180px, 1fr) minmax(128px, auto) minmax(96px, auto);
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   padding: 14px;
+  overflow: hidden;
 }
 
 .recurringCard.due {
@@ -341,6 +342,10 @@
   display: block;
 }
 
+.cardMoney {
+  min-width: 0;
+}
+
 .cardMoney strong {
   font-size: 16px;
 }
@@ -371,6 +376,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  min-width: 0;
 }
 
 .dueBadge,
@@ -412,10 +418,11 @@
 .cardActions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 6px;
+  grid-column: 1 / -1;
   min-width: 0;
-  max-width: 132px;
+  max-width: 100%;
 }
 
 .cardActions button {
@@ -424,6 +431,7 @@
   justify-content: center;
   width: 34px;
   height: 34px;
+  flex: 0 0 34px;
   border-radius: 8px;
   background: #f1f5f9;
   color: #475569;
@@ -438,6 +446,17 @@
 .cardActions button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
+}
+
+@media (min-width: 1280px) {
+  .recurringCard {
+    grid-template-columns: minmax(180px, 1fr) minmax(128px, auto) minmax(96px, auto) minmax(170px, auto);
+  }
+
+  .cardActions {
+    grid-column: auto;
+    justify-content: flex-end;
+  }
 }
 
 .historyPanel {
