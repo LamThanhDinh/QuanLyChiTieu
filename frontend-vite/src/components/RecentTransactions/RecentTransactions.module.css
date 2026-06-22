@@ -254,6 +254,26 @@
 .expenseAmount {
   color: #dc3545; /* Màu đỏ cho chi tiêu */
 }
+
+.descriptionContent {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.recurringBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4338ca;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
 /* Container cho cả ngày và giờ để căn chỉnh */
 .dateTimeContainer {
   display: flex;

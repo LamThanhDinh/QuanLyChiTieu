@@ -49,6 +49,12 @@ const RecurringTransactionSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    dayOfMonth: {
+      type: Number,
+      min: 1,
+      max: 31,
+      default: null,
+    },
     lastRunDate: {
       type: Date,
       default: null,

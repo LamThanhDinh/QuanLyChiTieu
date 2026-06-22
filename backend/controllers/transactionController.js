@@ -198,6 +198,7 @@ exports.getAllTransactions = async (req, res) => {
       type: t.type,
       category: t.categoryId,
       paymentMethod: t.accountId,
+      recurringTransactionId: t.recurringTransactionId,
     }));
 
     res.json({

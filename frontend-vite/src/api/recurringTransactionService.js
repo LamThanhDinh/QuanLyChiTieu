@@ -7,6 +7,11 @@ export const getRecurringTransactions = async (params = {}) => {
   return response.data;
 };
 
+export const getGeneratedTransactions = async (id) => {
+  const response = await axiosInstance.get(`${API_URL}/${id}/generated-transactions`);
+  return response.data;
+};
+
 export const createRecurringTransaction = async (payload) => {
   const response = await axiosInstance.post(API_URL, payload);
   return response.data;

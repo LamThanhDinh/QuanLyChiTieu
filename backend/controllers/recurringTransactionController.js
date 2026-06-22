@@ -13,8 +13,50 @@ const normalizeDate = (dateValue) => {
   return date;
 };
 
-const calculateNextRunDate = (currentDate, frequency) => {
-  const nextDate = new Date(currentDate);
+const getLastDayOfUtcMonth = (year, monthIndex) =>
+  new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
+
+const buildUtcDatePreservingTime = (sourceDate, year, monthIndex, day) =>
+  new Date(
+    Date.UTC(
+      year,
+      monthIndex,
+      day,
+      sourceDate.getUTCHours(),
+      sourceDate.getUTCMinutes(),
+      sourceDate.getUTCSeconds(),
+      sourceDate.getUTCMilliseconds()
+    )
+  );
+
+const calculateNextRunDate = (currentDate, frequency, dayOfMonth = null) => {
+  const sourceDate = new Date(currentDate);
+
+  if (frequency === "monthly" || frequency === "yearly") {
+    const preferredDay = Number(dayOfMonth) || sourceDate.getUTCDate();
+    const targetYear =
+      frequency === "yearly"
+        ? sourceDate.getUTCFullYear() + 1
+        : sourceDate.getUTCFullYear() +
+          Math.floor((sourceDate.getUTCMonth() + 1) / 12);
+    const targetMonth =
+      frequency === "yearly"
+        ? sourceDate.getUTCMonth()
+        : (sourceDate.getUTCMonth() + 1) % 12;
+    const targetDay = Math.min(
+      preferredDay,
+      getLastDayOfUtcMonth(targetYear, targetMonth)
+    );
+
+    return buildUtcDatePreservingTime(
+      sourceDate,
+      targetYear,
+      targetMonth,
+      targetDay
+    );
+  }
+
+  const nextDate = new Date(sourceDate);
 
   switch (frequency) {
     case "daily":
@@ -23,12 +65,7 @@ const calculateNextRunDate = (currentDate, frequency) => {
     case "weekly":
       nextDate.setDate(nextDate.getDate() + 7);
       break;
-    case "yearly":
-      nextDate.setFullYear(nextDate.getFullYear() + 1);
-      break;
-    case "monthly":
     default:
-      nextDate.setMonth(nextDate.getMonth() + 1);
       break;
   }
 
@@ -157,6 +194,10 @@ const createRecurringTransaction = async (req, res) => {
       categoryId,
       frequency,
       nextRunDate: parsedNextRunDate,
+      dayOfMonth:
+        frequency === "monthly" || frequency === "yearly"
+          ? parsedNextRunDate.getUTCDate()
+          : null,
       endDate: parsedEndDate,
       note,
       autoCreate,
@@ -179,6 +220,21 @@ const createRecurringTransaction = async (req, res) => {
   }
 };
 
+const UPDATABLE_FIELDS = [
+  "name",
+  "amount",
+  "type",
+  "accountId",
+  "categoryId",
+  "frequency",
+  "nextRunDate",
+  "dayOfMonth",
+  "endDate",
+  "note",
+  "autoCreate",
+  "isActive",
+];
+
 const updateRecurringTransaction = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -193,7 +249,11 @@ const updateRecurringTransaction = async (req, res) => {
       });
     }
 
-    const updates = { ...req.body };
+    // Chỉ lấy các field được phép cập nhật, bỏ qua userId/generatedCount...
+    const updates = {};
+    UPDATABLE_FIELDS.forEach((field) => {
+      if (req.body[field] !== undefined) updates[field] = req.body[field];
+    });
 
     if (updates.amount !== undefined) {
       updates.amount = Number(updates.amount);
@@ -213,6 +273,21 @@ const updateRecurringTransaction = async (req, res) => {
         });
       }
       updates.nextRunDate = parsedNextRunDate;
+      updates.dayOfMonth = parsedNextRunDate.getUTCDate();
+    }
+
+    if (updates.dayOfMonth !== undefined) {
+      const parsedDayOfMonth = Number(updates.dayOfMonth);
+      if (
+        !Number.isInteger(parsedDayOfMonth) ||
+        parsedDayOfMonth < 1 ||
+        parsedDayOfMonth > 31
+      ) {
+        return res.status(400).json({
+          message: "Ngày chạy trong tháng phải từ 1 đến 31",
+        });
+      }
+      updates.dayOfMonth = parsedDayOfMonth;
     }
 
     if (updates.endDate !== undefined && updates.endDate !== "") {
@@ -225,6 +300,18 @@ const updateRecurringTransaction = async (req, res) => {
       updates.endDate = parsedEndDate;
     } else if (updates.endDate === "") {
       updates.endDate = null;
+    }
+
+    const effectiveFrequency = updates.frequency || recurring.frequency;
+    if (effectiveFrequency === "daily" || effectiveFrequency === "weekly") {
+      updates.dayOfMonth = null;
+    } else if (
+      (effectiveFrequency === "monthly" || effectiveFrequency === "yearly") &&
+      updates.dayOfMonth === undefined
+    ) {
+      updates.dayOfMonth =
+        recurring.dayOfMonth ||
+        (updates.nextRunDate || recurring.nextRunDate).getUTCDate();
     }
 
     const accountId = updates.accountId || recurring.accountId;
@@ -301,7 +388,8 @@ const createTransactionFromRecurring = async (recurring, runDate = null) => {
   recurring.generatedCount += 1;
   recurring.nextRunDate = calculateNextRunDate(
     recurring.nextRunDate || transactionDate,
-    recurring.frequency
+    recurring.frequency,
+    recurring.dayOfMonth
   );
 
   if (recurring.endDate && recurring.nextRunDate > recurring.endDate) {
@@ -332,6 +420,14 @@ const runRecurringTransaction = async (req, res) => {
       });
     }
 
+    // Kiểm tra ngày kết thúc trước khi cho phép tạo thủ công
+    const now = new Date();
+    if (recurring.endDate && new Date(recurring.endDate) < now) {
+      return res.status(400).json({
+        message: "Giao dịch định kỳ này đã hết hạn và không thể tạo thêm",
+      });
+    }
+
     const transaction = await createTransactionFromRecurring(recurring);
     const populatedRecurring = await RecurringTransaction.findById(recurring._id)
       .populate("accountId", "name type bankName")
@@ -346,6 +442,51 @@ const runRecurringTransaction = async (req, res) => {
     console.error("Error running recurring transaction:", error);
     res.status(500).json({
       message: "Lỗi khi tạo giao dịch từ mẫu định kỳ",
+      error: error.message,
+    });
+  }
+};
+
+const getGeneratedTransactions = async (req, res) => {
+  try {
+    const recurring = await RecurringTransaction.findOne({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
+
+    if (!recurring) {
+      return res.status(404).json({
+        message: "Không tìm thấy giao dịch định kỳ",
+      });
+    }
+
+    const transactions = await Transaction.find({
+      userId: req.user.id,
+      recurringTransactionId: req.params.id,
+    })
+      .populate("accountId", "name type")
+      .populate("categoryId", "name icon type")
+      .sort({ date: -1, createdAt: -1 })
+      .limit(50);
+
+    res.json({
+      data: transactions.map((transaction) => ({
+        id: transaction._id,
+        createdAt: transaction.createdAt,
+        date: transaction.date,
+        description: transaction.name,
+        note: transaction.note,
+        amount: transaction.amount,
+        type: transaction.type,
+        category: transaction.categoryId,
+        paymentMethod: transaction.accountId,
+        recurringTransactionId: transaction.recurringTransactionId,
+      })),
+    });
+  } catch (error) {
+    console.error("Error getting generated transactions:", error);
+    res.status(500).json({
+      message: "Lỗi khi lấy lịch sử giao dịch đã sinh",
       error: error.message,
     });
   }
@@ -392,5 +533,6 @@ module.exports = {
   updateRecurringTransaction,
   deleteRecurringTransaction,
   runRecurringTransaction,
+  getGeneratedTransactions,
   processDueRecurringTransactions,
 };

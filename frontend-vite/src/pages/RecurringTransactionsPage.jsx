@@ -3,7 +3,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendarCheck,
   faCheck,
+  faCirclePlay,
   faEdit,
+  faHistory,
   faPause,
   faPlay,
   faPlus,
@@ -14,12 +16,14 @@ import Header from "../components/Header/Header";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
 import Button from "../components/Common/Button";
+import ConfirmDialog from "../components/Common/ConfirmDialog";
 import { getAccounts } from "../api/accountsService";
 import { getCategories } from "../api/categoriesService";
 import { getProfile } from "../api/profileService";
 import {
   createRecurringTransaction,
   deleteRecurringTransaction,
+  getGeneratedTransactions,
   getRecurringTransactions,
   processDueRecurringTransactions,
   runRecurringTransaction,
@@ -58,6 +62,13 @@ const formatDate = (date) => {
   return new Date(date).toLocaleDateString("vi-VN");
 };
 
+const parseInputAmount = (value) => value.replace(/\D/g, "");
+
+const formatInputAmount = (value) => {
+  const raw = parseInputAmount(String(value || ""));
+  return raw ? Number(raw).toLocaleString("vi-VN") : "";
+};
+
 const RecurringTransactionsPage = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [accounts, setAccounts] = useState([]);
@@ -70,6 +81,10 @@ const RecurringTransactionsPage = () => {
   const [messageType, setMessageType] = useState("info");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [historyPanel, setHistoryPanel] = useState(null);
+  const [historyLoadingId, setHistoryLoadingId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
 
   const userName = userProfile?.fullname || "Bạn";
   const userAvatar = userProfile?.avatar || null;
@@ -103,6 +118,25 @@ const RecurringTransactionsPage = () => {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  useEffect(() => {
+    if (statusFilter !== "due") return undefined;
+
+    const intervalId = window.setInterval(() => {
+      loadData();
+    }, 60000);
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) loadData();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [loadData, statusFilter]);
 
   const filteredCategories = useMemo(
     () => categories.filter((category) => category.type === formData.type),
@@ -197,23 +231,32 @@ const RecurringTransactionsPage = () => {
     setMessage("");
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Bạn có chắc muốn xóa giao dịch định kỳ này không?")) {
-      return;
-    }
+  const handleRequestDelete = (item) => {
+    setDeleteTarget(item);
+    setDeleteError("");
+  };
 
+  const handleCloseDeleteDialog = () => {
+    if (isSaving) return;
+    setDeleteTarget(null);
+    setDeleteError("");
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget?._id) return;
     setIsSaving(true);
     setMessage("");
+    setDeleteError("");
 
     try {
-      await deleteRecurringTransaction(id);
+      await deleteRecurringTransaction(deleteTarget._id);
       setMessage("Đã xóa giao dịch định kỳ.");
       setMessageType("success");
+      setDeleteTarget(null);
       await loadData();
     } catch (error) {
       console.error("Error deleting recurring transaction:", error);
-      setMessage("Không thể xóa giao dịch định kỳ.");
-      setMessageType("error");
+      setDeleteError("Không thể xóa giao dịch định kỳ.");
     } finally {
       setIsSaving(false);
     }
@@ -274,6 +317,26 @@ const RecurringTransactionsPage = () => {
       setMessageType("error");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleViewHistory = async (item) => {
+    setHistoryLoadingId(item._id);
+    setMessage("");
+
+    try {
+      const response = await getGeneratedTransactions(item._id);
+      setHistoryPanel({
+        recurringName: item.name,
+        generatedCount: item.generatedCount || 0,
+        transactions: response.data || [],
+      });
+    } catch (error) {
+      console.error("Error loading generated transactions:", error);
+      setMessage("Không thể tải lịch sử giao dịch đã sinh.");
+      setMessageType("error");
+    } finally {
+      setHistoryLoadingId(null);
     }
   };
 
@@ -357,11 +420,13 @@ const RecurringTransactionsPage = () => {
               <label>
                 Số tiền
                 <input
-                  type="number"
-                  min="1"
-                  value={formData.amount}
-                  onChange={(event) => handleInputChange("amount", event.target.value)}
-                  placeholder="VD: 2500000"
+                  type="text"
+                  inputMode="numeric"
+                  value={formatInputAmount(formData.amount)}
+                  onChange={(event) =>
+                    handleInputChange("amount", parseInputAmount(event.target.value))
+                  }
+                  placeholder="VD: 2.500.000"
                 />
               </label>
             </div>
@@ -578,16 +643,27 @@ const RecurringTransactionsPage = () => {
                       {!item.isActive && (
                         <span className={styles.pausedBadge}>Tạm dừng</span>
                       )}
+                      <span className={styles.countBadge}>
+                        Đã tạo {item.generatedCount || 0} lần
+                      </span>
                     </div>
 
                     <div className={styles.cardActions}>
+                      <button
+                        type="button"
+                        onClick={() => handleViewHistory(item)}
+                        disabled={historyLoadingId === item._id}
+                        title="Xem lịch sử đã tạo"
+                      >
+                        <FontAwesomeIcon icon={faHistory} />
+                      </button>
                       <button
                         type="button"
                         onClick={() => handleRunNow(item._id)}
                         disabled={isSaving || !item.isActive}
                         title="Tạo giao dịch ngay"
                       >
-                        <FontAwesomeIcon icon={faPlay} />
+                        <FontAwesomeIcon icon={faCirclePlay} />
                       </button>
                       <button
                         type="button"
@@ -607,7 +683,7 @@ const RecurringTransactionsPage = () => {
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleDelete(item._id)}
+                        onClick={() => handleRequestDelete(item)}
                         disabled={isSaving}
                         title="Xóa"
                       >
@@ -618,9 +694,73 @@ const RecurringTransactionsPage = () => {
                 ))}
               </div>
             )}
+
+            {historyPanel && (
+              <div className={styles.historyPanel}>
+                <div className={styles.historyHeader}>
+                  <div>
+                    <h3>Lịch sử đã tạo</h3>
+                    <p>
+                      {historyPanel.recurringName} · đã tạo{" "}
+                      {historyPanel.generatedCount} lần
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className={styles.secondaryButton}
+                    onClick={() => setHistoryPanel(null)}
+                  >
+                    Đóng
+                  </button>
+                </div>
+
+                {historyPanel.transactions.length === 0 ? (
+                  <div className={styles.emptyState}>
+                    Mẫu này chưa sinh giao dịch nào.
+                  </div>
+                ) : (
+                  <div className={styles.historyList}>
+                    {historyPanel.transactions.map((transaction) => (
+                      <div key={transaction.id} className={styles.historyItem}>
+                        <div>
+                          <strong>{transaction.description}</strong>
+                          <span>
+                            {formatDate(transaction.date)} ·{" "}
+                            {transaction.category?.name || "Danh mục"} ·{" "}
+                            {transaction.paymentMethod?.name || "Tài khoản"}
+                          </span>
+                        </div>
+                        <strong
+                          className={
+                            transaction.type === "THUNHAP"
+                              ? styles.income
+                              : styles.expense
+                          }
+                        >
+                          {formatCurrency(transaction.amount)}
+                        </strong>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </section>
         </section>
       </main>
+
+      <ConfirmDialog
+        isOpen={Boolean(deleteTarget)}
+        onClose={handleCloseDeleteDialog}
+        onConfirm={handleConfirmDelete}
+        title="Xóa giao dịch định kỳ"
+        message={`Bạn có chắc muốn xóa mẫu "${
+          deleteTarget?.name || "giao dịch định kỳ"
+        }" không?`}
+        confirmText="Xóa"
+        isProcessing={isSaving}
+        errorMessage={deleteError}
+      />
 
       <Footer />
     </div>

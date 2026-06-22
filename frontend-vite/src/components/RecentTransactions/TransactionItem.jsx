@@ -3,7 +3,7 @@ import React, { forwardRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./RecentTransactions.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faRedoAlt, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { getIconObject } from "../../utils/iconMap";
 
 // Hàm chỉ định dạng ngày (VD: 17/06/2025)
@@ -47,6 +47,7 @@ const TransactionItem = forwardRef(
       amount,
       type,
       createdAt,
+      recurringTransactionId,
     } = transaction;
 
     const handleEdit = () => onEditRequest(transaction);
@@ -109,7 +110,15 @@ const TransactionItem = forwardRef(
           </span>
         </td>
         <td data-label="Mô tả" className={styles.descriptionCell}>
-          {description || "-"}
+          <div className={styles.descriptionContent}>
+            <span>{description || "-"}</span>
+            {recurringTransactionId && (
+              <span className={styles.recurringBadge} title="Giao dịch được tạo từ mẫu định kỳ">
+                <FontAwesomeIcon icon={faRedoAlt} />
+                Định kỳ
+              </span>
+            )}
+          </div>
         </td>
         <td data-label="Phương thức TT">
           <span
