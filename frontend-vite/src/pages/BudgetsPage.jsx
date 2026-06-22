@@ -8,6 +8,7 @@ import {
   faPiggyBank,
   faPlus,
   faTrash,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Header from "../components/Header/Header";
@@ -47,6 +48,19 @@ const getNextPeriod = () => {
 
 const formatCurrency = (amount) =>
   `${Math.round(amount || 0).toLocaleString("vi-VN")} đ`;
+
+// Format số tiền để hiển thị trong input (có dấu chấm phân cách)
+const formatInputAmount = (value) => {
+  if (!value && value !== 0) return "";
+  const num = String(value).replace(/\D/g, "");
+  if (!num) return "";
+  return Number(num).toLocaleString("vi-VN");
+};
+
+// Parse số tiền từ input (bỏ dấu chấm)
+const parseInputAmount = (value) => {
+  return String(value).replace(/[^\d]/g, "");
+};
 
 const getStatusText = (status) => {
   if (status === "exceeded") return "Vượt ngân sách";
@@ -212,6 +226,7 @@ const BudgetsPage = () => {
     setEditingBudget({
       id: budget._id,
       categoryName: budget.categoryId?.name || "Danh mục",
+      categoryIcon: budget.categoryId?.icon || null,
       amount: budget.amount || "",
       threshold: budget.threshold || 80,
     });
@@ -393,16 +408,18 @@ const BudgetsPage = () => {
             <label>
               Số tiền ngân sách
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
                 min="1"
-                value={formData.amount}
-                placeholder="VD: 3000000"
-                onChange={(event) =>
+                value={formatInputAmount(formData.amount)}
+                placeholder="VD: 3.000.000"
+                onChange={(event) => {
+                  const raw = parseInputAmount(event.target.value);
                   setFormData((prev) => ({
                     ...prev,
-                    amount: event.target.value,
-                  }))
-                }
+                    amount: raw,
+                  }));
+                }}
               />
             </label>
 
@@ -434,7 +451,7 @@ const BudgetsPage = () => {
           <div className={styles.aiPanel}>
             <div className={styles.sectionHeader}>
               <div>
-                <h2>AI đề xuất tháng tới</h2>
+                <h2>Đề xuất ngân sách tháng tới</h2>
                 <p>Dựa trên 3 tháng gần nhất và danh mục chi tiêu thực tế.</p>
               </div>
               <FontAwesomeIcon icon={faMagic} />
@@ -493,21 +510,23 @@ const BudgetsPage = () => {
                   <h2>Sửa ngân sách</h2>
                   <p>{editingBudget.categoryName}</p>
                 </div>
-                <FontAwesomeIcon icon={faEdit} />
+                <FontAwesomeIcon icon={getIconObject(editingBudget.categoryIcon)} />
               </div>
 
               <label>
                 Số tiền ngân sách
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   min="1"
-                  value={editingBudget.amount}
-                  onChange={(event) =>
+                  value={formatInputAmount(editingBudget.amount)}
+                  onChange={(event) => {
+                    const raw = parseInputAmount(event.target.value);
                     setEditingBudget((prev) => ({
                       ...prev,
-                      amount: event.target.value,
-                    }))
-                  }
+                      amount: raw,
+                    }));
+                  }}
                 />
               </label>
 
@@ -534,6 +553,7 @@ const BudgetsPage = () => {
                   onClick={handleCloseEditBudget}
                   disabled={isSaving}
                 >
+                  <FontAwesomeIcon icon={faXmark} style={{ marginRight: 6 }} />
                   Hủy
                 </button>
                 <button
@@ -593,9 +613,8 @@ const BudgetsPage = () => {
                     </div>
                     <div className={styles.progressTrack}>
                       <div
-                        className={`${styles.progressFill} ${
-                          styles[budget.status] || ""
-                        }`}
+                        className={`${styles.progressFill} ${styles[budget.status] || ""
+                          }`}
                         style={{
                           width: `${Math.min(
                             budget.usedPercentage || 0,

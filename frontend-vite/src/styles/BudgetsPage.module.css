@@ -60,7 +60,7 @@
 .editButton,
 .deleteButton {
   border: none;
-  font-family: inherit;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .periodButton {
@@ -316,10 +316,11 @@
 
 .editDialog {
   width: min(440px, 100%);
-  padding: 20px;
-  border-radius: 8px;
+  padding: 24px;
+  border-radius: 16px;
   background: #ffffff;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .editDialog label {
@@ -357,11 +358,14 @@
 .primaryButton,
 .secondaryButton {
   min-height: 40px;
-  padding: 0 14px;
+  padding: 0 18px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 800;
+  font-weight: 700;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
 .primaryButton {
@@ -369,9 +373,19 @@
   color: #ffffff;
 }
 
+.primaryButton:hover {
+  background: #4338ca;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+}
+
 .secondaryButton {
   background: #f1f5f9;
   color: #334155;
+}
+
+.secondaryButton:hover {
+  background: #e2e8f0;
 }
 
 .primaryButton:disabled,
@@ -513,15 +527,36 @@
   justify-content: center;
   width: 38px;
   height: 38px;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #fee2e2;
   color: #dc2626;
   cursor: pointer;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease, background 0.18s ease;
+  font-size: 15px;
 }
 
 .editButton {
   background: #e0f2fe;
   color: #0369a1;
+}
+
+.editButton:hover {
+  background: #0369a1;
+  color: #ffffff;
+  transform: scale(1.15);
+  box-shadow: 0 4px 14px rgba(3, 105, 161, 0.35);
+}
+
+.deleteButton:hover {
+  background: #dc2626;
+  color: #ffffff;
+  transform: scale(1.15);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+}
+
+.editButton:active,
+.deleteButton:active {
+  transform: scale(0.95);
 }
 
 .editButton:disabled,

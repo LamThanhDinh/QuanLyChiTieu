@@ -72,7 +72,7 @@ body {
   margin: 0; /* Reset margin mặc định của trình duyệt */
   padding: 0; /* Reset padding mặc định của trình duyệt */
 
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
