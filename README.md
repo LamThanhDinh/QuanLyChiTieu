@@ -339,7 +339,3 @@ http://localhost:5000/api-docs
 - Cần cấu hình `GEMINI_API_KEY` để dùng đầy đủ tính năng AI.
 - Cần cấu hình Brevo API key và email gửi đã xác thực để dùng chức năng quên mật khẩu.
 - Với Render Free, backend có thể sleep khi không hoạt động nên request đầu tiên có thể chậm hơn.
-
-## Giấy phép
-
-Dự án này là một phần của đồ án tốt nghiệp, phục vụ mục đích học tập và nghiên cứu.
