@@ -545,6 +545,15 @@ const BudgetsPage = () => {
                   <p>Đặt giới hạn chi cho một danh mục trong tháng đang xem.</p>
                 </div>
                 <FontAwesomeIcon icon={faPlus} />
+                <button
+                  type="button"
+                  className={styles.modalCloseButton}
+                  onClick={handleCloseAddBudget}
+                  disabled={isSaving}
+                  aria-label="Đóng"
+                >
+                  ×
+                </button>
               </div>
 
               <label>
@@ -631,6 +640,15 @@ const BudgetsPage = () => {
                   <p>{editingBudget.categoryName}</p>
                 </div>
                 <FontAwesomeIcon icon={getIconObject(editingBudget.categoryIcon)} />
+                <button
+                  type="button"
+                  className={styles.modalCloseButton}
+                  onClick={handleCloseEditBudget}
+                  disabled={isSaving}
+                  aria-label="Đóng"
+                >
+                  ×
+                </button>
               </div>
 
               <label>

@@ -453,6 +453,15 @@ const RecurringTransactionsPage = () => {
                 <p>Mẫu này sẽ dùng để tạo giao dịch thật khi đến ngày.</p>
               </div>
               <FontAwesomeIcon icon={editingId ? faEdit : faPlus} />
+              <button
+                type="button"
+                className={styles.modalCloseButton}
+                onClick={handleCloseFormModal}
+                disabled={isSaving}
+                aria-label="Đóng"
+              >
+                ×
+              </button>
             </div>
 
             <label>
