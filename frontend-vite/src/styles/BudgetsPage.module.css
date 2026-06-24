@@ -312,64 +312,152 @@
 .editOverlay {
   position: fixed;
   inset: 0;
-  z-index: 1200;
+  z-index: 1050;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 18px;
-  background: rgba(15, 23, 42, 0.48);
-  backdrop-filter: blur(6px);
+  padding: 1rem;
+  background-color: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(4px);
+  animation: fadeInOverlay 0.2s ease-out;
 }
 
 .editDialog {
-  width: min(440px, 100%);
-  padding: 24px;
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+  width: min(510px, 100%);
+  max-height: 90vh;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: var(--color-background, #ffffff);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  transform: scale(0.95);
+  opacity: 0;
+  animation: scaleInModal 0.3s ease-out forwards;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleInModal {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.editDialog .sectionHeader {
+  align-items: center;
+  margin: 0;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 0.75rem 0.75rem 0 0;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.editDialog .sectionHeader h2 {
+  color: #ffffff;
+  font-size: 1.25rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.editDialog .sectionHeader p {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.editDialog .sectionHeader > svg {
+  color: #ffffff;
+  font-size: 1.75rem;
+  animation: bounceIn 0.6s ease-out;
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .editDialog label {
   display: flex;
   flex-direction: column;
   gap: 7px;
-  margin-bottom: 14px;
+  margin: 0 2rem 1.5rem;
   color: #334155;
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
 }
 
 .editDialog input,
 .editDialog select {
-  min-height: 42px;
-  padding: 0 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  display: block;
+  width: 100%;
+  min-height: 50px;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
   color: #0f172a;
-  font-size: 14px;
+  background: #ffffff;
+  font-size: 1rem;
+  font-weight: 500;
   outline: none;
+  transition: all 0.3s ease;
+}
+
+.editDialog label:first-of-type {
+  margin-top: 2rem;
 }
 
 .editDialog input:focus,
 .editDialog select:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  transform: translateY(-1px);
 }
 
 .editActions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 18px;
+  gap: 1rem;
+  margin-top: 0;
+  padding: 1.5rem 2rem;
+  background: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+  border-radius: 0 0 0.75rem 0.75rem;
+  flex-shrink: 0;
 }
 
 .primaryButton,
 .secondaryButton {
-  min-height: 40px;
-  padding: 0 18px;
-  border: none;
-  border-radius: 8px;
+  min-height: 44px;
+  padding: 0 1.5rem;
+  border: 2px solid transparent;
+  border-radius: 0.75rem;
   cursor: pointer;
   font-weight: 700;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -378,23 +466,26 @@
 }
 
 .primaryButton {
-  background: #4f46e5;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #ffffff;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 .primaryButton:hover {
-  background: #4338ca;
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
 }
 
 .secondaryButton {
-  background: #f1f5f9;
-  color: #334155;
+  background: #ffffff;
+  color: #64748b;
+  border-color: #e5e7eb;
 }
 
 .secondaryButton:hover {
-  background: #e2e8f0;
+  background: #f1f5f9;
+  color: #0f172a;
 }
 
 .primaryButton:disabled,
