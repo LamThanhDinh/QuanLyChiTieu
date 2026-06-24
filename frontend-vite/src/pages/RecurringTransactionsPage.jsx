@@ -214,6 +214,7 @@ const RecurringTransactionsPage = () => {
     formData.amount,
     formData.accountId,
     formData.categoryId,
+    formData.frequency,
     formData.nextRunDate,
   ].filter(Boolean).length;
 
@@ -895,7 +896,7 @@ const RecurringTransactionsPage = () => {
       {isFormModalOpen && (
         <div className={styles.formOverlay} role="dialog" aria-modal="true">
           <form className={styles.modalFormPanel} onSubmit={handleSubmit}>
-            <div className={styles.sectionHeader}>
+              <div className={styles.sectionHeader}>
               <div>
                 <h2>{editingId ? "Sửa mẫu định kỳ" : "Tạo mẫu định kỳ"}</h2>
                 <p>Mẫu này sẽ dùng để tạo giao dịch thật khi đến ngày.</p>
@@ -919,7 +920,7 @@ const RecurringTransactionsPage = () => {
               <div className={styles.modalProgressBar}>
                 <div
                   className={styles.modalProgressFill}
-                  style={{ width: `${Math.min(100, (requiredFieldsCompleted / 5) * 100)}%` }}
+                  style={{ width: `${Math.min(100, (requiredFieldsCompleted / 6) * 100)}%` }}
                 />
               </div>
               <span className={styles.modalProgressText}>
@@ -929,7 +930,7 @@ const RecurringTransactionsPage = () => {
                     Sẵn sàng để lưu
                   </>
                 ) : (
-                  `Hoàn thành ${requiredFieldsCompleted}/5 trường`
+                  `Hoàn thành ${requiredFieldsCompleted}/6 trường`
                 )}
               </span>
             </div>
