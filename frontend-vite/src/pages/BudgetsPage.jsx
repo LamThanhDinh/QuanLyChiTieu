@@ -79,6 +79,7 @@ const BudgetsPage = () => {
   const [isSuggesting, setIsSuggesting] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("info");
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState(null);
   const [formData, setFormData] = useState({
     categoryId: "",
@@ -168,7 +169,15 @@ const BudgetsPage = () => {
   const handleOpenAddBudget = () => {
     setEditingBudget(null);
     setFormData({ categoryId: "", amount: "", threshold: 80 });
-    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setMessage("");
+    setMessageType("info");
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCloseAddBudget = () => {
+    if (isSaving) return;
+    setIsCreateModalOpen(false);
+    setFormData({ categoryId: "", amount: "", threshold: 80 });
   };
 
   const handlePeriodChange = (direction) => {
@@ -197,6 +206,7 @@ const BudgetsPage = () => {
         year: period.year,
       });
       setFormData({ categoryId: "", amount: "", threshold: 80 });
+      setIsCreateModalOpen(false);
       await fetchBudgets();
       setMessage("Đã lưu ngân sách.");
       setMessageType("success");
@@ -523,6 +533,92 @@ const BudgetsPage = () => {
         {message && (
           <div className={`${styles.message} ${styles[messageType]}`}>
             {message}
+          </div>
+        )}
+
+        {isCreateModalOpen && (
+          <div className={styles.editOverlay} role="dialog" aria-modal="true">
+            <form className={styles.editDialog} onSubmit={handleCreateBudget}>
+              <div className={styles.sectionHeader}>
+                <div>
+                  <h2>Thêm ngân sách</h2>
+                  <p>Đặt giới hạn chi cho một danh mục trong tháng đang xem.</p>
+                </div>
+                <FontAwesomeIcon icon={faPlus} />
+              </div>
+
+              <label>
+                Danh mục
+                <select
+                  value={formData.categoryId}
+                  onChange={(event) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      categoryId: event.target.value,
+                    }))
+                  }
+                >
+                  <option value="">Chọn danh mục chi tiêu</option>
+                  {availableCategories.map((category) => (
+                    <option key={category._id} value={category._id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
+                Số tiền ngân sách
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={formatInputAmount(formData.amount)}
+                  placeholder="VD: 3.000.000"
+                  onChange={(event) => {
+                    const raw = parseInputAmount(event.target.value);
+                    setFormData((prev) => ({
+                      ...prev,
+                      amount: raw,
+                    }));
+                  }}
+                />
+              </label>
+
+              <label>
+                Ngưỡng cảnh báo (%)
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  value={formData.threshold}
+                  onChange={(event) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      threshold: event.target.value,
+                    }))
+                  }
+                />
+              </label>
+
+              <div className={styles.editActions}>
+                <button
+                  type="button"
+                  className={styles.secondaryButton}
+                  onClick={handleCloseAddBudget}
+                  disabled={isSaving}
+                >
+                  <FontAwesomeIcon icon={faTimes} style={{ marginRight: 6 }} />
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className={styles.primaryButton}
+                  disabled={isSaving || !formData.categoryId || !formData.amount}
+                >
+                  Lưu ngân sách
+                </button>
+              </div>
+            </form>
           </div>
         )}
 

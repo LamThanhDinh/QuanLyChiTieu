@@ -95,6 +95,7 @@ const RecurringTransactionsPage = () => {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleteError, setDeleteError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const formRef = useRef(null);
 
   const userName = userProfile?.fullname || "Bạn";
@@ -211,7 +212,15 @@ const RecurringTransactionsPage = () => {
 
   const handleOpenAddRecurring = () => {
     resetForm();
-    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setMessage("");
+    setMessageType("info");
+    setIsFormModalOpen(true);
+  };
+
+  const handleCloseFormModal = () => {
+    if (isSaving) return;
+    resetForm();
+    setIsFormModalOpen(false);
   };
 
   const handleSubmit = async (event) => {
@@ -236,6 +245,7 @@ const RecurringTransactionsPage = () => {
 
       setMessageType("success");
       resetForm();
+      setIsFormModalOpen(false);
       await loadData();
     } catch (error) {
       console.error("Error saving recurring transaction:", error);
@@ -266,6 +276,7 @@ const RecurringTransactionsPage = () => {
       isActive: Boolean(item.isActive),
     });
     setMessage("");
+    setIsFormModalOpen(true);
   };
 
   const handleRequestDelete = (item) => {
@@ -831,6 +842,177 @@ const RecurringTransactionsPage = () => {
           </section>
         </section>
       </main>
+
+      {isFormModalOpen && (
+        <div className={styles.formOverlay} role="dialog" aria-modal="true">
+          <form className={styles.modalFormPanel} onSubmit={handleSubmit}>
+            <div className={styles.sectionHeader}>
+              <div>
+                <h2>{editingId ? "Sửa mẫu định kỳ" : "Tạo mẫu định kỳ"}</h2>
+                <p>Mẫu này sẽ dùng để tạo giao dịch thật khi đến ngày.</p>
+              </div>
+              <FontAwesomeIcon icon={editingId ? faEdit : faPlus} />
+            </div>
+
+            <label>
+              Tên giao dịch
+              <input
+                value={formData.name}
+                onChange={(event) => handleInputChange("name", event.target.value)}
+                placeholder="VD: Tiền nhà"
+              />
+            </label>
+
+            <div className={styles.inlineFields}>
+              <label>
+                Loại
+                <select
+                  value={formData.type}
+                  onChange={(event) => handleInputChange("type", event.target.value)}
+                >
+                  <option value="CHITIEU">Chi tiêu</option>
+                  <option value="THUNHAP">Thu nhập</option>
+                </select>
+              </label>
+
+              <label>
+                Số tiền
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={formatInputAmount(formData.amount)}
+                  onChange={(event) =>
+                    handleInputChange("amount", parseInputAmount(event.target.value))
+                  }
+                  placeholder="VD: 2.500.000"
+                />
+              </label>
+            </div>
+
+            <label>
+              Tài khoản
+              <select
+                value={formData.accountId}
+                onChange={(event) => handleInputChange("accountId", event.target.value)}
+              >
+                <option value="">Chọn tài khoản</option>
+                {accounts.map((account) => (
+                  <option key={account._id || account.id} value={account._id || account.id}>
+                    {account.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label>
+              Danh mục
+              <select
+                value={formData.categoryId}
+                onChange={(event) => handleInputChange("categoryId", event.target.value)}
+              >
+                <option value="">Chọn danh mục</option>
+                {filteredCategories.map((category) => (
+                  <option key={category._id} value={category._id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <div className={styles.inlineFields}>
+              <label>
+                Chu kỳ
+                <select
+                  value={formData.frequency}
+                  onChange={(event) => handleInputChange("frequency", event.target.value)}
+                >
+                  <option value="daily">Hằng ngày</option>
+                  <option value="weekly">Hằng tuần</option>
+                  <option value="monthly">Hằng tháng</option>
+                  <option value="yearly">Hằng năm</option>
+                </select>
+              </label>
+
+              <label>
+                Ngày chạy tiếp theo
+                <input
+                  type="date"
+                  value={formData.nextRunDate}
+                  onChange={(event) =>
+                    handleInputChange("nextRunDate", event.target.value)
+                  }
+                />
+              </label>
+            </div>
+
+            <label>
+              Ngày kết thúc
+              <input
+                type="date"
+                value={formData.endDate}
+                onChange={(event) => handleInputChange("endDate", event.target.value)}
+              />
+            </label>
+
+            <label>
+              Ghi chú
+              <textarea
+                value={formData.note}
+                onChange={(event) => handleInputChange("note", event.target.value)}
+                placeholder="VD: Thanh toán đầu tháng"
+              />
+            </label>
+
+            <div className={styles.checkboxRow}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={formData.autoCreate}
+                  onChange={(event) =>
+                    handleInputChange("autoCreate", event.target.checked)
+                  }
+                />
+                Tự động tạo khi xử lý khoản đến hạn
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={formData.isActive}
+                  onChange={(event) =>
+                    handleInputChange("isActive", event.target.checked)
+                  }
+                />
+                Đang hoạt động
+              </label>
+            </div>
+
+            <div className={styles.formActions}>
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={handleCloseFormModal}
+                disabled={isSaving}
+              >
+                Hủy
+              </button>
+              <Button
+                type="submit"
+                icon={<FontAwesomeIcon icon={faCheck} />}
+                disabled={
+                  isSaving ||
+                  !formData.name ||
+                  !formData.amount ||
+                  !formData.accountId ||
+                  !formData.categoryId ||
+                  !formData.nextRunDate
+                }
+              >
+                {editingId ? "Lưu thay đổi" : "Tạo định kỳ"}
+              </Button>
+            </div>
+          </form>
+        </div>
+      )}
 
       <ConfirmDialog
         isOpen={Boolean(deleteTarget)}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./NotificationDropdown.module.css";
 import { getAllNotifications } from "../../api/notificationService";
@@ -58,20 +58,21 @@ const NotificationDropdown = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleNotificationClick = (notification) => {
-    if (notification.goalId) {
+  const navigateByNotification = (notification) => {
+    if (notification?.goalId) {
       navigate("/goals");
-      onClose();
     } else if (
-      notification.type === "budget_warning" ||
-      notification.type === "budget_exceeded"
+      notification?.type === "budget_warning" ||
+      notification?.type === "budget_exceeded"
     ) {
       navigate("/budgets");
-      onClose();
-    } else if (notification.type === "spending_limit") {
+    } else if (notification?.type === "spending_limit") {
       navigate("/transactions");
-      onClose();
+    } else {
+      navigate("/goals");
     }
+
+    onClose();
   };
 
   const formatTimeAgo = (date) => {
@@ -81,8 +82,9 @@ const NotificationDropdown = ({ isOpen, onClose }) => {
 
     if (diffInMinutes < 1) return "Vừa xong";
     if (diffInMinutes < 60) return `${diffInMinutes} phút trước`;
-    if (diffInMinutes < 1440)
+    if (diffInMinutes < 1440) {
       return `${Math.floor(diffInMinutes / 60)} giờ trước`;
+    }
     return `${Math.floor(diffInMinutes / 1440)} ngày trước`;
   };
 
@@ -137,7 +139,7 @@ const NotificationDropdown = ({ isOpen, onClose }) => {
               <div
                 key={notification.id}
                 className={`${styles.notificationItem} ${styles[notification.priority]}`}
-                onClick={() => handleNotificationClick(notification)}
+                onClick={() => navigateByNotification(notification)}
               >
                 <div className={styles.notificationIcon}>
                   <span className={styles.typeIcon}>
@@ -173,12 +175,9 @@ const NotificationDropdown = ({ isOpen, onClose }) => {
         <div className={styles.footer}>
           <button
             className={styles.viewAllButton}
-            onClick={() => {
-              navigate("/goals");
-              onClose();
-            }}
+            onClick={() => navigateByNotification(notifications[0])}
           >
-            Xem tất cả mục tiêu
+            Mở trang liên quan
           </button>
         </div>
       )}

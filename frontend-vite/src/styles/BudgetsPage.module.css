@@ -126,7 +126,7 @@
 
 .toolsGrid {
   display: grid;
-  grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.1fr);
+  grid-template-columns: 1fr;
   gap: 18px;
   margin-top: 18px;
 }
@@ -169,7 +169,7 @@
 }
 
 .budgetForm {
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 14px;
 }
@@ -340,7 +340,8 @@
   font-weight: 800;
 }
 
-.editDialog input {
+.editDialog input,
+.editDialog select {
   min-height: 42px;
   padding: 0 12px;
   border: 1px solid #cbd5e1;
@@ -350,7 +351,8 @@
   outline: none;
 }
 
-.editDialog input:focus {
+.editDialog input:focus,
+.editDialog select:focus {
   border-color: #6366f1;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
