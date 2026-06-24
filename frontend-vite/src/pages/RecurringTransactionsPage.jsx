@@ -13,6 +13,7 @@ import {
   faPlus,
   faRedoAlt,
   faTrash,
+  faBolt,
 } from "@fortawesome/free-solid-svg-icons";
 import Header from "../components/Header/Header";
 import Navbar from "../components/Navbar/Navbar";
@@ -70,6 +71,8 @@ const formatInputAmount = (value) => {
   const raw = parseInputAmount(String(value || ""));
   return raw ? Number(raw).toLocaleString("vi-VN") : "";
 };
+
+const AMOUNT_SUGGESTIONS = [10000, 20000, 50000, 100000, 200000, 500000, 1000000];
 
 const isRecurringExpired = (item) => {
   if (!item) return false;
@@ -462,6 +465,7 @@ const RecurringTransactionsPage = () => {
               onClick={handleProcessDue}
               disabled={isSaving}
             >
+              <FontAwesomeIcon icon={faBolt} />
               Xử lý khoản đến hạn
             </button>
           </div>
@@ -909,6 +913,40 @@ const RecurringTransactionsPage = () => {
             </div>
 
             <div className={styles.modalFormBody}>
+
+            {/* Loại giao dịch - radio buttons giống AddEditTransactionModal */}
+            <div className={styles.modalTypeGroup}>
+              <span className={styles.modalTypeLabel}>Loại giao dịch</span>
+              <div className={styles.modalRadioGroup}>
+                <label>
+                  <input
+                    className={styles.modalRadioInput}
+                    type="radio"
+                    value="CHITIEU"
+                    checked={formData.type === "CHITIEU"}
+                    onChange={(e) => handleInputChange("type", e.target.value)}
+                  />
+                  <span className={`${styles.modalRadioLabel} ${styles.modalExpense} ${formData.type === "CHITIEU" ? styles.modalExpenseActive : ""}`}>
+                    <FontAwesomeIcon icon={faArrowDown} />
+                    Chi tiêu
+                  </span>
+                </label>
+                <label>
+                  <input
+                    className={styles.modalRadioInput}
+                    type="radio"
+                    value="THUNHAP"
+                    checked={formData.type === "THUNHAP"}
+                    onChange={(e) => handleInputChange("type", e.target.value)}
+                  />
+                  <span className={`${styles.modalRadioLabel} ${styles.modalIncome} ${formData.type === "THUNHAP" ? styles.modalIncomeActive : ""}`}>
+                    <FontAwesomeIcon icon={faArrowUp} />
+                    Thu nhập
+                  </span>
+                </label>
+              </div>
+            </div>
+
             <label>
               Tên giao dịch
               <input
@@ -918,30 +956,36 @@ const RecurringTransactionsPage = () => {
               />
             </label>
 
-            <div className={styles.inlineFields}>
-              <label>
-                Loại
-                <select
-                  value={formData.type}
-                  onChange={(event) => handleInputChange("type", event.target.value)}
-                >
-                  <option value="CHITIEU">Chi tiêu</option>
-                  <option value="THUNHAP">Thu nhập</option>
-                </select>
-              </label>
-
-              <label>
-                Số tiền
+            {/* Số tiền - giống AddEditTransactionModal */}
+            <div className={styles.modalAmountGroup}>
+              <span className={styles.modalTypeLabel}>Số tiền <span className={styles.modalRequiredStar}>*</span></span>
+              <div className={styles.modalAmountWrapper}>
                 <input
                   type="text"
                   inputMode="numeric"
+                  className={styles.modalAmountInput}
                   value={formatInputAmount(formData.amount)}
                   onChange={(event) =>
                     handleInputChange("amount", parseInputAmount(event.target.value))
                   }
-                  placeholder="VD: 2.500.000"
+                  placeholder="0"
                 />
-              </label>
+                <span className={styles.modalCurrencySymbol}>đ</span>
+              </div>
+              {!formData.amount && (
+                <div className={styles.modalAmountSuggestions}>
+                  {AMOUNT_SUGGESTIONS.map((val) => (
+                    <button
+                      key={val}
+                      type="button"
+                      className={styles.modalAmountChip}
+                      onClick={() => handleInputChange("amount", String(val))}
+                    >
+                      {val.toLocaleString("vi-VN")}đ
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <label>
