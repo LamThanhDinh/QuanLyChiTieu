@@ -567,7 +567,7 @@ const BudgetsPage = () => {
                   <h2>Thêm ngân sách</h2>
                   <p>Đặt giới hạn chi cho một danh mục trong tháng đang xem.</p>
                 </div>
-                <FontAwesomeIcon icon={faPlus} />
+                <FontAwesomeIcon icon={faPiggyBank} />
                 <button
                   type="button"
                   className={styles.modalCloseButton}

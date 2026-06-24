@@ -4,6 +4,8 @@ import {
   faCalendarCheck,
   faCheck,
   faCirclePlay,
+  faArrowDown,
+  faArrowUp,
   faEdit,
   faHistory,
   faPause,
@@ -203,6 +205,14 @@ const RecurringTransactionsPage = () => {
     Boolean(formData.accountId) &&
     Boolean(formData.categoryId) &&
     Boolean(formData.nextRunDate);
+
+  const requiredFieldsCompleted = [
+    formData.name,
+    formData.amount,
+    formData.accountId,
+    formData.categoryId,
+    formData.nextRunDate,
+  ].filter(Boolean).length;
 
   useEffect(() => {
     if (!isFormModalOpen) return undefined;
@@ -483,7 +493,7 @@ const RecurringTransactionsPage = () => {
                 <h2>{editingId ? "Sửa mẫu định kỳ" : "Tạo mẫu định kỳ"}</h2>
                 <p>Mẫu này sẽ dùng để tạo giao dịch thật khi đến ngày.</p>
               </div>
-              <FontAwesomeIcon icon={editingId ? faEdit : faPlus} />
+              <FontAwesomeIcon icon={editingId ? faEdit : faRedoAlt} />
               <button
                 type="button"
                 className={styles.modalCloseButton}
@@ -886,9 +896,19 @@ const RecurringTransactionsPage = () => {
                 <h2>{editingId ? "Sửa mẫu định kỳ" : "Tạo mẫu định kỳ"}</h2>
                 <p>Mẫu này sẽ dùng để tạo giao dịch thật khi đến ngày.</p>
               </div>
-              <FontAwesomeIcon icon={editingId ? faEdit : faPlus} />
+              <FontAwesomeIcon icon={editingId ? faEdit : faRedoAlt} />
+              <button
+                type="button"
+                className={styles.modalCloseButton}
+                onClick={handleCloseFormModal}
+                disabled={isSaving}
+                aria-label="Đóng"
+              >
+                ×
+              </button>
             </div>
 
+            <div className={styles.modalFormBody}>
             <label>
               Tên giao dịch
               <input
@@ -1019,6 +1039,8 @@ const RecurringTransactionsPage = () => {
                 />
                 Đang hoạt động
               </label>
+            </div>
+
             </div>
 
             <div className={styles.formActions}>
