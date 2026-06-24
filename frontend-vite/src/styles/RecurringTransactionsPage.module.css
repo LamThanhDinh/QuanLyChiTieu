@@ -57,6 +57,20 @@
   font-family: inherit;
 }
 
+.heroActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.addButton {
+  min-height: 42px;
+  white-space: nowrap;
+}
+
 .processButton {
   min-height: 42px;
   padding: 0 16px;
@@ -596,6 +610,15 @@
     flex-direction: column;
     align-items: stretch;
     padding: 16px;
+  }
+
+  .heroActions {
+    justify-content: stretch;
+  }
+
+  .heroActions > * {
+    flex: 1;
+    justify-content: center;
   }
 
   .hero h1 {

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendarCheck,
@@ -95,6 +95,7 @@ const RecurringTransactionsPage = () => {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleteError, setDeleteError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const formRef = useRef(null);
 
   const userName = userProfile?.fullname || "Bạn";
   const userAvatar = userProfile?.avatar || null;
@@ -206,6 +207,11 @@ const RecurringTransactionsPage = () => {
   const resetForm = () => {
     setFormData(initialForm);
     setEditingId(null);
+  };
+
+  const handleOpenAddRecurring = () => {
+    resetForm();
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const handleSubmit = async (event) => {
@@ -388,14 +394,25 @@ const RecurringTransactionsPage = () => {
               và gói dịch vụ để không phải nhập thủ công mỗi tháng.
             </p>
           </div>
-          <button
-            type="button"
-            className={styles.processButton}
-            onClick={handleProcessDue}
-            disabled={isSaving}
-          >
-            Xử lý khoản đến hạn
-          </button>
+          <div className={styles.heroActions}>
+            <Button
+              type="button"
+              icon={<FontAwesomeIcon icon={faPlus} />}
+              variant="primary"
+              onClick={handleOpenAddRecurring}
+              className={styles.addButton}
+            >
+              Thêm định kỳ
+            </Button>
+            <button
+              type="button"
+              className={styles.processButton}
+              onClick={handleProcessDue}
+              disabled={isSaving}
+            >
+              Xử lý khoản đến hạn
+            </button>
+          </div>
         </section>
 
         <section className={styles.summaryGrid}>
@@ -418,7 +435,7 @@ const RecurringTransactionsPage = () => {
         </section>
 
         <section className={styles.contentGrid}>
-          <form className={styles.formPanel} onSubmit={handleSubmit}>
+          <form ref={formRef} className={styles.formPanel} onSubmit={handleSubmit}>
             <div className={styles.sectionHeader}>
               <div>
                 <h2>{editingId ? "Sửa mẫu định kỳ" : "Tạo mẫu định kỳ"}</h2>

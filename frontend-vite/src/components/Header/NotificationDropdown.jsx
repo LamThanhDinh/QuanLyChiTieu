@@ -47,6 +47,10 @@ const NotificationDropdown = ({ isOpen, onClose }) => {
         return "⚠️";
       case "goal_progress":
         return "🎯";
+      case "budget_warning":
+        return "📊";
+      case "budget_exceeded":
+        return "💸";
       case "spending_limit":
         return "💰";
       default:
@@ -57,6 +61,12 @@ const NotificationDropdown = ({ isOpen, onClose }) => {
   const handleNotificationClick = (notification) => {
     if (notification.goalId) {
       navigate("/goals");
+      onClose();
+    } else if (
+      notification.type === "budget_warning" ||
+      notification.type === "budget_exceeded"
+    ) {
+      navigate("/budgets");
       onClose();
     } else if (notification.type === "spending_limit") {
       navigate("/transactions");
@@ -74,6 +84,34 @@ const NotificationDropdown = ({ isOpen, onClose }) => {
     if (diffInMinutes < 1440)
       return `${Math.floor(diffInMinutes / 60)} giờ trước`;
     return `${Math.floor(diffInMinutes / 1440)} ngày trước`;
+  };
+
+  const formatDate = (date) => {
+    if (!date) return "";
+    return new Date(date).toLocaleDateString("vi-VN");
+  };
+
+  const getNotificationMeta = (notification) => {
+    if (
+      (notification.type === "goal_deadline" ||
+        notification.type === "goal_overdue") &&
+      notification.deadline
+    ) {
+      return `Hạn chót: ${formatDate(notification.deadline)}`;
+    }
+
+    if (notification.type === "goal_progress") {
+      return "Theo tiến độ hiện tại";
+    }
+
+    if (
+      notification.type === "budget_warning" ||
+      notification.type === "budget_exceeded"
+    ) {
+      return `Ngân sách tháng ${notification.month}/${notification.year}`;
+    }
+
+    return formatTimeAgo(notification.createdAt);
   };
 
   if (!isOpen) return null;
@@ -117,7 +155,7 @@ const NotificationDropdown = ({ isOpen, onClose }) => {
                     {notification.message}
                   </div>
                   <div className={styles.notificationTime}>
-                    {formatTimeAgo(notification.createdAt)}
+                    {getNotificationMeta(notification)}
                   </div>
                 </div>
               </div>

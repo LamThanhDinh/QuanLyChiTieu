@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   faCalendarAlt,
   faChartLine,
@@ -85,6 +85,7 @@ const BudgetsPage = () => {
     amount: "",
     threshold: 80,
   });
+  const formRef = useRef(null);
 
   const userName = userProfile?.fullname || "Bạn";
   const userAvatar = userProfile?.avatar || null;
@@ -163,6 +164,12 @@ const BudgetsPage = () => {
   const availableCategories = categories.filter(
     (category) => !selectedCategoryIds.has(category._id)
   );
+
+  const handleOpenAddBudget = () => {
+    setEditingBudget(null);
+    setFormData({ categoryId: "", amount: "", threshold: 80 });
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const handlePeriodChange = (direction) => {
     const target = new Date(period.year, period.month - 1 + direction, 1);
@@ -335,6 +342,15 @@ const BudgetsPage = () => {
             </p>
           </div>
           <div className={styles.heroActions}>
+            <Button
+              type="button"
+              icon={<FontAwesomeIcon icon={faPlus} />}
+              variant="primary"
+              onClick={handleOpenAddBudget}
+              className={styles.addButton}
+            >
+              Thêm ngân sách
+            </Button>
             <button
               className={styles.periodButton}
               onClick={() => handlePeriodChange(-1)}
@@ -380,7 +396,11 @@ const BudgetsPage = () => {
         </section>
 
         <section className={styles.toolsGrid}>
-          <form className={styles.budgetForm} onSubmit={handleCreateBudget}>
+          <form
+            ref={formRef}
+            className={styles.budgetForm}
+            onSubmit={handleCreateBudget}
+          >
             <div className={styles.sectionHeader}>
               <div>
                 <h2>Thêm ngân sách</h2>

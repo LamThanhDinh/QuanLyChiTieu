@@ -50,7 +50,14 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   flex-shrink: 0;
+}
+
+.addButton {
+  min-height: 40px;
+  white-space: nowrap;
 }
 
 .periodButton,
