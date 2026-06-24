@@ -914,7 +914,25 @@ const RecurringTransactionsPage = () => {
 
             <div className={styles.modalFormBody}>
 
-            {/* Loại giao dịch - radio buttons giống AddEditTransactionModal */}
+            {/* Thanh tiến trình hoàn thành form */}
+            <div className={styles.modalProgress}>
+              <div className={styles.modalProgressBar}>
+                <div
+                  className={styles.modalProgressFill}
+                  style={{ width: `${Math.min(100, (requiredFieldsCompleted / 5) * 100)}%` }}
+                />
+              </div>
+              <span className={styles.modalProgressText}>
+                {isFormValid ? (
+                  <>
+                    <FontAwesomeIcon icon={faCheck} style={{ color: "#059669", marginRight: 4 }} />
+                    Sẵn sàng để lưu
+                  </>
+                ) : (
+                  `Hoàn thành ${requiredFieldsCompleted}/5 trường`
+                )}
+              </span>
+            </div>
             <div className={styles.modalTypeGroup}>
               <span className={styles.modalTypeLabel}>Loại giao dịch</span>
               <div className={styles.modalRadioGroup}>
