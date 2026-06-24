@@ -126,6 +126,29 @@ const BudgetsPage = () => {
     fetchBudgets();
   }, [fetchBudgets]);
 
+  useEffect(() => {
+    if (!isCreateModalOpen && !editingBudget) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        if (editingBudget) {
+          handleCloseEditBudget();
+        } else {
+          handleCloseAddBudget();
+        }
+      }
+
+      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        const form = document.querySelector(`.${styles.editDialog}`);
+        form?.requestSubmit();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isCreateModalOpen, editingBudget, isSaving]);
+
   const budgetStats = useMemo(() => {
     const totalBudget = budgets.reduce(
       (sum, budget) => sum + (budget.amount || 0),

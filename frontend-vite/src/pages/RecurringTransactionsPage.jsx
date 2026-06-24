@@ -197,6 +197,37 @@ const RecurringTransactionsPage = () => {
     }
   }, [currentPage, totalPages]);
 
+  const isFormValid =
+    Boolean(formData.name) &&
+    Boolean(formData.amount) &&
+    Boolean(formData.accountId) &&
+    Boolean(formData.categoryId) &&
+    Boolean(formData.nextRunDate);
+
+  useEffect(() => {
+    if (!isFormModalOpen) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        handleCloseFormModal();
+      }
+
+      if (
+        event.key === "Enter" &&
+        (event.ctrlKey || event.metaKey) &&
+        isFormValid &&
+        !isSaving
+      ) {
+        event.preventDefault();
+        const form = document.querySelector(`.${styles.modalFormPanel}`);
+        form?.requestSubmit();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isFormModalOpen, isFormValid, isSaving]);
+
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -613,12 +644,7 @@ const RecurringTransactionsPage = () => {
                 type="submit"
                 icon={<FontAwesomeIcon icon={faCheck} />}
                 disabled={
-                  isSaving ||
-                  !formData.name ||
-                  !formData.amount ||
-                  !formData.accountId ||
-                  !formData.categoryId ||
-                  !formData.nextRunDate
+                  isSaving || !isFormValid
                 }
               >
                 {editingId ? "Lưu thay đổi" : "Tạo định kỳ"}
@@ -1008,12 +1034,7 @@ const RecurringTransactionsPage = () => {
                 type="submit"
                 icon={<FontAwesomeIcon icon={faCheck} />}
                 disabled={
-                  isSaving ||
-                  !formData.name ||
-                  !formData.amount ||
-                  !formData.accountId ||
-                  !formData.categoryId ||
-                  !formData.nextRunDate
+                  isSaving || !isFormValid
                 }
               >
                 {editingId ? "Lưu thay đổi" : "Tạo định kỳ"}
