@@ -15,6 +15,7 @@ import Header from "../components/Header/Header";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
 import Button from "../components/Common/Button";
+import ConfirmDialog from "../components/Common/ConfirmDialog";
 import { getProfile } from "../api/profileService";
 import { getCategories } from "../api/categoriesService";
 import {
@@ -81,6 +82,8 @@ const BudgetsPage = () => {
   const [messageType, setMessageType] = useState("info");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
   const [formData, setFormData] = useState({
     categoryId: "",
     amount: "",
@@ -242,25 +245,34 @@ const BudgetsPage = () => {
     }
   };
 
-  const handleDeleteBudget = async (budgetId) => {
-    const shouldDelete = window.confirm(
-      "Bạn có chắc muốn xóa ngân sách này không?"
-    );
-    if (!shouldDelete) return;
+  const handleRequestDeleteBudget = (budget) => {
+    setDeleteTarget(budget);
+    setDeleteError("");
+  };
+
+  const handleCloseDeleteDialog = () => {
+    if (isSaving) return;
+    setDeleteTarget(null);
+    setDeleteError("");
+  };
+
+  const handleConfirmDeleteBudget = async () => {
+    if (!deleteTarget?._id) return;
 
     setIsSaving(true);
     setMessage("");
     setMessageType("info");
+    setDeleteError("");
 
     try {
-      await deleteBudget(budgetId);
+      await deleteBudget(deleteTarget._id);
+      setDeleteTarget(null);
       await fetchBudgets();
       setMessage("Đã xóa ngân sách.");
       setMessageType("success");
     } catch (error) {
       console.error("Error deleting budget:", error);
-      setMessage("Không thể xóa ngân sách.");
-      setMessageType("error");
+      setDeleteError("Không thể xóa ngân sách.");
     } finally {
       setIsSaving(false);
     }
@@ -786,9 +798,23 @@ const BudgetsPage = () => {
                     </div>
                   </div>
 
-                  <div className={styles.remainingCell}>
-                    <span>Còn lại</span>
-                    <strong>{formatCurrency(budget.remainingAmount)}</strong>
+                  <div
+                    className={`${styles.remainingCell} ${budget.status === "exceeded" ? styles.overBudget : ""
+                      }`}
+                  >
+                    <span>
+                      {budget.status === "exceeded" ? "Vượt mức" : "Còn lại"}
+                    </span>
+                    <strong>
+                      {formatCurrency(
+                        budget.status === "exceeded"
+                          ? Math.max(
+                            (budget.spentAmount || 0) - (budget.amount || 0),
+                            0
+                          )
+                          : budget.remainingAmount
+                      )}
+                    </strong>
                   </div>
 
                   <div className={styles.rowActions}>
@@ -804,7 +830,7 @@ const BudgetsPage = () => {
                     <button
                       type="button"
                       className={styles.deleteButton}
-                      onClick={() => handleDeleteBudget(budget._id)}
+                      onClick={() => handleRequestDeleteBudget(budget)}
                       disabled={isSaving}
                       title="Xóa ngân sách"
                     >
@@ -817,6 +843,17 @@ const BudgetsPage = () => {
           )}
         </section>
       </main>
+
+      <ConfirmDialog
+        isOpen={Boolean(deleteTarget)}
+        onClose={handleCloseDeleteDialog}
+        onConfirm={handleConfirmDeleteBudget}
+        title="Xóa ngân sách"
+        message={`Bạn có chắc muốn xóa ngân sách của danh mục "${deleteTarget?.categoryId?.name || "này"}" không?`}
+        confirmText="Xóa"
+        isProcessing={isSaving}
+        errorMessage={deleteError}
+      />
 
       <Footer />
     </div>

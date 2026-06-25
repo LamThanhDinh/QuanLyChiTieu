@@ -747,6 +747,11 @@
   white-space: nowrap;
 }
 
+.remainingCell.overBudget span,
+.remainingCell.overBudget strong {
+  color: #dc2626;
+}
+
 .rowActions {
   display: flex;
   align-items: center;
