@@ -45,6 +45,7 @@
 .panelHeader h2 {
   margin: 0;
   color: #172033;
+  font-weight: 700;
 }
 
 .hero p,
@@ -53,6 +54,7 @@
   margin: 10px 0 0;
   color: #64748b;
   line-height: 1.55;
+  font-weight: 400;
 }
 
 .heroMeta {
@@ -86,7 +88,7 @@
   margin-bottom: 8px;
   color: #4f46e5;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
@@ -108,6 +110,11 @@
 .heroBadge strong {
   color: #0f172a;
   font-size: 28px;
+  font-weight: 700;
+}
+
+.heroBadge span {
+  font-weight: 500;
 }
 
 .heroButton,
@@ -472,12 +479,12 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: rgba(15, 23, 42, 0.48);
-  backdrop-filter: blur(6px);
+  background: rgba(17, 24, 39, 0.65);
+  backdrop-filter: blur(8px);
 }
 
 .modalDialog {
-  width: min(560px, 100%);
+  width: min(700px, 100%);
   max-height: min(90vh, 760px);
   display: flex;
   flex-direction: column;
@@ -492,14 +499,15 @@
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 14px;
-  padding: 24px 28px;
+  gap: 16px;
+  padding: 22px 34px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #ffffff;
 }
 
 .modalHeader > svg {
-  font-size: 28px;
+  font-size: 30px;
+  opacity: 0.95;
 }
 
 .modalHeader h2,
@@ -508,13 +516,15 @@
 }
 
 .modalHeader h2 {
-  font-size: 24px;
+  font-size: 27px;
+  font-weight: 700;
 }
 
 .modalHeader p {
   margin-top: 4px;
   color: rgba(255, 255, 255, 0.85);
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 400;
 }
 
 .modalHeader button {
@@ -540,8 +550,23 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 24px 28px;
+  padding: 28px 34px;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.modalBody::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modalBody::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modalBody::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 999px;
 }
 
 .modalBody label {
@@ -550,7 +575,8 @@
   gap: 8px;
   color: #334155;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .inlineFields {
@@ -576,7 +602,7 @@
   border-radius: 12px;
   cursor: pointer;
   font: inherit;
-  font-weight: 800;
+  font-weight: 700;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -641,7 +667,7 @@
   }
 }
 
-@media (max-width: 620px) {
+  @media (max-width: 620px) {
   .page {
     padding-inline: 12px;
     padding-bottom: 110px;
@@ -692,7 +718,7 @@
   .modalHeader,
   .modalBody,
   .modalActions {
-    padding-inline: 18px;
+    padding-inline: 20px;
   }
 
   .modalActions {

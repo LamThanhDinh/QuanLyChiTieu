@@ -265,11 +265,6 @@ const FamilyPage = () => {
             </div>
           </div>
           <div className={styles.heroSide}>
-            <div className={styles.heroBadge}>
-              <FontAwesomeIcon icon={faHome} />
-              <strong>{families.length}</strong>
-              <span>nhóm gia đình</span>
-            </div>
             <Button
               type="button"
               icon={<FontAwesomeIcon icon={faPlus} />}
@@ -279,6 +274,11 @@ const FamilyPage = () => {
             >
               Tạo gia đình
             </Button>
+            <div className={styles.heroBadge}>
+              <FontAwesomeIcon icon={faHome} />
+              <strong>{families.length}</strong>
+              <span>Nhóm gia đình</span>
+            </div>
           </div>
         </section>
 
