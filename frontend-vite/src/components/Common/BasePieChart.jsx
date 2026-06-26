@@ -143,6 +143,7 @@ const BasePieChart = ({
     activeStrokeWidth = 2.2,
     labelRadius = 35,
     activeLabelRadius = 45,
+    labelMaxLength = 14,
   } = labelConfig;
 
   // Process data to ensure colors are assigned
@@ -194,7 +195,9 @@ const BasePieChart = ({
 
     const textOffset = 6;
     const isLeft = x < cx;
-    const labelText = `${truncateText(payload.name, 18)} ${(percent * 100).toFixed(1)}%`;
+    const labelText = `${truncateText(payload.name, labelMaxLength)} ${(
+      percent * 100
+    ).toFixed(1)}%`;
 
     return (
       <g textAnchor={isLeft ? "end" : "start"} fill={payload.fill}>

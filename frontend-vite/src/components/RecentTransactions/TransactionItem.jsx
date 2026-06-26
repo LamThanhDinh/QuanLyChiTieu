@@ -113,9 +113,9 @@ const TransactionItem = forwardRef(
           <div className={styles.descriptionContent}>
             <span>{description || "-"}</span>
             {recurringTransactionId && (
-              <span className={styles.recurringBadge} title="Giao dịch được tạo từ mẫu định kỳ">
+              <span className={styles.recurringBadge} title="Giao dịch được tạo từ khoản cố định">
                 <FontAwesomeIcon icon={faRedoAlt} />
-                Định kỳ
+                Cố định
               </span>
             )}
           </div>

@@ -125,7 +125,7 @@ const RecurringTransactionsPage = () => {
       setRecurringTransactions(recurringResponse?.data || []);
     } catch (error) {
       console.error("Error loading recurring transactions:", error);
-      setMessage("Không thể tải dữ liệu giao dịch định kỳ.");
+      setMessage("Không thể tải dữ liệu khoản cố định.");
       setMessageType("error");
     } finally {
       setIsLoading(false);
@@ -282,10 +282,10 @@ const RecurringTransactionsPage = () => {
     try {
       if (editingId) {
         await updateRecurringTransaction(editingId, payload);
-        setMessage("Đã cập nhật giao dịch định kỳ.");
+        setMessage("Đã cập nhật khoản cố định.");
       } else {
         await createRecurringTransaction(payload);
-        setMessage("Đã tạo giao dịch định kỳ.");
+        setMessage("Đã tạo khoản cố định.");
       }
 
       setMessageType("success");
@@ -295,7 +295,7 @@ const RecurringTransactionsPage = () => {
     } catch (error) {
       console.error("Error saving recurring transaction:", error);
       setMessage(
-        error.response?.data?.message || "Không thể lưu giao dịch định kỳ."
+        error.response?.data?.message || "Không thể lưu khoản cố định."
       );
       setMessageType("error");
     } finally {
@@ -343,13 +343,13 @@ const RecurringTransactionsPage = () => {
 
     try {
       await deleteRecurringTransaction(deleteTarget._id);
-      setMessage("Đã xóa giao dịch định kỳ.");
+      setMessage("Đã xóa khoản cố định.");
       setMessageType("success");
       setDeleteTarget(null);
       await loadData();
     } catch (error) {
       console.error("Error deleting recurring transaction:", error);
-      setDeleteError("Không thể xóa giao dịch định kỳ.");
+      setDeleteError("Không thể xóa khoản cố định.");
     } finally {
       setIsSaving(false);
     }
@@ -363,7 +363,7 @@ const RecurringTransactionsPage = () => {
       await updateRecurringTransaction(item._id, {
         isActive: !item.isActive,
       });
-      setMessage(item.isActive ? "Đã tạm dừng mẫu định kỳ." : "Đã bật lại mẫu định kỳ.");
+      setMessage(item.isActive ? "Đã tạm dừng khoản cố định." : "Đã bật lại khoản cố định.");
       setMessageType("success");
       await loadData();
     } catch (error) {
@@ -381,7 +381,7 @@ const RecurringTransactionsPage = () => {
 
     try {
       await runRecurringTransaction(id);
-      setMessage("Đã tạo giao dịch thật từ mẫu định kỳ.");
+      setMessage("Đã tạo giao dịch thật từ khoản cố định.");
       setMessageType("success");
       await loadData();
     } catch (error) {
@@ -442,7 +442,7 @@ const RecurringTransactionsPage = () => {
         <section className={styles.hero}>
           <div>
             <span className={styles.eyebrow}>
-              <FontAwesomeIcon icon={faRedoAlt} /> Giao dịch định kỳ
+              <FontAwesomeIcon icon={faRedoAlt} /> Khoản cố định
             </span>
             <h1>{getGreeting()}, {userName}!</h1>
             <p>
@@ -458,7 +458,7 @@ const RecurringTransactionsPage = () => {
               onClick={handleOpenAddRecurring}
               className={styles.addButton}
             >
-              Thêm định kỳ
+              Thêm khoản cố định
             </Button>
             <button
               type="button"
@@ -495,7 +495,7 @@ const RecurringTransactionsPage = () => {
           <form ref={formRef} className={styles.formPanel} onSubmit={handleSubmit}>
             <div className={styles.sectionHeader}>
               <div>
-                <h2>{editingId ? "Sửa mẫu định kỳ" : "Tạo mẫu định kỳ"}</h2>
+                <h2>{editingId ? "Sửa khoản cố định" : "Tạo khoản cố định"}</h2>
                 <p>Mẫu này sẽ dùng để tạo giao dịch thật khi đến ngày.</p>
               </div>
               <FontAwesomeIcon icon={editingId ? faEdit : faRedoAlt} />
@@ -662,7 +662,7 @@ const RecurringTransactionsPage = () => {
                   isSaving || !isFormValid
                 }
               >
-                {editingId ? "Lưu thay đổi" : "Tạo định kỳ"}
+                {editingId ? "Lưu thay đổi" : "Tạo khoản cố định"}
               </Button>
             </div>
           </form>
@@ -670,7 +670,7 @@ const RecurringTransactionsPage = () => {
           <section className={styles.listPanel}>
             <div className={styles.sectionHeader}>
               <div>
-                <h2>Danh sách định kỳ</h2>
+                <h2>Danh sách khoản cố định</h2>
                 <p>Theo dõi các mẫu thu chi lặp lại và tạo giao dịch khi cần.</p>
               </div>
               <FontAwesomeIcon icon={faCalendarCheck} />
@@ -704,7 +704,7 @@ const RecurringTransactionsPage = () => {
               <div className={styles.emptyState}>Đang tải dữ liệu...</div>
             ) : recurringTransactions.length === 0 ? (
               <div className={styles.emptyState}>
-                Chưa có giao dịch định kỳ nào. Hãy tạo mẫu đầu tiên.
+                Chưa có khoản cố định nào. Hãy tạo mẫu đầu tiên.
               </div>
             ) : (
               <div className={styles.recurringList}>
@@ -898,7 +898,7 @@ const RecurringTransactionsPage = () => {
           <form className={styles.modalFormPanel} onSubmit={handleSubmit}>
               <div className={styles.sectionHeader}>
               <div>
-                <h2>{editingId ? "Sửa mẫu định kỳ" : "Tạo mẫu định kỳ"}</h2>
+                <h2>{editingId ? "Sửa khoản cố định" : "Tạo khoản cố định"}</h2>
                 <p>Mẫu này sẽ dùng để tạo giao dịch thật khi đến ngày.</p>
               </div>
               <FontAwesomeIcon icon={editingId ? faEdit : faRedoAlt} />
@@ -1122,7 +1122,7 @@ const RecurringTransactionsPage = () => {
                   isSaving || !isFormValid
                 }
               >
-                {editingId ? "Lưu thay đổi" : "Tạo định kỳ"}
+                {editingId ? "Lưu thay đổi" : "Tạo khoản cố định"}
               </Button>
             </div>
           </form>
@@ -1133,9 +1133,9 @@ const RecurringTransactionsPage = () => {
         isOpen={Boolean(deleteTarget)}
         onClose={handleCloseDeleteDialog}
         onConfirm={handleConfirmDelete}
-        title="Xóa giao dịch định kỳ"
+        title="Xóa khoản cố định"
         message={`Bạn có chắc muốn xóa mẫu "${
-          deleteTarget?.name || "giao dịch định kỳ"
+          deleteTarget?.name || "khoản cố định"
         }" không?`}
         confirmText="Xóa"
         isProcessing={isSaving}

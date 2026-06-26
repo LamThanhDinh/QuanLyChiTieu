@@ -26,7 +26,7 @@ const Navbar = () => {
     { name: "Tài khoản", path: "/accounts" },
     { name: "Mục tiêu", path: "/goals" },
     { name: "Ngân sách", path: "/budgets" },
-    { name: "Định kỳ", path: "/recurring-transactions" },
+    { name: "Khoản cố định", path: "/recurring-transactions" },
     { name: "Giao dịch", path: "/transactions" },
     { name: "Thống kê", path: "/statistics" },
     // { name: "Cá nhân", path: "/personinfo" },
