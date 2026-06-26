@@ -153,8 +153,8 @@ const CategoryAnalysisChart = ({
           activeFontWeight: 700,
           strokeWidth: 1.5,
           activeStrokeWidth: 3,
-          labelRadius: 32,
-          activeLabelRadius: 46,
+          labelRadius: 20,
+          activeLabelRadius: 30,
           labelMaxLength: 18,
         }}
       />
