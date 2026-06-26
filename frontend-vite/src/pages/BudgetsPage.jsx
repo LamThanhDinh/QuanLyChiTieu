@@ -74,6 +74,10 @@ const BudgetsPage = () => {
   const [period, setPeriod] = useState(getCurrentPeriod());
   const [categories, setCategories] = useState([]);
   const [budgets, setBudgets] = useState([]);
+  const [incomeSummary, setIncomeSummary] = useState({
+    totalIncome: 0,
+    transactionCount: 0,
+  });
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -116,6 +120,9 @@ const BudgetsPage = () => {
         console.log("[DEBUG] First budget categoryId:", JSON.stringify(budgetList[0].categoryId));
       }
       setBudgets(budgetList);
+      setIncomeSummary(
+        budgetResponse?.incomeSummary || { totalIncome: 0, transactionCount: 0 }
+      );
     } catch (error) {
       console.error("Error loading budgets:", error);
       setMessage("Không thể tải dữ liệu ngân sách. Vui lòng thử lại.");
@@ -187,6 +194,17 @@ const BudgetsPage = () => {
       ),
     [budgets]
   );
+
+  const savingsPlan = useMemo(() => {
+    const totalIncome = incomeSummary.totalIncome || 0;
+    const savingAmount = Math.round(totalIncome * 0.1);
+    return {
+      totalIncome,
+      savingAmount,
+      spendableIncome: Math.max(totalIncome - savingAmount, 0),
+      transactionCount: incomeSummary.transactionCount || 0,
+    };
+  }, [incomeSummary]);
 
   const availableCategories = categories.filter(
     (category) => !selectedCategoryIds.has(category._id)
@@ -517,11 +535,46 @@ const BudgetsPage = () => {
             </Button>
           </form>
 
+          <div className={styles.savingsPanel}>
+            <div className={styles.sectionHeader}>
+              <div>
+                <h2>Gợi ý tiết kiệm từ thu nhập</h2>
+                <p>Trích 10% thu nhập tháng này để ưu tiên tích lũy cho bản thân.</p>
+              </div>
+              <FontAwesomeIcon icon={faPiggyBank} />
+            </div>
+
+            <div className={styles.savingsContent}>
+              <div className={styles.savingsMain}>
+                <span>Nên tiết kiệm</span>
+                <strong>{formatCurrency(savingsPlan.savingAmount)}</strong>
+                <small>10% của {formatCurrency(savingsPlan.totalIncome)}</small>
+              </div>
+
+              <div className={styles.savingsDetails}>
+                <div>
+                  <span>Thu nhập tháng này</span>
+                  <b>{formatCurrency(savingsPlan.totalIncome)}</b>
+                </div>
+                <div>
+                  <span>Còn lại để phân bổ</span>
+                  <b>{formatCurrency(savingsPlan.spendableIncome)}</b>
+                </div>
+              </div>
+
+              {savingsPlan.transactionCount === 0 && (
+                <p className={styles.savingsHint}>
+                  Chưa có giao dịch thu nhập trong tháng này, hãy thêm thu nhập để hệ thống tính gợi ý chính xác hơn.
+                </p>
+              )}
+            </div>
+          </div>
+
           <div className={styles.aiPanel}>
             <div className={styles.sectionHeader}>
               <div>
                 <h2>Đề xuất ngân sách tháng tới</h2>
-                <p>Dựa trên 3 tháng gần nhất và danh mục chi tiêu thực tế.</p>
+                <p>Dựa trên các tháng đã qua trong năm và danh mục chi tiêu thực tế.</p>
               </div>
               <FontAwesomeIcon icon={faMagic} />
             </div>

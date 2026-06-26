@@ -72,6 +72,31 @@ const getSpentByCategory = async (userObjectId, month, year) => {
   }, {});
 };
 
+const getIncomeSummary = async (userObjectId, month, year) => {
+  const { start, end } = getMonthRange(year, month);
+  const [summary] = await Transaction.aggregate([
+    {
+      $match: {
+        userId: userObjectId,
+        type: "THUNHAP",
+        date: { $gte: start, $lte: end },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalIncome: { $sum: "$amount" },
+        transactionCount: { $sum: 1 },
+      },
+    },
+  ]);
+
+  return {
+    totalIncome: summary?.totalIncome || 0,
+    transactionCount: summary?.transactionCount || 0,
+  };
+};
+
 const enrichBudget = (budget, spentMap) => {
   const budgetObject = budget.toObject ? budget.toObject() : budget;
   const categoryId = budgetObject.categoryId?._id || budgetObject.categoryId;
@@ -106,16 +131,18 @@ const getBudgets = async (req, res) => {
     const userObjectId = toObjectId(userId);
     const { month, year } = normalizeMonthYear(req.query);
 
-    const [budgets, spentMap] = await Promise.all([
+    const [budgets, spentMap, incomeSummary] = await Promise.all([
       Budget.find({ userId, month, year })
         .populate("categoryId", "name type icon")
         .sort({ createdAt: -1 }),
       getSpentByCategory(userObjectId, month, year),
+      getIncomeSummary(userObjectId, month, year),
     ]);
 
     res.json({
       month,
       year,
+      incomeSummary,
       budgets: budgets.map((budget) => {
         console.log("[DEBUG backend] budget categoryId:", JSON.stringify(budget.categoryId));
         return enrichBudget(budget, spentMap);
@@ -269,13 +296,28 @@ const deleteBudget = async (req, res) => {
 
 const buildBaseSuggestions = async (userId, targetMonth, targetYear) => {
   const userObjectId = toObjectId(userId);
-  const targetStart = new Date(Date.UTC(targetYear, targetMonth - 1, 1));
-  const lookbackStart = new Date(
-    Date.UTC(targetStart.getUTCFullYear(), targetStart.getUTCMonth() - 3, 1)
-  );
+  const usesCurrentYearHistory = targetMonth > 1;
+  const lookbackStart = usesCurrentYearHistory
+    ? new Date(Date.UTC(targetYear, 0, 1))
+    : new Date(Date.UTC(targetYear - 1, 6, 1));
   const lookbackEnd = new Date(
-    Date.UTC(targetStart.getUTCFullYear(), targetStart.getUTCMonth(), 0, 23, 59, 59, 999)
+    Date.UTC(targetYear, targetMonth - 1, 0, 23, 59, 59, 999)
   );
+  const historyMonths = [];
+  const cursor = new Date(
+    Date.UTC(lookbackStart.getUTCFullYear(), lookbackStart.getUTCMonth(), 1)
+  );
+  while (cursor <= lookbackEnd) {
+    historyMonths.push({
+      year: cursor.getUTCFullYear(),
+      month: cursor.getUTCMonth() + 1,
+      key: `${cursor.getUTCFullYear()}-${cursor.getUTCMonth() + 1}`,
+    });
+    cursor.setUTCMonth(cursor.getUTCMonth() + 1);
+  }
+  const historyLabel = usesCurrentYearHistory
+    ? `${historyMonths.length} tháng đã qua trong năm ${targetYear}`
+    : `${historyMonths.length} tháng cuối năm ${targetYear - 1}`;
 
   const [categories, transactionStats, existingBudgets] = await Promise.all([
     Category.find({
@@ -309,8 +351,9 @@ const buildBaseSuggestions = async (userId, targetMonth, targetYear) => {
   const monthlyMap = {};
   transactionStats.forEach((item) => {
     const key = item._id.categoryId.toString();
-    if (!monthlyMap[key]) monthlyMap[key] = [];
-    monthlyMap[key].push(item.total || 0);
+    const monthKey = `${item._id.year}-${item._id.month}`;
+    if (!monthlyMap[key]) monthlyMap[key] = {};
+    monthlyMap[key][monthKey] = item.total || 0;
   });
 
   const existingBudgetMap = existingBudgets.reduce((map, budget) => {
@@ -320,8 +363,12 @@ const buildBaseSuggestions = async (userId, targetMonth, targetYear) => {
 
   return categories
     .map((category) => {
-      const history = monthlyMap[category._id.toString()] || [];
-      if (history.length === 0) return null;
+      const categoryHistory = monthlyMap[category._id.toString()] || {};
+      const history = historyMonths.map(
+        (monthItem) => categoryHistory[monthItem.key] || 0
+      );
+      const monthsWithData = history.filter((amount) => amount > 0).length;
+      if (monthsWithData === 0) return null;
 
       const total = history.reduce((sum, amount) => sum + amount, 0);
       const average = total / history.length;
@@ -339,15 +386,20 @@ const buildBaseSuggestions = async (userId, targetMonth, targetYear) => {
         averageMonthlyExpense: average,
         highestMonthlyExpense: max,
         lowestMonthlyExpense: min,
-        monthsWithData: history.length,
+        monthsAnalyzed: history.length,
+        monthsWithData,
         suggestedAmount,
         currentBudgetAmount: currentBudget?.amount || null,
         confidence:
-          history.length >= 3 ? "high" : history.length === 2 ? "medium" : "low",
+          history.length >= 4 && monthsWithData >= 2
+            ? "high"
+            : monthsWithData >= 2
+              ? "medium"
+              : "low",
         reason:
           volatility > 0.5
-            ? `Chi tiêu ${category.name} dao động mạnh, đề xuất cộng thêm vùng đệm so với trung bình ${formatCurrency(average)}.`
-            : `Dựa trên trung bình ${formatCurrency(average)} trong ${history.length} tháng gần nhất.`,
+            ? `Chi tiêu ${category.name} dao động mạnh trong ${historyLabel}, đề xuất cộng thêm vùng đệm so với trung bình ${formatCurrency(average)}.`
+            : `Dựa trên trung bình ${formatCurrency(average)} từ ${historyLabel}.`,
       };
     })
     .filter(Boolean)
@@ -445,7 +497,7 @@ const suggestBudgets = async (req, res) => {
       summary:
         suggestions.length > 0
           ? `Đã đề xuất ${suggestions.length} ngân sách cho tháng ${month}/${year}.`
-          : "Chưa đủ dữ liệu chi tiêu 3 tháng gần nhất để đề xuất ngân sách.",
+          : "Chưa đủ dữ liệu chi tiêu từ các tháng đã qua để đề xuất ngân sách.",
     });
   } catch (error) {
     console.error("Error suggesting budgets:", error);

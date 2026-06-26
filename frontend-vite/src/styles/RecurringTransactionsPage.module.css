@@ -1,7 +1,8 @@
 .page {
-  width: min(1180px, calc(100% - 32px));
+  width: 100%;
   margin: 0 auto;
-  padding: 26px 0 90px;
+  padding: 26px var(--page-padding, 48px) 90px;
+  box-sizing: border-box;
 }
 
 .hero,
@@ -900,7 +901,8 @@
 
 @media (max-width: 620px) {
   .page {
-    width: min(100% - 20px, 1180px);
+    width: 100%;
+    padding-inline: 12px;
     padding-bottom: 110px;
   }
 

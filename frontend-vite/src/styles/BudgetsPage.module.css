@@ -1,7 +1,8 @@
 .page {
-  width: min(1180px, calc(100% - 32px));
+  width: 100%;
   margin: 0 auto;
-  padding: 26px 0 90px;
+  padding: 26px var(--page-padding, 48px) 90px;
+  box-sizing: border-box;
 }
 
 .hero {
@@ -140,12 +141,13 @@
 
 .toolsGrid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
   margin-top: 18px;
 }
 
 .budgetForm,
+.savingsPanel,
 .aiPanel,
 .budgetListSection {
   padding: 20px;
@@ -157,6 +159,7 @@
 }
 
 .aiPanel:hover,
+.savingsPanel:hover,
 .budgetListSection:hover {
   transform: translateY(-3px);
   border-color: #c7d2fe;
@@ -194,6 +197,79 @@
   display: none;
   flex-direction: column;
   gap: 14px;
+}
+
+.savingsContent {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.savingsMain {
+  padding: 18px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #eef2ff 0%, #ecfdf5 100%);
+  border: 1px solid #c7d2fe;
+}
+
+.savingsMain span,
+.savingsMain small,
+.savingsDetails span,
+.savingsHint {
+  color: #64748b;
+}
+
+.savingsMain span,
+.savingsDetails span {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.savingsMain strong {
+  display: block;
+  margin-top: 8px;
+  color: #047857;
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.savingsMain small {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.savingsDetails {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.savingsDetails div {
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.savingsDetails b {
+  display: block;
+  margin-top: 6px;
+  color: #0f172a;
+  font-size: 17px;
+}
+
+.savingsHint {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  font-size: 13px;
+  line-height: 1.45;
+  font-weight: 700;
 }
 
 .budgetForm label {
@@ -806,8 +882,7 @@
 
 @media (max-width: 900px) {
   .hero,
-  .heroActions,
-  .toolsGrid {
+  .heroActions {
     flex-direction: column;
     align-items: stretch;
   }
@@ -843,12 +918,14 @@
 
 @media (max-width: 560px) {
   .page {
-    width: min(100% - 20px, 1180px);
+    width: 100%;
+    padding-inline: 12px;
     padding-bottom: 110px;
   }
 
   .hero,
   .budgetForm,
+  .savingsPanel,
   .aiPanel,
   .budgetListSection {
     padding: 16px;
@@ -859,7 +936,8 @@
   }
 
   .summaryGrid,
-  .toolsGrid {
+  .toolsGrid,
+  .savingsDetails {
     grid-template-columns: 1fr;
   }
 

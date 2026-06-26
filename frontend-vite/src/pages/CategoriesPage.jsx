@@ -230,6 +230,7 @@ const CategoriesPage = () => {
         id: cat._id || cat.id,
         name: cat.name,
         value: cat.totalAmount,
+        type: cat.type,
         icon: cat.icon,
         color: COLORS[index % COLORS.length],
       }));

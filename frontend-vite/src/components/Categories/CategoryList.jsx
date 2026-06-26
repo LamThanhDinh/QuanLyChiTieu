@@ -8,8 +8,14 @@ import ConfirmDialog from "../Common/ConfirmDialog";
 import Badge from "../Common/Badge";
 
 // Hàm định dạng tiền tệ (Không đổi)
-const formatCurrency = (amount) => {
+const formatCurrency = (amount, type) => {
   if (typeof amount !== "number") return "0 ₫";
+  const formattedAmount = Math.abs(amount).toLocaleString("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
+  if (type === "THUNHAP") return `+${formattedAmount}`;
+  if (type === "CHITIEU") return `-${formattedAmount}`;
   return amount.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
 };
 
@@ -43,7 +49,7 @@ const CategoryItem = ({
       </div>
       <div className={`${styles.categoryTotalAmount} ${amountStyle}`}>
         {category.totalAmount !== undefined
-          ? formatCurrency(category.totalAmount)
+          ? formatCurrency(category.totalAmount, category.type)
           : "-"}
       </div>
       <div className={styles.categoryActions}>
@@ -304,7 +310,7 @@ const CategoryList = ({
                             : styles.expenseAmount
                         }`}
                       >
-                        {formatCurrency(category.totalAmount)}
+                        {formatCurrency(category.totalAmount, category.type)}
                       </td>
                       <td className={styles.transactionCount}>
                         <Badge
@@ -394,7 +400,7 @@ const CategoryList = ({
                             category.type === "THUNHAP" ? styles.income : styles.expense
                           }`}
                         >
-                          {formatCurrency(category.totalAmount)}
+                          {formatCurrency(category.totalAmount, category.type)}
                         </span>
                         <span className={styles.mobileCardTransactions}>
                           {category.transactionCount || 0} giao dịch

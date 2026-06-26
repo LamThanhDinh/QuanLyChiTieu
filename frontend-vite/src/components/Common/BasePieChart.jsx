@@ -32,6 +32,13 @@ const DEFAULT_COLORS = [
 const formatCurrency = (value) =>
   value.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
 
+const formatSignedCurrency = (value, type) => {
+  const formattedValue = formatCurrency(Math.abs(value || 0));
+  if (type === "THUNHAP") return `+${formattedValue}`;
+  if (type === "CHITIEU") return `-${formattedValue}`;
+  return formatCurrency(value || 0);
+};
+
 // Smart text truncation function
 const truncateText = (text, maxLength = 30) => {
   if (!text) return "";
@@ -185,9 +192,9 @@ const BasePieChart = ({
     const x = cx + currentLabelRadius * Math.cos(-midAngle * RADIAN);
     const y = cy + currentLabelRadius * Math.sin(-midAngle * RADIAN);
 
-    const iconSize = 20;
-    const textOffset = 5;
+    const textOffset = 6;
     const isLeft = x < cx;
+    const labelText = `${truncateText(payload.name, 18)} ${(percent * 100).toFixed(1)}%`;
 
     return (
       <g textAnchor={isLeft ? "end" : "start"} fill={payload.fill}>
@@ -201,30 +208,15 @@ const BasePieChart = ({
           strokeWidth={currentStrokeWidth}
         />
 
-        {/* Icon */}
-        {payload.icon && (
-          <foreignObject
-            x={isLeft ? x - iconSize : x}
-            y={y - iconSize / 2}
-            width={iconSize}
-            height={iconSize}
-          >
-            <FontAwesomeIcon
-              icon={getIconObject(payload.icon)}
-              style={{ width: "100%", height: "100%", color: payload.fill }}
-            />
-          </foreignObject>
-        )}
-
-        {/* Percentage text */}
+        {/* Category and percentage text */}
         <text
-          x={isLeft ? x - iconSize - textOffset : x + iconSize + textOffset}
+          x={isLeft ? x - textOffset : x + textOffset}
           y={y}
           dominantBaseline="central"
           fontSize={currentFontSize}
           fontWeight={currentFontWeight}
         >
-          {`${(percent * 100).toFixed(1)}%`}
+          {labelText}
         </text>
       </g>
     );
@@ -264,7 +256,7 @@ const BasePieChart = ({
             <span style={{ fontWeight: 600 }}>{d.name}</span>
           </div>
           <div>
-            Số tiền: <b>{formatCurrency(d.value)}</b>
+            Số tiền: <b>{formatSignedCurrency(d.value, d.type)}</b>
           </div>
           <div>
             Tỉ lệ: <b>{((d.value / total) * 100).toFixed(1)}%</b>
@@ -362,7 +354,10 @@ const BasePieChart = ({
                   {truncateText(processedData[activeIndex].name, 35)}
                 </span>
                 <span className={styles.categoryAmount}>
-                  {formatCurrency(processedData[activeIndex].value)}
+                  {formatSignedCurrency(
+                    processedData[activeIndex].value,
+                    processedData[activeIndex].type
+                  )}
                 </span>
               </div>
             )}
@@ -411,7 +406,12 @@ const BasePieChart = ({
                 ))}
               </Pie>
 
-              {showTooltip && <Tooltip content={tooltipRenderer} />}
+              {showTooltip && (
+                <Tooltip
+                  content={tooltipRenderer}
+                  wrapperStyle={{ zIndex: 50, pointerEvents: "none" }}
+                />
+              )}
             </PieChart>
           </ResponsiveContainer>
         </div>
