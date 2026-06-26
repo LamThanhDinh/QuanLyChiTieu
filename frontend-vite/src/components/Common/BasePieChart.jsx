@@ -131,6 +131,7 @@ const BasePieChart = ({
     outerRadius = 145,
     paddingAngle = 2,
     height = 480,
+    chartMargin = { top: 28, right: 92, bottom: 58, left: 92 },
   } = chartConfig;
 
   // Label configuration with defaults
@@ -141,8 +142,8 @@ const BasePieChart = ({
     activeFontWeight = 700,
     strokeWidth = 1.5,
     activeStrokeWidth = 2.2,
-    labelRadius = 28,
-    activeLabelRadius = 36,
+    labelRadius = 42,
+    activeLabelRadius = 54,
     labelMaxLength = 18,
   } = labelConfig;
 
@@ -195,46 +196,12 @@ const BasePieChart = ({
 
     const textOffset = 8;
     const isLeft = x < cx;
-    const percentText = `${(percent * 100).toFixed(1)}%`;
-    const chartWidth = cx * 2;
-    const chartHeight = cy * 2;
-    const edgePadding = 18;
-    let textX = isLeft ? x - textOffset : x + textOffset;
-    let textY = y;
-    let textAnchor = isLeft ? "end" : "start";
-    const percentChars = percentText.length + 1;
-    let labelText = `${truncateText(payload.name, labelMaxLength)} ${percentText}`;
-    let estimatedTextWidth = labelText.length * currentFontSize * 0.62;
-
-    if (!isLeft && textX + estimatedTextWidth > chartWidth - edgePadding) {
-      textX = chartWidth - edgePadding - estimatedTextWidth;
-      const availableChars = Math.floor(
-        (chartWidth - edgePadding - textX) / (currentFontSize * 0.62)
-      );
-      const nameLength = Math.max(
-        8,
-        Math.min(labelMaxLength, availableChars - percentChars)
-      );
-      labelText = `${truncateText(payload.name, nameLength)} ${percentText}`;
-      estimatedTextWidth = labelText.length * currentFontSize * 0.62;
-      textX = Math.max(edgePadding, chartWidth - edgePadding - estimatedTextWidth);
-    }
-
-    if (isLeft && textX - estimatedTextWidth < edgePadding) {
-      textX = edgePadding + estimatedTextWidth;
-      const availableChars = Math.floor(
-        (textX - edgePadding) / (currentFontSize * 0.62)
-      );
-      const nameLength = Math.max(
-        8,
-        Math.min(labelMaxLength, availableChars - percentChars)
-      );
-      labelText = `${truncateText(payload.name, nameLength)} ${percentText}`;
-      estimatedTextWidth = labelText.length * currentFontSize * 0.62;
-      textX = Math.min(chartWidth - edgePadding, edgePadding + estimatedTextWidth);
-    }
-
-    textY = Math.max(edgePadding, Math.min(chartHeight - edgePadding, textY));
+    const labelText = `${truncateText(payload.name, labelMaxLength)} ${(
+      percent * 100
+    ).toFixed(1)}%`;
+    const textX = isLeft ? x - textOffset : x + textOffset;
+    const textY = y;
+    const textAnchor = isLeft ? "end" : "start";
 
     return (
       <g textAnchor={textAnchor} fill={payload.fill}>
@@ -242,7 +209,7 @@ const BasePieChart = ({
         <path
           d={`M${cx + (outerRadius + 5) * Math.cos(-midAngle * RADIAN)},${
             cy + (outerRadius + 5) * Math.sin(-midAngle * RADIAN)
-          } L${isLeft ? textX - textOffset : textX + textOffset},${textY}`}
+          } L${x},${textY}`}
           stroke={payload.fill}
           fill="none"
           strokeWidth={currentStrokeWidth}
@@ -403,7 +370,7 @@ const BasePieChart = ({
             )}
 
           <ResponsiveContainer>
-            <PieChart>
+            <PieChart margin={chartMargin}>
               <Pie
                 data={processedData}
                 cx="50%"

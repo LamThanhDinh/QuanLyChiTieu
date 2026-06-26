@@ -2,6 +2,7 @@
   width: 100%;
   padding: 26px var(--page-padding, 48px) 90px;
   box-sizing: border-box;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .hero,
@@ -9,17 +10,34 @@
 .familyHeader,
 .statCard {
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 14px;
   background: #ffffff;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
 }
 
 .hero {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
   gap: 24px;
-  padding: 26px;
+  min-height: 188px;
+  padding: 28px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.hero:hover,
+.panel:hover,
+.familyHeader:hover,
+.statCard:hover {
+  transform: translateY(-3px);
+  border-color: #c7d2fe;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.1);
+}
+
+.heroCopy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .hero h1,
@@ -35,6 +53,30 @@
   margin: 10px 0 0;
   color: #64748b;
   line-height: 1.55;
+}
+
+.heroMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 48px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.heroMeta svg {
+  color: #a78bfa;
+}
+
+.heroSide {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .eyebrow {
@@ -54,7 +96,7 @@
   place-items: center;
   gap: 4px;
   padding: 18px;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #eef2ff;
   color: #4f46e5;
 }
@@ -66,6 +108,12 @@
 .heroBadge strong {
   color: #0f172a;
   font-size: 28px;
+}
+
+.heroButton,
+.addTransactionButton {
+  min-height: 44px;
+  white-space: nowrap;
 }
 
 .layout {
@@ -85,12 +133,13 @@
 
 .contentGrid {
   display: grid;
-  grid-template-columns: minmax(300px, 0.9fr) minmax(280px, 1fr);
+  grid-template-columns: minmax(280px, 1fr);
 }
 
 .panel,
 .familyHeader {
   padding: 20px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .panelHeader {
@@ -108,21 +157,38 @@
 .panel input,
 .panel textarea,
 .panel select,
-.inviteForm input {
+.inviteForm input,
+.modalBody input,
+.modalBody textarea,
+.modalBody select {
   width: 100%;
-  min-height: 42px;
-  padding: 0 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  min-height: 50px;
+  padding: 0 14px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
   color: #0f172a;
   font: inherit;
   box-sizing: border-box;
   outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.panel textarea {
+.panel textarea,
+.modalBody textarea {
   padding-top: 10px;
   resize: vertical;
+}
+
+.panel input:focus,
+.panel textarea:focus,
+.panel select:focus,
+.inviteForm input:focus,
+.modalBody input:focus,
+.modalBody textarea:focus,
+.modalBody select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  transform: translateY(-1px);
 }
 
 .panel form,
@@ -152,10 +218,19 @@
   width: 100%;
   padding: 14px;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #f8fafc;
   text-align: left;
   cursor: pointer;
+  font: inherit;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.familyItem:hover {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
 }
 
 .familyItem strong,
@@ -181,6 +256,14 @@
   gap: 18px;
 }
 
+.familyHeaderActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .inviteForm {
   min-width: 360px;
   display: grid;
@@ -189,7 +272,7 @@
   gap: 10px;
   padding: 10px;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #f8fafc;
 }
 
@@ -201,15 +284,23 @@
 .typeToggle button {
   min-height: 40px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 0 14px;
   font-weight: 800;
   cursor: pointer;
+  font: inherit;
+  transition: transform 0.18s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .inviteForm button {
   background: #4f46e5;
   color: #ffffff;
+}
+
+.inviteForm button:hover:not(:disabled),
+.typeToggle button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.18);
 }
 
 .statsGrid {
@@ -273,8 +364,17 @@
   gap: 16px;
   padding: 14px;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #ffffff;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.memberItem:hover,
+.transactionItem:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
 }
 
 .memberItem strong,
@@ -297,6 +397,34 @@
   background: #eef2ff;
   color: #4f46e5;
   font-size: 12px;
+}
+
+.memberActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.deleteMemberButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: #fee2e2;
+  color: #dc2626;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+
+.deleteMemberButton:hover {
+  background: #dc2626;
+  color: #ffffff;
+  transform: scale(1.08);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
 }
 
 .transactionItem b {
@@ -336,6 +464,156 @@
   text-align: center;
 }
 
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(6px);
+}
+
+.modalDialog {
+  width: min(560px, 100%);
+  max-height: min(90vh, 760px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: none;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.28);
+}
+
+.modalHeader {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+}
+
+.modalHeader > svg {
+  font-size: 28px;
+}
+
+.modalHeader h2,
+.modalHeader p {
+  margin: 0;
+}
+
+.modalHeader h2 {
+  font-size: 24px;
+}
+
+.modalHeader p {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+}
+
+.modalHeader button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.modalHeader button:hover {
+  background: rgba(255, 255, 255, 0.24);
+  transform: rotate(90deg) scale(1.06);
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 28px;
+  overflow-y: auto;
+}
+
+.modalBody label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.inlineFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  padding: 20px 28px;
+  border-top: 1px solid #e5e7eb;
+  background: #f8fafc;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: 46px;
+  padding: 0 24px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.28);
+}
+
+.primaryButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(102, 126, 234, 0.38);
+}
+
+.secondaryButton {
+  background: #ffffff;
+  color: #64748b;
+  border-color: #e5e7eb;
+}
+
+.secondaryButton:hover:not(:disabled) {
+  background: #f1f5f9;
+  color: #0f172a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
 @media (max-width: 1050px) {
   .layout,
   .contentGrid,
@@ -350,6 +628,15 @@
 
   .inviteForm {
     min-width: 0;
+    width: 100%;
+  }
+
+  .familyHeaderActions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .addTransactionButton {
     width: 100%;
   }
 }
@@ -367,11 +654,53 @@
     align-items: stretch;
   }
 
+  .hero {
+    min-height: auto;
+  }
+
+  .heroMeta {
+    padding-top: 16px;
+  }
+
+  .heroSide {
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
   .heroBadge {
     min-width: 0;
   }
 
   .inviteForm {
     grid-template-columns: 1fr;
+  }
+
+  .inlineFields {
+    grid-template-columns: 1fr;
+  }
+
+  .modalOverlay {
+    align-items: flex-end;
+    padding: 12px;
+  }
+
+  .modalDialog {
+    max-height: 92vh;
+    border-radius: 16px 16px 10px 10px;
+  }
+
+  .modalHeader,
+  .modalBody,
+  .modalActions {
+    padding-inline: 18px;
+  }
+
+  .modalActions {
+    flex-direction: column;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
   }
 }

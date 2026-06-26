@@ -142,9 +142,10 @@ const CategoryAnalysisChart = ({
         }}
         chartConfig={{
           innerRadius: 66,
-          outerRadius: 121,
+          outerRadius: 108,
           paddingAngle: 2,
           height: 418,
+          chartMargin: { top: 26, right: 118, bottom: 58, left: 118 },
         }}
         labelConfig={{
           fontSize: 12,
@@ -153,9 +154,9 @@ const CategoryAnalysisChart = ({
           activeFontWeight: 700,
           strokeWidth: 1.5,
           activeStrokeWidth: 3,
-          labelRadius: 20,
-          activeLabelRadius: 30,
-          labelMaxLength: 18,
+          labelRadius: 38,
+          activeLabelRadius: 50,
+          labelMaxLength: 16,
         }}
       />
     </div>

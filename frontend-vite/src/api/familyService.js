@@ -24,6 +24,13 @@ export const inviteFamilyMember = async (familyId, email) => {
   return response.data;
 };
 
+export const deleteFamilyMember = async (familyId, memberId) => {
+  const response = await axiosInstance.delete(
+    `${API_URL}/${familyId}/members/${memberId}`
+  );
+  return response.data;
+};
+
 export const getFamilyTransactions = async (familyId) => {
   const response = await axiosInstance.get(`${API_URL}/${familyId}/transactions`);
   return response.data;

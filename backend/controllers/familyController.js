@@ -210,6 +210,44 @@ exports.inviteMember = async (req, res) => {
   }
 };
 
+exports.removeMember = async (req, res) => {
+  try {
+    const family = await Family.findById(req.params.id);
+    if (!family || !isOwner(family, req.user.id)) {
+      return res.status(403).json({ message: "Chỉ chủ gia đình mới có quyền xóa thành viên" });
+    }
+
+    const memberUserId = req.params.memberId;
+    if (isSameId(memberUserId, req.user.id) || isSameId(memberUserId, family.ownerId)) {
+      return res.status(400).json({ message: "Không thể xóa chủ nhóm khỏi gia đình" });
+    }
+
+    const member = getMember(family, memberUserId);
+    if (!member) {
+      return res.status(404).json({ message: "Không tìm thấy thành viên trong gia đình" });
+    }
+
+    family.members = family.members.filter(
+      (item) => !isSameId(item.userId, memberUserId)
+    );
+    await family.save();
+
+    await createNotification({
+      userId: memberUserId,
+      type: "family_member_removed",
+      title: "Bạn đã được xóa khỏi nhóm gia đình",
+      message: `Bạn đã được xóa khỏi nhóm chi tiêu gia đình: ${family.name}.`,
+      priority: "medium",
+      familyId: family._id,
+    });
+
+    res.json({ message: "Đã xóa thành viên khỏi gia đình" });
+  } catch (error) {
+    console.error("Error removing family member:", error);
+    res.status(500).json({ message: "Lỗi khi xóa thành viên", error: error.message });
+  }
+};
+
 const respondInvitation = async (req, res, status) => {
   const invitation = await FamilyInvitation.findOne({
     _id: req.params.id,
