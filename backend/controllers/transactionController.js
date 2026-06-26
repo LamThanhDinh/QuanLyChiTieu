@@ -2,6 +2,12 @@
 const mongoose = require("mongoose");
 const Transaction = require("../models/Transaction");
 const Account = require("../models/Account");
+
+const personalTransactionScope = (userId) => ({
+  userId,
+  $or: [{ familyId: null }, { familyId: { $exists: false } }],
+});
+
 exports.createTransaction = async (req, res) => {
   try {
     const { name, amount, type, categoryId, accountId, date, note } = req.body;
@@ -72,7 +78,7 @@ exports.getAllTransactions = async (req, res) => {
     const skip = (parseInt(page, 10) - 1) * parseInt(limit, 10);
 
     // --- Xây dựng bộ lọc (match criteria) ---
-    const matchCriteria = { userId };
+    const matchCriteria = personalTransactionScope(userId);
 
     //  Lấy thêm tham số year và month từ query
     const { year, month } = req.query;
@@ -220,7 +226,7 @@ exports.deleteTransaction = async (req, res) => {
   try {
     const transaction = await Transaction.findOne({
       _id: req.params.id,
-      userId: req.user.id,
+      ...personalTransactionScope(req.user.id),
     })
       .populate("categoryId")
       .exec();
@@ -298,7 +304,7 @@ exports.updateTransaction = async (req, res) => {
 
     const transaction = await Transaction.findOne({
       _id: transactionId,
-      userId,
+      ...personalTransactionScope(userId),
     })
       .populate("categoryId")
       .exec();

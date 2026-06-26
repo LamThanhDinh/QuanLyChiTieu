@@ -331,6 +331,7 @@ router.delete("/all", verifyToken, async (req, res) => {
   try {
     const result = await require("../models/Transaction").deleteMany({
       userId: req.user.id,
+      $or: [{ familyId: null }, { familyId: { $exists: false } }],
     });
     res.json({
       message: "Đã xóa toàn bộ giao dịch!",

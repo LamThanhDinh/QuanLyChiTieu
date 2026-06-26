@@ -7,6 +7,10 @@ import {
   isTestModeEnabled,
   getTestNotifications,
 } from "../utils/testNotifications";
+import {
+  acceptFamilyInvitation,
+  rejectFamilyInvitation,
+} from "./familyService";
 
 const priorityOrder = { high: 3, medium: 2, low: 1 };
 
@@ -198,6 +202,29 @@ export const getBudgetNotifications = async () => {
   }
 };
 
+export const getStoredNotifications = async () => {
+  try {
+    const response = await axiosInstance.get("/notifications");
+    return response.data?.data || [];
+  } catch (error) {
+    console.error("Error fetching stored notifications:", error);
+    return [];
+  }
+};
+
+export const markNotificationAsRead = async (notificationId) => {
+  const response = await axiosInstance.patch(`/notifications/${notificationId}/read`);
+  return response.data;
+};
+
+export const acceptInvitationNotification = async (invitationId) => {
+  return acceptFamilyInvitation(invitationId);
+};
+
+export const rejectInvitationNotification = async (invitationId) => {
+  return rejectFamilyInvitation(invitationId);
+};
+
 export const getUnreadNotificationCount = async () => {
   try {
     // Kiểm tra test mode
@@ -206,16 +233,23 @@ export const getUnreadNotificationCount = async () => {
       return testNotifications.length;
     }
 
-    const [goalNotifications, spendingNotifications, budgetNotifications] =
+    const [
+      goalNotifications,
+      spendingNotifications,
+      budgetNotifications,
+      storedNotifications,
+    ] =
       await Promise.all([
         getGoalNotifications(),
         generateSpendingNotifications(),
         getBudgetNotifications(),
+        getStoredNotifications(),
       ]);
     const totalNotifications = [
       ...goalNotifications,
       ...spendingNotifications,
       ...budgetNotifications,
+      ...storedNotifications.filter((notification) => !notification.read),
     ];
     return totalNotifications.length;
   } catch (error) {
@@ -233,14 +267,21 @@ export const getAllNotifications = async () => {
       return testNotifications;
     }
 
-    const [goalNotifications, spendingNotifications, budgetNotifications] =
+    const [
+      goalNotifications,
+      spendingNotifications,
+      budgetNotifications,
+      storedNotifications,
+    ] =
       await Promise.all([
         getGoalNotifications(),
         generateSpendingNotifications(),
         getBudgetNotifications(),
+        getStoredNotifications(),
       ]);
 
     const allNotifications = [
+      ...storedNotifications,
       ...goalNotifications,
       ...spendingNotifications,
       ...budgetNotifications,

@@ -32,7 +32,7 @@ import {
   runRecurringTransaction,
   updateRecurringTransaction,
 } from "../api/recurringTransactionService";
-import { getGreeting } from "../utils/timeHelpers";
+import { getFullDate, getGreeting } from "../utils/timeHelpers";
 import { getIconObject } from "../utils/iconMap";
 import styles from "../styles/RecurringTransactionsPage.module.css";
 
@@ -440,7 +440,7 @@ const RecurringTransactionsPage = () => {
 
       <main className={styles.page}>
         <section className={styles.hero}>
-          <div>
+          <div className={styles.heroCopy}>
             <span className={styles.eyebrow}>
               <FontAwesomeIcon icon={faRedoAlt} /> Khoản cố định
             </span>
@@ -449,6 +449,10 @@ const RecurringTransactionsPage = () => {
               Quản lý các khoản thu chi lặp lại như tiền nhà, lương, hóa đơn
               và gói dịch vụ để không phải nhập thủ công mỗi tháng.
             </p>
+            <div className={styles.heroMeta}>
+              <FontAwesomeIcon icon={faCalendarCheck} />
+              <span>{getFullDate()}</span>
+            </div>
           </div>
           <div className={styles.heroActions}>
             <Button

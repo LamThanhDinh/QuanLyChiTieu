@@ -198,14 +198,33 @@ const BasePieChart = ({
     const labelText = `${truncateText(payload.name, labelMaxLength)} ${(
       percent * 100
     ).toFixed(1)}%`;
+    const chartWidth = cx * 2;
+    const chartHeight = cy * 2;
+    const estimatedTextWidth = labelText.length * currentFontSize * 0.58;
+    const edgePadding = 12;
+    let textX = isLeft ? x - textOffset : x + textOffset;
+    let textY = y;
+    let textAnchor = isLeft ? "end" : "start";
+
+    if (!isLeft && textX + estimatedTextWidth > chartWidth - edgePadding) {
+      textX = chartWidth - edgePadding;
+      textAnchor = "end";
+    }
+
+    if (isLeft && textX - estimatedTextWidth < edgePadding) {
+      textX = edgePadding;
+      textAnchor = "start";
+    }
+
+    textY = Math.max(edgePadding, Math.min(chartHeight - edgePadding, textY));
 
     return (
-      <g textAnchor={isLeft ? "end" : "start"} fill={payload.fill}>
+      <g textAnchor={textAnchor} fill={payload.fill}>
         {/* Connection line */}
         <path
           d={`M${cx + (outerRadius + 5) * Math.cos(-midAngle * RADIAN)},${
             cy + (outerRadius + 5) * Math.sin(-midAngle * RADIAN)
-          } L${x},${y}`}
+          } L${x},${textY}`}
           stroke={payload.fill}
           fill="none"
           strokeWidth={currentStrokeWidth}
@@ -213,8 +232,8 @@ const BasePieChart = ({
 
         {/* Category and percentage text */}
         <text
-          x={isLeft ? x - textOffset : x + textOffset}
-          y={y}
+          x={textX}
+          y={textY}
           dominantBaseline="central"
           fontSize={currentFontSize}
           fontWeight={currentFontWeight}

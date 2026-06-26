@@ -1,0 +1,377 @@
+.page {
+  width: 100%;
+  padding: 26px var(--page-padding, 48px) 90px;
+  box-sizing: border-box;
+}
+
+.hero,
+.panel,
+.familyHeader,
+.statCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 26px;
+}
+
+.hero h1,
+.familyHeader h2,
+.panelHeader h2 {
+  margin: 0;
+  color: #172033;
+}
+
+.hero p,
+.familyHeader p {
+  max-width: 720px;
+  margin: 10px 0 0;
+  color: #64748b;
+  line-height: 1.55;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: #4f46e5;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.heroBadge {
+  min-width: 180px;
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  padding: 18px;
+  border-radius: 8px;
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.heroBadge svg {
+  font-size: 28px;
+}
+
+.heroBadge strong {
+  color: #0f172a;
+  font-size: 28px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.sidebar,
+.mainPanel,
+.contentGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.9fr) minmax(280px, 1fr);
+}
+
+.panel,
+.familyHeader {
+  padding: 20px;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.panelHeader svg {
+  color: #4f46e5;
+}
+
+.panel input,
+.panel textarea,
+.panel select,
+.inviteForm input {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  color: #0f172a;
+  font: inherit;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.panel textarea {
+  padding-top: 10px;
+  resize: vertical;
+}
+
+.panel form,
+.panel {
+  min-width: 0;
+}
+
+.panel input + input,
+.panel input + textarea,
+.panel textarea + button,
+.panel select + select,
+.panel select + input,
+.panel input + select,
+.panel textarea + button {
+  margin-top: 10px;
+}
+
+.familyList,
+.memberList,
+.transactionList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.familyItem {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  text-align: left;
+  cursor: pointer;
+}
+
+.familyItem strong,
+.familyItem span {
+  display: block;
+}
+
+.familyItem span {
+  margin-top: 4px;
+  color: #64748b;
+}
+
+.familyItem.active {
+  background: #eef2ff;
+  border-color: #818cf8;
+  color: #3730a3;
+}
+
+.familyHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.inviteForm {
+  min-width: 360px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.inviteForm svg {
+  color: #4f46e5;
+}
+
+.inviteForm button,
+.typeToggle button {
+  min-height: 40px;
+  border: none;
+  border-radius: 8px;
+  padding: 0 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.inviteForm button {
+  background: #4f46e5;
+  color: #ffffff;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.statCard {
+  padding: 18px;
+}
+
+.statCard span {
+  display: block;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.statCard strong {
+  color: #0f172a;
+  font-size: 22px;
+}
+
+.income {
+  color: #059669 !important;
+}
+
+.expense {
+  color: #dc2626 !important;
+}
+
+.typeToggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.typeToggle button {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.typeToggle .expenseActive {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.typeToggle .incomeActive {
+  background: #dcfce7;
+  color: #047857;
+}
+
+.memberItem,
+.transactionItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.memberItem strong,
+.memberItem span,
+.transactionItem strong,
+.transactionItem span {
+  display: block;
+}
+
+.memberItem span,
+.transactionItem span {
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.memberItem b {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4f46e5;
+  font-size: 12px;
+}
+
+.transactionItem b {
+  white-space: nowrap;
+}
+
+.message {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.message.success {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.message.error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.message.info {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.emptyState {
+  padding: 18px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  color: #64748b;
+  text-align: center;
+}
+
+@media (max-width: 1050px) {
+  .layout,
+  .contentGrid,
+  .familyHeader,
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .familyHeader {
+    flex-direction: column;
+  }
+
+  .inviteForm {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 620px) {
+  .page {
+    padding-inline: 12px;
+    padding-bottom: 110px;
+  }
+
+  .hero,
+  .memberItem,
+  .transactionItem {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .heroBadge {
+    min-width: 0;
+  }
+
+  .inviteForm {
+    grid-template-columns: 1fr;
+  }
+}

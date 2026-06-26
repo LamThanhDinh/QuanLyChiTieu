@@ -7,10 +7,11 @@
 
 .hero {
   display: flex;
-  align-items: flex-end;
+  align-items: stretch;
   justify-content: space-between;
   gap: 24px;
-  padding: 24px;
+  min-height: 188px;
+  padding: 28px;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   background: #ffffff;
@@ -25,6 +26,8 @@
 }
 
 .heroCopy {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
 }
 
@@ -54,9 +57,25 @@
   line-height: 1.55;
 }
 
+.heroMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 48px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.heroMeta svg {
+  color: #818cf8;
+}
+
 .heroActions {
   display: flex;
   align-items: center;
+  align-self: flex-end;
   gap: 10px;
   flex-wrap: wrap;
   justify-content: flex-end;
@@ -885,6 +904,14 @@
   .heroActions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .hero {
+    min-height: auto;
+  }
+
+  .heroMeta {
+    padding-top: 16px;
   }
 
   .toolsGrid,

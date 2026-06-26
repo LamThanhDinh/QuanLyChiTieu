@@ -33,6 +33,12 @@ const TransactionSchema = new mongoose.Schema(
       ref: "RecurringTransaction",
       required: false,
     },
+    familyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Family",
+      required: false,
+      default: null,
+    },
   },
   { timestamps: true }
 );

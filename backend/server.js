@@ -62,6 +62,9 @@ app.use("/api/statistics", statisticsRoutes);
 
 app.use("/api/goals", require("./routes/goalRoutes"));
 app.use("/api/budgets", require("./routes/budgetRoutes"));
+app.use("/api/families", require("./routes/familyRoutes"));
+app.use("/api/family-invitations", require("./routes/familyInvitationRoutes"));
+app.use("/api/notifications", require("./routes/notificationRoutes"));
 app.use(
   "/api/recurring-transactions",
   require("./routes/recurringTransactionRoutes")

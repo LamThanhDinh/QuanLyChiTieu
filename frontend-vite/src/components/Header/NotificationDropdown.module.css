@@ -160,6 +160,40 @@
   color: #999;
 }
 
+.notificationActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.notificationActions button {
+  min-height: 30px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.acceptButton {
+  background: #dcfce7;
+  color: #047857;
+}
+
+.acceptButton:hover {
+  background: #bbf7d0;
+}
+
+.rejectButton {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.rejectButton:hover {
+  background: #fecaca;
+}
+
 .emptyState {
   display: flex;
   flex-direction: column;

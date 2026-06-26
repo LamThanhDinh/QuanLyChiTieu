@@ -26,7 +26,7 @@ import {
   saveBudget,
   updateBudget,
 } from "../api/budgetService";
-import { getGreeting } from "../utils/timeHelpers";
+import { getFullDate, getGreeting } from "../utils/timeHelpers";
 import { getIconObject } from "../utils/iconMap";
 import styles from "../styles/BudgetsPage.module.css";
 
@@ -403,6 +403,10 @@ const BudgetsPage = () => {
               Theo dõi ngân sách từng danh mục, cảnh báo khi gần vượt và
               đề xuất kế hoạch tháng tới từ lịch sử chi tiêu.
             </p>
+            <div className={styles.heroMeta}>
+              <FontAwesomeIcon icon={faCalendarAlt} />
+              <span>{getFullDate()}</span>
+            </div>
           </div>
           <div className={styles.heroActions}>
             <Button

@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./NotificationDropdown.module.css";
-import { getAllNotifications } from "../../api/notificationService";
+import {
+  acceptInvitationNotification,
+  getAllNotifications,
+  markNotificationAsRead,
+  rejectInvitationNotification,
+} from "../../api/notificationService";
 
 const NotificationDropdown = ({ isOpen, onClose }) => {
   const [notifications, setNotifications] = useState([]);
@@ -53,10 +58,25 @@ const NotificationDropdown = ({ isOpen, onClose }) => {
         return "💸";
       case "spending_limit":
         return "💰";
+      case "family_invitation":
+        return "👨‍👩‍👧‍👦";
+      case "family_invitation_accepted":
+        return "✅";
+      case "family_invitation_rejected":
+        return "❌";
       default:
         return "📢";
     }
   };
+
+  const isFamilyNotification = (notification) =>
+    notification?.type?.startsWith("family_");
+
+  const isPendingFamilyInvitation = (notification) =>
+    notification?.type === "family_invitation" &&
+    notification?.invitationId &&
+    notification?.invitationStatus !== "accepted" &&
+    notification?.invitationStatus !== "rejected";
 
   const navigateByNotification = (notification) => {
     if (notification?.goalId) {
@@ -68,6 +88,8 @@ const NotificationDropdown = ({ isOpen, onClose }) => {
       navigate("/budgets");
     } else if (notification?.type === "spending_limit") {
       navigate("/transactions");
+    } else if (isFamilyNotification(notification)) {
+      navigate("/families");
     } else {
       navigate("/goals");
     }
@@ -116,6 +138,33 @@ const NotificationDropdown = ({ isOpen, onClose }) => {
     return formatTimeAgo(notification.createdAt);
   };
 
+  const handleNotificationClick = async (notification) => {
+    try {
+      if (notification?._id && !notification.read) {
+        await markNotificationAsRead(notification._id);
+      }
+    } catch (error) {
+      console.error("Error marking notification read:", error);
+    }
+    navigateByNotification(notification);
+  };
+
+  const handleInvitationResponse = async (event, notification, action) => {
+    event.stopPropagation();
+    if (!notification?.invitationId) return;
+
+    try {
+      if (action === "accept") {
+        await acceptInvitationNotification(notification.invitationId);
+      } else {
+        await rejectInvitationNotification(notification.invitationId);
+      }
+      await loadNotifications();
+    } catch (error) {
+      console.error("Error responding family invitation:", error);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -139,7 +188,7 @@ const NotificationDropdown = ({ isOpen, onClose }) => {
               <div
                 key={notification.id}
                 className={`${styles.notificationItem} ${styles[notification.priority]}`}
-                onClick={() => navigateByNotification(notification)}
+                onClick={() => handleNotificationClick(notification)}
               >
                 <div className={styles.notificationIcon}>
                   <span className={styles.typeIcon}>
@@ -159,6 +208,28 @@ const NotificationDropdown = ({ isOpen, onClose }) => {
                   <div className={styles.notificationTime}>
                     {getNotificationMeta(notification)}
                   </div>
+                  {isPendingFamilyInvitation(notification) && (
+                    <div className={styles.notificationActions}>
+                      <button
+                        type="button"
+                        className={styles.acceptButton}
+                        onClick={(event) =>
+                          handleInvitationResponse(event, notification, "accept")
+                        }
+                      >
+                        Chấp nhận
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.rejectButton}
+                        onClick={(event) =>
+                          handleInvitationResponse(event, notification, "reject")
+                        }
+                      >
+                        Từ chối
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
