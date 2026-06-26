@@ -143,7 +143,7 @@ const BasePieChart = ({
     activeStrokeWidth = 2.2,
     labelRadius = 35,
     activeLabelRadius = 45,
-    labelMaxLength = 14,
+    labelMaxLength = 18,
   } = labelConfig;
 
   // Process data to ensure colors are assigned
@@ -195,16 +195,27 @@ const BasePieChart = ({
 
     const textOffset = 6;
     const isLeft = x < cx;
-    const labelText = `${truncateText(payload.name, labelMaxLength)} ${(
-      percent * 100
-    ).toFixed(1)}%`;
+    const percentText = `${(percent * 100).toFixed(1)}%`;
     const chartWidth = cx * 2;
     const chartHeight = cy * 2;
-    const estimatedTextWidth = labelText.length * currentFontSize * 0.58;
     const edgePadding = 12;
     let textX = isLeft ? x - textOffset : x + textOffset;
     let textY = y;
     let textAnchor = isLeft ? "end" : "start";
+    let availableWidth = isLeft
+      ? textX - edgePadding
+      : chartWidth - edgePadding - textX;
+    const percentChars = percentText.length + 1;
+    const maxTextChars = Math.max(
+      7,
+      Math.floor(availableWidth / (currentFontSize * 0.58))
+    );
+    const fittedNameLength = Math.max(
+      4,
+      Math.min(labelMaxLength, maxTextChars - percentChars)
+    );
+    let labelText = `${truncateText(payload.name, fittedNameLength)} ${percentText}`;
+    let estimatedTextWidth = labelText.length * currentFontSize * 0.58;
 
     if (!isLeft && textX + estimatedTextWidth > chartWidth - edgePadding) {
       textX = chartWidth - edgePadding;
@@ -216,6 +227,19 @@ const BasePieChart = ({
       textAnchor = "start";
     }
 
+    availableWidth =
+      textAnchor === "end"
+        ? textX - edgePadding
+        : chartWidth - edgePadding - textX;
+    const clampedMaxChars = Math.max(
+      7,
+      Math.floor(availableWidth / (currentFontSize * 0.58))
+    );
+    const clampedNameLength = Math.max(
+      4,
+      Math.min(labelMaxLength, clampedMaxChars - percentChars)
+    );
+    labelText = `${truncateText(payload.name, clampedNameLength)} ${percentText}`;
     textY = Math.max(edgePadding, Math.min(chartHeight - edgePadding, textY));
 
     return (

@@ -155,7 +155,7 @@ const CategoryAnalysisChart = ({
           activeStrokeWidth: 3,
           labelRadius: 32,
           activeLabelRadius: 46,
-          labelMaxLength: 13,
+          labelMaxLength: 18,
         }}
       />
     </div>
