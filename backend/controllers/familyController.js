@@ -347,6 +347,39 @@ exports.removeMember = async (req, res) => {
   }
 };
 
+exports.updateMemberNickname = async (req, res) => {
+  try {
+    const family = await Family.findById(req.params.id)
+      .populate("ownerId", "fullname email username avatar")
+      .populate("members.userId", "fullname email username avatar");
+
+    if (!family || !getMember(family, req.user.id)) {
+      return res.status(404).json({ message: "Không tìm thấy gia đình hoặc bạn không có quyền truy cập" });
+    }
+
+    const member = getMember(family, req.params.memberId);
+    if (!member) {
+      return res.status(404).json({ message: "Không tìm thấy thành viên trong gia đình" });
+    }
+
+    const memberUserId = member.userId?._id || member.userId;
+    const canEditNickname = isOwner(family, req.user.id) || isSameId(memberUserId, req.user.id);
+    if (!canEditNickname) {
+      return res.status(403).json({
+        message: "Bạn chỉ có thể đặt biệt danh của bản thân hoặc thành viên nếu là chủ nhóm",
+      });
+    }
+
+    member.nickname = String(req.body.nickname || "").trim().slice(0, 40);
+    await family.save();
+
+    res.json({ message: "Đã cập nhật biệt danh", family });
+  } catch (error) {
+    console.error("Error updating member nickname:", error);
+    res.status(500).json({ message: "Lỗi khi cập nhật biệt danh", error: error.message });
+  }
+};
+
 const respondInvitation = async (req, res, status) => {
   const invitation = await FamilyInvitation.findOne({
     _id: req.params.id,

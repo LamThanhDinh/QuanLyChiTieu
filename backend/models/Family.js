@@ -8,6 +8,7 @@ const FamilyMemberSchema = new mongoose.Schema(
       required: true,
     },
     email: { type: String, required: true, lowercase: true, trim: true },
+    nickname: { type: String, trim: true, default: "" },
     role: {
       type: String,
       enum: ["owner", "member"],

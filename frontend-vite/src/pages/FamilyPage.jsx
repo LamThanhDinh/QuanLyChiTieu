@@ -45,6 +45,7 @@ import {
   inviteFamilyMember,
   leaveFamily,
   transferFamilyOwnership,
+  updateFamilyMemberNickname,
   updateFamilyTransaction,
 } from "../api/familyService";
 import { getFullDate, getGreeting } from "../utils/timeHelpers";
@@ -541,6 +542,8 @@ const FamilyPage = () => {
 
   // confirm dialog states
   const [memberToDelete, setMemberToDelete] = useState(null);
+  const [memberNicknameEdit, setMemberNicknameEdit] = useState(null);
+  const [nicknameValue, setNicknameValue] = useState("");
   const [txToDelete, setTxToDelete] = useState(null);
   const [showDeleteFamily, setShowDeleteFamily] = useState(false);
   const [showLeaveFamily, setShowLeaveFamily] = useState(false);
@@ -782,6 +785,39 @@ const FamilyPage = () => {
       setMessageType("success");
     } catch (err) {
       setMessage(err.response?.data?.message || "Không thể xóa thành viên.");
+      setMessageType("error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const openNicknameModal = (member) => {
+    const memberId = member.userId?._id || member.userId;
+    setMemberNicknameEdit({
+      id: memberId,
+      name: member.userId?.fullname || member.userId?.username || member.email,
+    });
+    setNicknameValue(member.nickname || "");
+  };
+
+  const handleUpdateNickname = async (e) => {
+    e.preventDefault();
+    if (!selectedFamilyId || !memberNicknameEdit) return;
+    setIsSaving(true);
+    setMessage("");
+    try {
+      await updateFamilyMemberNickname(
+        selectedFamilyId,
+        memberNicknameEdit.id,
+        nicknameValue
+      );
+      setMemberNicknameEdit(null);
+      setNicknameValue("");
+      await Promise.all([loadFamilyData(txPage), loadBaseData()]);
+      setMessage(nicknameValue.trim() ? "Đã cập nhật biệt danh." : "Đã xóa biệt danh.");
+      setMessageType("success");
+    } catch (err) {
+      setMessage(err.response?.data?.message || "Không thể cập nhật biệt danh.");
       setMessageType("error");
     } finally {
       setIsSaving(false);
@@ -1132,10 +1168,25 @@ const FamilyPage = () => {
                                 {member.userId?.fullname || member.userId?.username || member.email}
                                 {isMe && <span className={styles.youBadge}>(Bạn)</span>}
                               </strong>
+                              {member.nickname && (
+                                <span className={styles.nicknameText}>
+                                  Biệt danh: {member.nickname}
+                                </span>
+                              )}
                               <span>{member.email}</span>
                             </div>
                             <div className={styles.memberActions}>
                               <b>{isOwnerMember ? "Chủ nhóm" : "Thành viên"}</b>
+                              {(isCurrentUserOwner || isMe) && (
+                                <button
+                                  type="button"
+                                  className={styles.editMemberButton}
+                                  title="Đặt biệt danh"
+                                  onClick={() => openNicknameModal(member)}
+                                >
+                                  <FontAwesomeIcon icon={faPencilAlt} />
+                                </button>
+                              )}
                               {isCurrentUserOwner && !isOwnerMember && (
                                 <button
                                   type="button"
@@ -1378,6 +1429,59 @@ const FamilyPage = () => {
         confirmText="Rời nhóm"
         isProcessing={isSaving}
       />
+
+      {/* Edit member nickname modal */}
+      {memberNicknameEdit && (
+        <div className={styles.modalOverlay} onMouseDown={() => setMemberNicknameEdit(null)}>
+          <form
+            className={styles.modalDialog}
+            onSubmit={handleUpdateNickname}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className={styles.modalHeader}>
+              <FontAwesomeIcon icon={faPencilAlt} />
+              <div>
+                <h2>Đặt biệt danh</h2>
+                <p>Đặt cách gọi thân thuộc cho thành viên trong gia đình.</p>
+              </div>
+              <button type="button" onClick={() => setMemberNicknameEdit(null)} aria-label="Đóng">
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </div>
+            <div className={styles.modalBody}>
+              <label>
+                Thành viên
+                <input value={memberNicknameEdit.name} disabled />
+              </label>
+              <label>
+                Biệt danh
+                <input
+                  value={nicknameValue}
+                  onChange={(e) => setNicknameValue(e.target.value)}
+                  placeholder="VD: Mẹ, Cha, Anh Hai..."
+                  maxLength={40}
+                  autoFocus
+                />
+              </label>
+              <p className={styles.modalHint}>
+                Để trống và lưu nếu bạn muốn xóa biệt danh hiện tại.
+              </p>
+            </div>
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={() => setMemberNicknameEdit(null)}
+              >
+                <FontAwesomeIcon icon={faTimes} /> Hủy
+              </button>
+              <button type="submit" className={styles.primaryButton} disabled={isSaving}>
+                <FontAwesomeIcon icon={faCheck} /> Lưu biệt danh
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* Transfer ownership modal */}
       {isTransferModalOpen && (

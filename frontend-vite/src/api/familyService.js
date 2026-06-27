@@ -36,6 +36,14 @@ export const deleteFamilyMember = async (familyId, memberId) => {
   return response.data;
 };
 
+export const updateFamilyMemberNickname = async (familyId, memberId, nickname) => {
+  const response = await axiosInstance.patch(
+    `${API_URL}/${familyId}/members/${memberId}/nickname`,
+    { nickname }
+  );
+  return response.data;
+};
+
 export const leaveFamily = async (familyId) => {
   const response = await axiosInstance.post(`${API_URL}/${familyId}/leave`);
   return response.data;

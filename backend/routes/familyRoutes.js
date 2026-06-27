@@ -8,6 +8,7 @@ router.get("/", verifyToken, familyController.getFamilies);
 router.get("/:id", verifyToken, familyController.getFamilyDetail);
 router.delete("/:id", verifyToken, familyController.deleteFamily);
 router.post("/:id/invite", verifyToken, familyController.inviteMember);
+router.patch("/:id/members/:memberId/nickname", verifyToken, familyController.updateMemberNickname);
 router.delete("/:id/members/:memberId", verifyToken, familyController.removeMember);
 router.post("/:id/leave", verifyToken, familyController.leaveFamily);
 router.post("/:id/transfer-ownership", verifyToken, familyController.transferOwnership);
