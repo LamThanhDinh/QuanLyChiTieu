@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+﻿import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowDown,
@@ -979,7 +979,7 @@ const FamilyPage = () => {
             {!selectedFamily ? (
               <div className={styles.panel}>
                 <div className={styles.emptyState}>
-                  HĂ£y táº¡o hoáº·c chá»n má»™t nhĂ³m gia Ä‘Ă¬nh Ä‘á»ƒ báº¯t Ä‘áº§u.
+                  Hãy tạo hoặc chọn một nhóm gia đình để bắt đầu.
                 </div>
               </div>
             ) : (
