@@ -141,22 +141,22 @@ const CategoryAnalysisChart = ({
           title: "Xem trang quản lý giao dịch",
         }}
         chartConfig={{
-          innerRadius: 66,
-          outerRadius: 108,
+          innerRadius: 58,
+          outerRadius: 88,
           paddingAngle: 2,
-          height: 418,
-          chartMargin: { top: 26, right: 118, bottom: 58, left: 118 },
+          height: 380,
+          chartMargin: { top: 24, right: 88, bottom: 52, left: 88 },
         }}
         labelConfig={{
           fontSize: 12,
-          activeFontSize: 15,
+          activeFontSize: 13,
           fontWeight: 600,
           activeFontWeight: 700,
-          strokeWidth: 1.5,
-          activeStrokeWidth: 3,
-          labelRadius: 38,
-          activeLabelRadius: 50,
-          labelMaxLength: 16,
+          strokeWidth: 1.4,
+          activeStrokeWidth: 2.2,
+          labelRadius: 26,
+          activeLabelRadius: 34,
+          labelMaxLength: 14,
         }}
       />
     </div>

@@ -199,9 +199,14 @@ const BasePieChart = ({
     const labelText = `${truncateText(payload.name, labelMaxLength)} ${(
       percent * 100
     ).toFixed(1)}%`;
-    const textX = isLeft ? x - textOffset : x + textOffset;
+    const rawTextX = isLeft ? x - textOffset : x + textOffset;
     const textY = y;
     const textAnchor = isLeft ? "end" : "start";
+    const estimatedTextWidth = labelText.length * currentFontSize * 0.56;
+    const chartWidth = cx * 2;
+    const minTextX = isLeft ? estimatedTextWidth + 8 : 8;
+    const maxTextX = isLeft ? chartWidth - 8 : chartWidth - estimatedTextWidth - 8;
+    const textX = Math.max(minTextX, Math.min(rawTextX, maxTextX));
 
     return (
       <g textAnchor={textAnchor} fill={payload.fill}>
