@@ -17,6 +17,11 @@ export const getFamilyDetail = async (familyId) => {
   return response.data;
 };
 
+export const deleteFamily = async (familyId) => {
+  const response = await axiosInstance.delete(`${API_URL}/${familyId}`);
+  return response.data;
+};
+
 export const inviteFamilyMember = async (familyId, email) => {
   const response = await axiosInstance.post(`${API_URL}/${familyId}/invite`, {
     email,
@@ -31,8 +36,23 @@ export const deleteFamilyMember = async (familyId, memberId) => {
   return response.data;
 };
 
-export const getFamilyTransactions = async (familyId) => {
-  const response = await axiosInstance.get(`${API_URL}/${familyId}/transactions`);
+export const leaveFamily = async (familyId) => {
+  const response = await axiosInstance.post(`${API_URL}/${familyId}/leave`);
+  return response.data;
+};
+
+export const transferFamilyOwnership = async (familyId, newOwnerId) => {
+  const response = await axiosInstance.post(
+    `${API_URL}/${familyId}/transfer-ownership`,
+    { newOwnerId }
+  );
+  return response.data;
+};
+
+export const getFamilyTransactions = async (familyId, { page = 1, limit = 20 } = {}) => {
+  const response = await axiosInstance.get(`${API_URL}/${familyId}/transactions`, {
+    params: { page, limit },
+  });
   return response.data;
 };
 

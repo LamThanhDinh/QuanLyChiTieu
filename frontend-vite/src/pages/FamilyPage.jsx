@@ -6,6 +6,9 @@ import {
   faCalendarAlt,
   faCheck,
   faCheckCircle,
+  faChevronLeft,
+  faChevronRight,
+  faCrown,
   faEdit,
   faEnvelope,
   faExclamationTriangle,
@@ -13,6 +16,7 @@ import {
   faPencilAlt,
   faPlus,
   faReceipt,
+  faSignOutAlt,
   faSpinner,
   faTimes,
   faTrash,
@@ -31,12 +35,15 @@ import { getCategories } from "../api/categoriesService";
 import {
   createFamily,
   createFamilyTransaction,
+  deleteFamily,
   deleteFamilyMember,
   deleteFamilyTransaction,
   getFamilies,
   getFamilyDetail,
   getFamilyTransactions,
   inviteFamilyMember,
+  leaveFamily,
+  transferFamilyOwnership,
   updateFamilyTransaction,
 } from "../api/familyService";
 import { getFullDate, getGreeting } from "../utils/timeHelpers";
@@ -526,11 +533,19 @@ const FamilyPage = () => {
   // modal states
   const [isFamilyModalOpen, setIsFamilyModalOpen] = useState(false);
   const [isTxModalOpen, setIsTxModalOpen] = useState(false);
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
   const [editingTx, setEditingTx] = useState(null); // null = add, object = edit
+  const [transferToMemberId, setTransferToMemberId] = useState("");
 
-  // confirm delete states
+  // confirm dialog states
   const [memberToDelete, setMemberToDelete] = useState(null);
   const [txToDelete, setTxToDelete] = useState(null);
+  const [showDeleteFamily, setShowDeleteFamily] = useState(false);
+  const [showLeaveFamily, setShowLeaveFamily] = useState(false);
+
+  // pagination
+  const [txPage, setTxPage] = useState(1);
+  const [txPagination, setTxPagination] = useState(null); // { total, page, limit, totalPages }
 
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("info");
@@ -576,20 +591,23 @@ const FamilyPage = () => {
     }
   }, []);
 
-  const loadFamilyData = useCallback(async () => {
+  const loadFamilyData = useCallback(async (page = 1) => {
     if (!selectedFamilyId) {
       setFamilyDetail(null);
       setTransactions([]);
+      setTxPagination(null);
       return;
     }
     try {
       const [detailRes, txRes] = await Promise.all([
         getFamilyDetail(selectedFamilyId),
-        getFamilyTransactions(selectedFamilyId),
+        getFamilyTransactions(selectedFamilyId, { page, limit: 20 }),
       ]);
       setFamilyDetail(detailRes.family);
       setStats(txRes.stats || detailRes.stats || {});
       setTransactions(txRes.data || []);
+      setTxPagination(txRes.pagination || null);
+      setTxPage(page);
     } catch {
       setMessage("Không thể tải chi tiết gia đình.");
       setMessageType("error");
@@ -597,7 +615,7 @@ const FamilyPage = () => {
   }, [selectedFamilyId]);
 
   useEffect(() => { loadBaseData(); }, [loadBaseData]);
-  useEffect(() => { loadFamilyData(); }, [loadFamilyData]);
+  useEffect(() => { setTxPage(1); loadFamilyData(1); }, [loadFamilyData]);
 
   // flash message auto-clear
   useEffect(() => {
@@ -693,11 +711,69 @@ const FamilyPage = () => {
     try {
       await deleteFamilyMember(selectedFamilyId, memberToDelete.id);
       setMemberToDelete(null);
-      await Promise.all([loadFamilyData(), loadBaseData()]);
+      await Promise.all([loadFamilyData(1), loadBaseData()]);
       setMessage("Đã xóa thành viên khỏi gia đình.");
       setMessageType("success");
     } catch (err) {
       setMessage(err.response?.data?.message || "Không thể xóa thành viên.");
+      setMessageType("error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteFamily = async () => {
+    if (!selectedFamilyId) return;
+    setIsSaving(true);
+    setMessage("");
+    try {
+      await deleteFamily(selectedFamilyId);
+      setShowDeleteFamily(false);
+      setSelectedFamilyId("");
+      await loadBaseData();
+      setMessage("Đã xóa nhóm gia đình.");
+      setMessageType("success");
+    } catch (err) {
+      setMessage(err.response?.data?.message || "Không thể xóa nhóm gia đình.");
+      setMessageType("error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleLeaveFamily = async () => {
+    if (!selectedFamilyId) return;
+    setIsSaving(true);
+    setMessage("");
+    try {
+      await leaveFamily(selectedFamilyId);
+      setShowLeaveFamily(false);
+      setSelectedFamilyId("");
+      await loadBaseData();
+      setMessage("Đã rời khỏi nhóm gia đình.");
+      setMessageType("success");
+    } catch (err) {
+      setMessage(err.response?.data?.message || "Không thể rời nhóm.");
+      setMessageType("error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleTransferOwnership = async (e) => {
+    e.preventDefault();
+    if (!selectedFamilyId || !transferToMemberId) return;
+    setIsSaving(true);
+    setMessage("");
+    try {
+      await transferFamilyOwnership(selectedFamilyId, transferToMemberId);
+      setIsTransferModalOpen(false);
+      setTransferToMemberId("");
+      await Promise.all([loadFamilyData(1), loadBaseData()]);
+      setMessage("Đã chuyển quyền chủ nhóm thành công.");
+      setMessageType("success");
+    } catch (err) {
+      setMessage(err.response?.data?.message || "Không thể chuyển quyền.");
       setMessageType("error");
     } finally {
       setIsSaving(false);
@@ -798,27 +874,68 @@ const FamilyPage = () => {
                     <p>{familyDetail?.description || "Cùng quản lý thu chi chung."}</p>
                   </div>
                   <div className={styles.familyHeaderActions}>
-                    <form className={styles.inviteForm} onSubmit={handleInvite}>
-                      <FontAwesomeIcon icon={faEnvelope} />
-                      <input
-                        type="email"
-                        value={inviteEmail}
-                        onChange={(e) => setInviteEmail(e.target.value)}
-                        placeholder="Nhập email thành viên"
-                      />
-                      <button type="submit" disabled={isSaving || !inviteEmail.trim()}>
-                        Mời
-                      </button>
-                    </form>
-                    <Button
-                      type="button"
-                      icon={<FontAwesomeIcon icon={faPlus} />}
-                      variant="primary"
-                      onClick={() => { setEditingTx(null); setIsTxModalOpen(true); }}
-                      className={styles.addTransactionButton}
-                    >
-                      Thêm giao dịch chung
-                    </Button>
+                    {isCurrentUserOwner ? (
+                      <>
+                        <form className={styles.inviteForm} onSubmit={handleInvite}>
+                          <FontAwesomeIcon icon={faEnvelope} />
+                          <input
+                            type="email"
+                            value={inviteEmail}
+                            onChange={(e) => setInviteEmail(e.target.value)}
+                            placeholder="Nhập email thành viên"
+                          />
+                          <button type="submit" disabled={isSaving || !inviteEmail.trim()}>
+                            Mời
+                          </button>
+                        </form>
+                        <Button
+                          type="button"
+                          icon={<FontAwesomeIcon icon={faPlus} />}
+                          variant="primary"
+                          onClick={() => { setEditingTx(null); setIsTxModalOpen(true); }}
+                          className={styles.addTransactionButton}
+                        >
+                          Thêm giao dịch chung
+                        </Button>
+                        <button
+                          type="button"
+                          className={styles.ownerActionButton}
+                          title="Chuyển quyền chủ nhóm"
+                          onClick={() => { setTransferToMemberId(""); setIsTransferModalOpen(true); }}
+                        >
+                          <FontAwesomeIcon icon={faCrown} />
+                        </button>
+                        <button
+                          type="button"
+                          className={styles.dangerActionButton}
+                          title="Xóa nhóm gia đình"
+                          onClick={() => setShowDeleteFamily(true)}
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          type="button"
+                          icon={<FontAwesomeIcon icon={faPlus} />}
+                          variant="primary"
+                          onClick={() => { setEditingTx(null); setIsTxModalOpen(true); }}
+                          className={styles.addTransactionButton}
+                        >
+                          Thêm giao dịch chung
+                        </Button>
+                        <button
+                          type="button"
+                          className={styles.leaveButton}
+                          title="Rời khỏi nhóm"
+                          onClick={() => setShowLeaveFamily(true)}
+                        >
+                          <FontAwesomeIcon icon={faSignOutAlt} />
+                          Rời nhóm
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -850,40 +967,46 @@ const FamilyPage = () => {
                       <FontAwesomeIcon icon={faUsers} />
                     </div>
                     <div className={styles.memberList}>
-                      {(familyDetail?.members || selectedFamily.members || []).map((member) => (
-                        <div
-                          key={member.userId?._id || member.userId}
-                          className={styles.memberItem}
-                        >
-                          <div>
-                            <strong>
-                              {member.userId?.fullname || member.userId?.username || member.email}
-                            </strong>
-                            <span>{member.email}</span>
+                      {(familyDetail?.members || selectedFamily.members || []).map((member) => {
+                        const memberId = member.userId?._id || member.userId;
+                        const isMe = String(memberId) === String(currentUserId);
+                        const isOwnerMember = member.role === "owner";
+                        return (
+                          <div
+                            key={memberId}
+                            className={styles.memberItem}
+                          >
+                            <div>
+                              <strong>
+                                {member.userId?.fullname || member.userId?.username || member.email}
+                                {isMe && <span className={styles.youBadge}>(Bạn)</span>}
+                              </strong>
+                              <span>{member.email}</span>
+                            </div>
+                            <div className={styles.memberActions}>
+                              <b>{isOwnerMember ? "Chủ nhóm" : "Thành viên"}</b>
+                              {isCurrentUserOwner && !isOwnerMember && (
+                                <button
+                                  type="button"
+                                  className={styles.deleteMemberButton}
+                                  title="Xóa thành viên"
+                                  onClick={() =>
+                                    setMemberToDelete({
+                                      id: memberId,
+                                      name:
+                                        member.userId?.fullname ||
+                                        member.userId?.username ||
+                                        member.email,
+                                    })
+                                  }
+                                >
+                                  <FontAwesomeIcon icon={faTrash} />
+                                </button>
+                              )}
+                            </div>
                           </div>
-                          <div className={styles.memberActions}>
-                            <b>{member.role === "owner" ? "Chủ nhóm" : "Thành viên"}</b>
-                            {isCurrentUserOwner && member.role !== "owner" && (
-                              <button
-                                type="button"
-                                className={styles.deleteMemberButton}
-                                title="Xóa thành viên"
-                                onClick={() =>
-                                  setMemberToDelete({
-                                    id: member.userId?._id || member.userId,
-                                    name:
-                                      member.userId?.fullname ||
-                                      member.userId?.username ||
-                                      member.email,
-                                  })
-                                }
-                              >
-                                <FontAwesomeIcon icon={faTrash} />
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -897,65 +1020,93 @@ const FamilyPage = () => {
                   {transactions.length === 0 ? (
                     <div className={styles.emptyState}>Chưa có giao dịch gia đình.</div>
                   ) : (
-                    <div className={styles.transactionList}>
-                      {transactions.map((tx) => {
-                        const creatorName =
-                          tx.createdBy?.fullname ||
-                          tx.createdBy?.username ||
-                          tx.createdBy?.email ||
-                          null;
-                        return (
-                          <article key={tx.id || tx._id} className={styles.transactionItem}>
-                            <div style={{ minWidth: 0, flex: 1 }}>
-                              <strong>{tx.description || tx.name}</strong>
-                              <span>
-                                {tx.category?.name || "Danh mục"}
-                                {" · "}
-                                {tx.paymentMethod?.name || "Tài khoản"}
-                                {" · "}
-                                {new Date(tx.date).toLocaleDateString("vi-VN")}
-                                {creatorName && (
-                                  <>
-                                    {" · "}
-                                    <FontAwesomeIcon
-                                      icon={faUserCircle}
-                                      style={{ marginRight: 3 }}
-                                    />
-                                    {creatorName}
-                                  </>
-                                )}
-                              </span>
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-                              <b
-                                className={
-                                  tx.type === "THUNHAP" ? styles.income : styles.expense
-                                }
-                              >
-                                {tx.type === "THUNHAP" ? "+" : "-"}
-                                {formatCurrency(tx.amount)}
-                              </b>
-                              <button
-                                type="button"
-                                className={styles.editTxButton}
-                                title="Sửa giao dịch"
-                                onClick={() => { setEditingTx(tx); setIsTxModalOpen(true); }}
-                              >
-                                <FontAwesomeIcon icon={faPencilAlt} />
-                              </button>
-                              <button
-                                type="button"
-                                className={styles.deleteMemberButton}
-                                title="Xóa giao dịch"
-                                onClick={() => setTxToDelete(tx)}
-                              >
-                                <FontAwesomeIcon icon={faTrash} />
-                              </button>
-                            </div>
-                          </article>
-                        );
-                      })}
-                    </div>
+                    <>
+                      <div className={styles.transactionList}>
+                        {transactions.map((tx) => {
+                          const creatorName =
+                            tx.createdBy?.fullname ||
+                            tx.createdBy?.username ||
+                            tx.createdBy?.email ||
+                            null;
+                          return (
+                            <article key={tx.id || tx._id} className={styles.transactionItem}>
+                              <div style={{ minWidth: 0, flex: 1 }}>
+                                <strong>{tx.description || tx.name}</strong>
+                                <span>
+                                  {tx.category?.name || "Danh mục"}
+                                  {" · "}
+                                  {tx.paymentMethod?.name || "Tài khoản"}
+                                  {" · "}
+                                  {new Date(tx.date).toLocaleDateString("vi-VN")}
+                                  {creatorName && (
+                                    <>
+                                      {" · "}
+                                      <FontAwesomeIcon
+                                        icon={faUserCircle}
+                                        style={{ marginRight: 3 }}
+                                      />
+                                      {creatorName}
+                                    </>
+                                  )}
+                                </span>
+                              </div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+                                <b
+                                  className={
+                                    tx.type === "THUNHAP" ? styles.income : styles.expense
+                                  }
+                                >
+                                  {tx.type === "THUNHAP" ? "+" : "-"}
+                                  {formatCurrency(tx.amount)}
+                                </b>
+                                <button
+                                  type="button"
+                                  className={styles.editTxButton}
+                                  title="Sửa giao dịch"
+                                  onClick={() => { setEditingTx(tx); setIsTxModalOpen(true); }}
+                                >
+                                  <FontAwesomeIcon icon={faPencilAlt} />
+                                </button>
+                                <button
+                                  type="button"
+                                  className={styles.deleteMemberButton}
+                                  title="Xóa giao dịch"
+                                  onClick={() => setTxToDelete(tx)}
+                                >
+                                  <FontAwesomeIcon icon={faTrash} />
+                                </button>
+                              </div>
+                            </article>
+                          );
+                        })}
+                      </div>
+
+                      {/* Pagination */}
+                      {txPagination && txPagination.totalPages > 1 && (
+                        <div className={styles.pagination}>
+                          <button
+                            className={styles.pageBtn}
+                            disabled={txPage <= 1}
+                            onClick={() => loadFamilyData(txPage - 1)}
+                            title="Trang trước"
+                          >
+                            <FontAwesomeIcon icon={faChevronLeft} />
+                          </button>
+                          <span className={styles.pageInfo}>
+                            Trang {txPagination.page} / {txPagination.totalPages}
+                            <small> ({txPagination.total} giao dịch)</small>
+                          </span>
+                          <button
+                            className={styles.pageBtn}
+                            disabled={txPage >= txPagination.totalPages}
+                            onClick={() => loadFamilyData(txPage + 1)}
+                            title="Trang sau"
+                          >
+                            <FontAwesomeIcon icon={faChevronRight} />
+                          </button>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </>
@@ -1054,6 +1205,92 @@ const FamilyPage = () => {
         confirmText="Xóa"
         isProcessing={isSaving}
       />
+
+      {/* Confirm delete family */}
+      <ConfirmDialog
+        isOpen={showDeleteFamily}
+        onClose={() => setShowDeleteFamily(false)}
+        onConfirm={handleDeleteFamily}
+        title="Xóa nhóm gia đình"
+        message={`Bạn có chắc muốn xóa nhóm "${selectedFamily?.name || ""}"? Toàn bộ giao dịch trong nhóm sẽ bị xóa vĩnh viễn.`}
+        confirmText="Xóa nhóm"
+        isProcessing={isSaving}
+      />
+
+      {/* Confirm leave family */}
+      <ConfirmDialog
+        isOpen={showLeaveFamily}
+        onClose={() => setShowLeaveFamily(false)}
+        onConfirm={handleLeaveFamily}
+        title="Rời khỏi nhóm"
+        message={`Bạn có chắc muốn rời khỏi nhóm "${selectedFamily?.name || ""}"? Bạn sẽ không còn truy cập được dữ liệu của nhóm này.`}
+        confirmText="Rời nhóm"
+        isProcessing={isSaving}
+      />
+
+      {/* Transfer ownership modal */}
+      {isTransferModalOpen && (
+        <div className={styles.modalOverlay} onMouseDown={() => setIsTransferModalOpen(false)}>
+          <form
+            className={styles.modalDialog}
+            onSubmit={handleTransferOwnership}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className={styles.modalHeader}>
+              <FontAwesomeIcon icon={faCrown} />
+              <div>
+                <h2>Chuyển quyền chủ nhóm</h2>
+                <p>Chọn thành viên sẽ tiếp quản nhóm này.</p>
+              </div>
+              <button type="button" onClick={() => setIsTransferModalOpen(false)} aria-label="Đóng">
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </div>
+            <div className={styles.modalBody}>
+              <label>
+                Chọn thành viên nhận quyền
+                <select
+                  value={transferToMemberId}
+                  onChange={(e) => setTransferToMemberId(e.target.value)}
+                  required
+                >
+                  <option value="">-- Chọn thành viên --</option>
+                  {(familyDetail?.members || []).filter((m) => {
+                    const mid = m.userId?._id || m.userId;
+                    return m.role !== "owner" && String(mid) !== String(currentUserId);
+                  }).map((m) => {
+                    const mid = m.userId?._id || m.userId;
+                    return (
+                      <option key={mid} value={mid}>
+                        {m.userId?.fullname || m.userId?.username || m.email}
+                      </option>
+                    );
+                  })}
+                </select>
+              </label>
+              <p style={{ color: "#dc2626", fontSize: 13, margin: 0 }}>
+                ⚠️ Sau khi chuyển, bạn sẽ trở thành thành viên thường và không thể hoàn tác.
+              </p>
+            </div>
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={() => setIsTransferModalOpen(false)}
+              >
+                <FontAwesomeIcon icon={faTimes} /> Hủy
+              </button>
+              <button
+                type="submit"
+                className={styles.primaryButton}
+                disabled={isSaving || !transferToMemberId}
+              >
+                <FontAwesomeIcon icon={faCrown} /> Chuyển quyền
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       <Footer />
     </div>

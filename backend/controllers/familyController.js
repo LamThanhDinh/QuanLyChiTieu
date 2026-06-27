@@ -329,15 +329,32 @@ exports.getFamilyTransactions = async (req, res) => {
       return res.status(403).json({ message: "Bạn không có quyền xem giao dịch gia đình này" });
     }
 
-    const transactions = await Transaction.find({ familyId: family._id })
-      .populate("accountId", "name type bankName")
-      .populate("categoryId", "name icon type")
-      .populate("userId", "fullname username email avatar")
-      .sort({ date: -1, createdAt: -1 })
-      .limit(100);
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 20));
+    const skip = (page - 1) * limit;
+
+    const [transactions, total] = await Promise.all([
+      Transaction.find({ familyId: family._id })
+        .populate("accountId", "name type bankName")
+        .populate("categoryId", "name icon type")
+        .populate("userId", "fullname username email avatar")
+        .sort({ date: -1, createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Transaction.countDocuments({ familyId: family._id }),
+    ]);
 
     const stats = await getFamilyStats(family._id);
-    res.json({ data: transactions.map(formatTransaction), stats });
+    res.json({
+      data: transactions.map(formatTransaction),
+      stats,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     console.error("Error getting family transactions:", error);
     res.status(500).json({ message: "Lỗi khi lấy giao dịch gia đình" });
@@ -352,7 +369,6 @@ exports.createFamilyTransaction = async (req, res) => {
     }
 
     const { name, amount, type, categoryId, accountId, date, note } = req.body;
-    console.log("[Family Transaction] body:", { name, amount, type, categoryId, accountId, date, note });
 
     if (!name || amount === undefined || !type || !categoryId || !accountId) {
       return res.status(400).json({ message: "Thiếu thông tin giao dịch" });
@@ -375,8 +391,6 @@ exports.createFamilyTransaction = async (req, res) => {
       Account.findOne({ _id: accountId, userId: req.user.id }),
       Category.findOne({ _id: categoryId, userId: req.user.id }),
     ]);
-
-    console.log("[Family Transaction] account:", account?._id, "category:", category?._id, "category.type:", category?.type);
 
     if (!account) {
       return res.status(404).json({ message: "Không tìm thấy tài khoản của bạn" });
@@ -481,5 +495,136 @@ exports.deleteFamilyTransaction = async (req, res) => {
   } catch (error) {
     console.error("Error deleting family transaction:", error);
     res.status(500).json({ message: "Lỗi khi xóa giao dịch gia đình" });
+  }
+};
+
+exports.deleteFamily = async (req, res) => {
+  try {
+    const family = await Family.findById(req.params.id);
+    if (!family) {
+      return res.status(404).json({ message: "Không tìm thấy gia đình" });
+    }
+    if (!isOwner(family, req.user.id)) {
+      return res.status(403).json({ message: "Chỉ chủ nhóm mới có thể xóa gia đình" });
+    }
+
+    // Xóa toàn bộ giao dịch thuộc nhóm
+    await Transaction.deleteMany({ familyId: family._id });
+
+    // Thông báo cho các thành viên khác
+    const otherMemberIds = family.members
+      .filter((m) => !isSameId(m.userId, req.user.id))
+      .map((m) => getIdValue(m.userId));
+
+    if (otherMemberIds.length > 0) {
+      await Notification.insertMany(
+        otherMemberIds.map((uid) => ({
+          userId: uid,
+          type: "family_deleted",
+          title: "Nhóm gia đình đã bị xóa",
+          message: `Nhóm chi tiêu gia đình "${family.name}" đã bị chủ nhóm xóa.`,
+          priority: "high",
+        }))
+      );
+    }
+
+    await family.deleteOne();
+    res.json({ message: "Đã xóa nhóm gia đình" });
+  } catch (error) {
+    console.error("Error deleting family:", error);
+    res.status(500).json({ message: "Lỗi khi xóa nhóm gia đình", error: error.message });
+  }
+};
+
+exports.leaveFamily = async (req, res) => {
+  try {
+    const family = await Family.findById(req.params.id);
+    if (!family) {
+      return res.status(404).json({ message: "Không tìm thấy gia đình" });
+    }
+
+    if (isOwner(family, req.user.id)) {
+      return res.status(400).json({
+        message: "Chủ nhóm không thể rời nhóm. Hãy chuyển quyền chủ nhóm trước hoặc xóa nhóm.",
+      });
+    }
+
+    const member = getMember(family, req.user.id);
+    if (!member) {
+      return res.status(404).json({ message: "Bạn không phải thành viên của nhóm này" });
+    }
+
+    family.members = family.members.filter((m) => !isSameId(m.userId, req.user.id));
+    await family.save();
+
+    // Thông báo cho chủ nhóm
+    const leavingUser = await User.findById(req.user.id).select("fullname username email");
+    const leaverName = leavingUser?.fullname || leavingUser?.username || leavingUser?.email || "Một thành viên";
+
+    await createNotification({
+      userId: family.ownerId,
+      type: "family_member_left",
+      title: "Thành viên rời nhóm",
+      message: `${leaverName} đã rời khỏi nhóm chi tiêu gia đình: ${family.name}.`,
+      priority: "medium",
+      familyId: family._id,
+    });
+
+    res.json({ message: "Đã rời khỏi nhóm gia đình" });
+  } catch (error) {
+    console.error("Error leaving family:", error);
+    res.status(500).json({ message: "Lỗi khi rời nhóm gia đình", error: error.message });
+  }
+};
+
+exports.transferOwnership = async (req, res) => {
+  try {
+    const family = await Family.findById(req.params.id);
+    if (!family) {
+      return res.status(404).json({ message: "Không tìm thấy gia đình" });
+    }
+    if (!isOwner(family, req.user.id)) {
+      return res.status(403).json({ message: "Chỉ chủ nhóm mới có thể chuyển quyền" });
+    }
+
+    const { newOwnerId } = req.body;
+    if (!newOwnerId) {
+      return res.status(400).json({ message: "newOwnerId là bắt buộc" });
+    }
+    if (isSameId(newOwnerId, req.user.id)) {
+      return res.status(400).json({ message: "Bạn đã là chủ nhóm" });
+    }
+
+    const newOwnerMember = getMember(family, newOwnerId);
+    if (!newOwnerMember) {
+      return res.status(404).json({ message: "Người dùng này không phải thành viên nhóm" });
+    }
+
+    // Cập nhật role
+    family.members = family.members.map((m) => {
+      if (isSameId(m.userId, req.user.id)) return { ...m.toObject(), role: "member" };
+      if (isSameId(m.userId, newOwnerId)) return { ...m.toObject(), role: "owner" };
+      return m;
+    });
+    family.ownerId = toObjectId(newOwnerId);
+    await family.save();
+
+    // Thông báo cho thành viên mới được chuyển quyền
+    const currentOwner = await User.findById(req.user.id).select("fullname username email");
+    const ownerName = currentOwner?.fullname || currentOwner?.username || "Chủ nhóm cũ";
+
+    await createNotification({
+      userId: toObjectId(newOwnerId),
+      type: "family_ownership_transferred",
+      title: "Bạn là chủ nhóm mới",
+      message: `${ownerName} đã chuyển quyền chủ nhóm "${family.name}" cho bạn.`,
+      priority: "high",
+      familyId: family._id,
+    });
+
+    res.json({ message: "Đã chuyển quyền chủ nhóm thành công" });
+  } catch (error) {
+    console.error("Error transferring ownership:", error);
+    res.status(500).json({ message: "Lỗi khi chuyển quyền chủ nhóm", error: error.message });
   }
 };
