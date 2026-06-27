@@ -1,4 +1,4 @@
-// frontend-vite/src/components/Categories/CategoryAnalysisChart.jsx
+﻿// frontend-vite/src/components/Categories/CategoryAnalysisChart.jsx
 import React, { useState } from "react";
 import { Sector } from "recharts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -29,17 +29,18 @@ const CategoryAnalysisChart = ({
   error,
   categoryType,
   onActiveCategoryChange,
+  detailsLink,
 }) => {
   const [activeIndex, setActiveIndex] = useState(null);
 
-  // Loại bỏ logic điều hướng vì đã có ở CategoryPageHeader
+  // Loáº¡i bá» logic Ä‘iá»u hÆ°á»›ng vĂ¬ Ä‘Ă£ cĂ³ á»Ÿ CategoryPageHeader
 
   const chartTitle =
     categoryType === "THUNHAP"
-      ? "Cơ cấu Thu nhập"
+      ? "CÆ¡ cáº¥u Thu nháº­p"
       : categoryType === "CHITIEU"
-        ? "Cơ cấu Chi tiêu"
-        : "Cơ cấu Thu chi";
+        ? "CÆ¡ cáº¥u Chi tiĂªu"
+        : "CÆ¡ cáº¥u Thu chi";
 
   // Custom active shape renderer - subtle highlight
   const renderCustomActiveShape = (props) => {
@@ -94,7 +95,7 @@ const CategoryAnalysisChart = ({
     const newIndex = activeIndex === index ? null : index;
     setActiveIndex(newIndex);
     if (onActiveCategoryChange) {
-      // Truyền đúng format {id, color, name} cho parent
+      // Truyá»n Ä‘Ăºng format {id, color, name} cho parent
       const categoryData =
         newIndex !== null
           ? {
@@ -135,28 +136,32 @@ const CategoryAnalysisChart = ({
         showTooltip={true}
         showActiveShape={true}
         renderCustomActiveShape={renderCustomActiveShape}
-        detailsLink={{
-          url: "/transactions",
-          text: "Xem giao dịch",
-          title: "Xem trang quản lý giao dịch",
-        }}
+        detailsLink={
+          detailsLink === undefined
+            ? {
+                url: "/transactions",
+                text: "Xem giao dịch",
+                title: "Xem trang quản lý giao dịch",
+              }
+            : detailsLink
+        }
         chartConfig={{
-          innerRadius: 58,
-          outerRadius: 88,
+          innerRadius: 54,
+          outerRadius: 80,
           paddingAngle: 2,
-          height: 380,
-          chartMargin: { top: 24, right: 88, bottom: 52, left: 88 },
+          height: 340,
+          chartMargin: { top: 20, right: 110, bottom: 48, left: 110 },
         }}
         labelConfig={{
           fontSize: 12,
           activeFontSize: 13,
-          fontWeight: 600,
-          activeFontWeight: 700,
-          strokeWidth: 1.4,
-          activeStrokeWidth: 2.2,
-          labelRadius: 26,
-          activeLabelRadius: 34,
-          labelMaxLength: 14,
+          fontWeight: 700,
+          activeFontWeight: 800,
+          strokeWidth: 1.2,
+          activeStrokeWidth: 2,
+          labelRadius: 32,
+          activeLabelRadius: 40,
+          labelMaxLength: 16,
         }}
       />
     </div>
@@ -165,7 +170,7 @@ const CategoryAnalysisChart = ({
 
 export default CategoryAnalysisChart;
 
-// --- renderCustomizedLabel Component (Không thay đổi) ---
+// --- renderCustomizedLabel Component (KhĂ´ng thay Ä‘á»•i) ---
 const _renderCustomizedLabel = ({
   cx,
   cy,

@@ -167,7 +167,7 @@ const BasePieChart = ({
     [processedData, activeCategoryId]
   );
 
-  // Default label renderer with dynamic styling
+  // Default label renderer with dynamic styling — two-line layout (name + %)
   const defaultRenderLabel = ({
     cx,
     cy,
@@ -189,6 +189,10 @@ const BasePieChart = ({
     const currentStrokeWidth = isActive ? activeStrokeWidth : strokeWidth;
     const currentFontSize = isActive ? activeFontSize : fontSize;
     const currentFontWeight = isActive ? activeFontWeight : fontWeight;
+    // Percentage line is always slightly larger & bolder than name line
+    const pctFontSize = currentFontSize + 0.5;
+    const pctFontWeight = isActive ? 800 : 700;
+    const lineSpacing = currentFontSize * 1.35;
 
     const RADIAN = Math.PI / 180;
     const x = cx + currentLabelRadius * Math.cos(-midAngle * RADIAN);
@@ -196,17 +200,22 @@ const BasePieChart = ({
 
     const textOffset = 8;
     const isLeft = x < cx;
-    const labelText = `${truncateText(payload.name, labelMaxLength)} ${(
-      percent * 100
-    ).toFixed(1)}%`;
+    const nameText = truncateText(payload.name, labelMaxLength);
+    const pctText = `${(percent * 100).toFixed(1)}%`;
+
     const rawTextX = isLeft ? x - textOffset : x + textOffset;
-    const textY = y;
     const textAnchor = isLeft ? "end" : "start";
-    const estimatedTextWidth = labelText.length * currentFontSize * 0.56;
+
+    // Clamp textX so label stays within SVG bounds
+    const estimatedWidth = Math.max(nameText.length, pctText.length) * currentFontSize * 0.58;
     const chartWidth = cx * 2;
-    const minTextX = isLeft ? estimatedTextWidth + 8 : 8;
-    const maxTextX = isLeft ? chartWidth - 8 : chartWidth - estimatedTextWidth - 8;
+    const minTextX = isLeft ? estimatedWidth + 8 : 8;
+    const maxTextX = isLeft ? chartWidth - 8 : chartWidth - estimatedWidth - 8;
     const textX = Math.max(minTextX, Math.min(rawTextX, maxTextX));
+
+    // Vertical center: name above midpoint, pct below
+    const nameY = y - lineSpacing / 2;
+    const pctY = y + lineSpacing / 2;
 
     return (
       <g textAnchor={textAnchor} fill={payload.fill}>
@@ -214,21 +223,38 @@ const BasePieChart = ({
         <path
           d={`M${cx + (outerRadius + 5) * Math.cos(-midAngle * RADIAN)},${
             cy + (outerRadius + 5) * Math.sin(-midAngle * RADIAN)
-          } L${x},${textY}`}
+          } L${x},${y}`}
           stroke={payload.fill}
           fill="none"
           strokeWidth={currentStrokeWidth}
         />
 
-        {/* Category and percentage text */}
+        {/* Name — lighter weight */}
         <text
           x={textX}
-          y={textY}
+          y={nameY}
           dominantBaseline="central"
           fontSize={currentFontSize}
           fontWeight={currentFontWeight}
+          stroke="#ffffff"
+          strokeWidth={2.5}
+          paintOrder="stroke"
         >
-          {labelText}
+          {nameText}
+        </text>
+
+        {/* Percentage — bold */}
+        <text
+          x={textX}
+          y={pctY}
+          dominantBaseline="central"
+          fontSize={pctFontSize}
+          fontWeight={pctFontWeight}
+          stroke="#ffffff"
+          strokeWidth={2.5}
+          paintOrder="stroke"
+        >
+          {pctText}
         </text>
       </g>
     );

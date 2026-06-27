@@ -29,7 +29,10 @@ const formatTimeOnly = (dateString) => {
 
 const formatCurrency = (amount) => {
   if (typeof amount !== "number") return "0 ₫";
-  return amount.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+  return Math.abs(amount).toLocaleString("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
 };
 
 const TransactionItem = forwardRef(
@@ -52,6 +55,7 @@ const TransactionItem = forwardRef(
 
     const handleEdit = () => onEditRequest(transaction);
     const handleDelete = () => onDeleteRequest(id);
+    const amountSign = type === "THUNHAP" ? "+" : "-";
 
     const handleCategoryClick = () => {
       console.log("Category clicked:", category);
@@ -135,6 +139,7 @@ const TransactionItem = forwardRef(
             type === "THUNHAP" ? styles.incomeAmount : styles.expenseAmount
           }`}
         >
+          {amountSign}
           {formatCurrency(amount)}
         </td>
         <td data-label="Hành động" className={styles.actionsCell}>
