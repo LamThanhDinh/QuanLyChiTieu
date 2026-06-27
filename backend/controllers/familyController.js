@@ -358,6 +358,14 @@ exports.createFamilyTransaction = async (req, res) => {
       return res.status(400).json({ message: "Thiếu thông tin giao dịch" });
     }
 
+    // Validate ObjectId format to avoid CastError
+    if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+      return res.status(400).json({ message: "categoryId không hợp lệ" });
+    }
+    if (!mongoose.Types.ObjectId.isValid(accountId)) {
+      return res.status(400).json({ message: "accountId không hợp lệ" });
+    }
+
     const numericAmount = Math.round(Number(amount));
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
       return res.status(400).json({ message: "Số tiền phải lớn hơn 0" });
