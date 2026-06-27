@@ -39,6 +39,7 @@ import {
   deleteFamilyMember,
   deleteFamilyTransaction,
   getFamilies,
+  getFamilyCategoryStats,
   getFamilyDetail,
   getFamilyTransactions,
   inviteFamilyMember,
@@ -49,6 +50,7 @@ import {
 import { getFullDate, getGreeting } from "../utils/timeHelpers";
 import styles from "../styles/FamilyPage.module.css";
 import txStyles from "../components/Transactions/AddEditTransactionModal.module.css";
+import CategoryAnalysisChart from "../components/Categories/CategoryAnalysisChart";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 const formatCurrency = (amount) =>
@@ -547,10 +549,43 @@ const FamilyPage = () => {
   const [txPage, setTxPage] = useState(1);
   const [txPagination, setTxPagination] = useState(null); // { total, page, limit, totalPages }
 
+  // chart state
+  const [categoriesData, setCategoriesData] = useState([]);
+  const [chartType, setChartType] = useState("ALL"); // ALL | CHITIEU | THUNHAP
+  const [chartPeriod, setChartPeriod] = useState("month");
+  const [chartDate, setChartDate] = useState(new Date());
+  const [isChartLoading, setIsChartLoading] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(null);
+
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("info");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+
+  // chart derived data
+  const { chartData, chartTotal } = useMemo(() => {
+    const filtered =
+      chartType === "ALL"
+        ? categoriesData
+        : categoriesData.filter((c) => c.type === chartType);
+    const COLORS = [
+      "#0088FE", "#00C49F", "#FFBB28", "#FF8042",
+      "#AF19FF", "#FF4560", "#3366CC", "#DC3912",
+      "#FF9900", "#109618", "#990099", "#0099C6",
+    ];
+    const data = filtered
+      .filter((c) => c.totalAmount > 0)
+      .map((c, i) => ({
+        id: c._id || c.id,
+        name: c.name,
+        value: c.totalAmount,
+        type: c.type,
+        icon: c.icon,
+        color: COLORS[i % COLORS.length],
+      }));
+    const total = data.reduce((s, d) => s + d.value, 0);
+    return { chartData: data, chartTotal: total };
+  }, [categoriesData, chartType]);
 
   const userName = userProfile?.fullname || "Bạn";
   const userAvatar = userProfile?.avatar || null;
@@ -614,8 +649,39 @@ const FamilyPage = () => {
     }
   }, [selectedFamilyId]);
 
+  // ── chart loader ─────────────────────────────────────────────────────────────
+  const buildChartParams = useCallback(() => {
+    const params = { period: chartPeriod };
+    if (chartPeriod === "year") params.year = chartDate.getFullYear();
+    if (chartPeriod === "month") {
+      params.year = chartDate.getFullYear();
+      params.month = chartDate.getMonth() + 1;
+    }
+    if (chartPeriod === "week") {
+      params.date = chartDate.toISOString().split("T")[0];
+    }
+    return params;
+  }, [chartPeriod, chartDate]);
+
+  const loadCategoryStats = useCallback(async () => {
+    if (!selectedFamilyId) {
+      setCategoriesData([]);
+      return;
+    }
+    setIsChartLoading(true);
+    try {
+      const data = await getFamilyCategoryStats(selectedFamilyId, buildChartParams());
+      setCategoriesData(data || []);
+    } catch {
+      setCategoriesData([]);
+    } finally {
+      setIsChartLoading(false);
+    }
+  }, [selectedFamilyId, buildChartParams]);
+
   useEffect(() => { loadBaseData(); }, [loadBaseData]);
   useEffect(() => { setTxPage(1); loadFamilyData(1); }, [loadFamilyData]);
+  useEffect(() => { setActiveCategory(null); loadCategoryStats(); }, [loadCategoryStats]);
 
   // flash message auto-clear
   useEffect(() => {
@@ -957,6 +1023,91 @@ const FamilyPage = () => {
                     <span>Giao dịch</span>
                     <strong>{stats.totalTransactions || 0}</strong>
                   </div>
+                </div>
+
+                {/* category analysis chart */}
+                <div className={styles.panel} style={{ padding: "20px" }}>
+                  <div className={styles.panelHeader}>
+                    <h2>Cơ cấu thu chi</h2>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      {/* period buttons */}
+                      <div className={styles.chartPeriodBar}>
+                        {[
+                          { key: "week", label: "Tuần" },
+                          { key: "month", label: "Tháng" },
+                          { key: "year", label: "Năm" },
+                        ].map(({ key, label }) => (
+                          <button
+                            key={key}
+                            type="button"
+                            className={`${styles.chartPeriodBtn} ${chartPeriod === key ? styles.chartPeriodActive : ""}`}
+                            onClick={() => setChartPeriod(key)}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                      {/* type buttons */}
+                      <div className={styles.chartPeriodBar}>
+                        {[
+                          { key: "ALL", label: "Tất cả" },
+                          { key: "CHITIEU", label: "Chi tiêu" },
+                          { key: "THUNHAP", label: "Thu nhập" },
+                        ].map(({ key, label }) => (
+                          <button
+                            key={key}
+                            type="button"
+                            className={`${styles.chartPeriodBtn} ${chartType === key ? styles.chartPeriodActive : ""}`}
+                            onClick={() => { setChartType(key); setActiveCategory(null); }}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  {/* date nav */}
+                  <div className={styles.chartDateNav}>
+                    <button
+                      type="button"
+                      className={styles.pageBtn}
+                      onClick={() => {
+                        const d = new Date(chartDate);
+                        if (chartPeriod === "week") d.setDate(d.getDate() - 7);
+                        else if (chartPeriod === "month") d.setMonth(d.getMonth() - 1);
+                        else d.setFullYear(d.getFullYear() - 1);
+                        setChartDate(d);
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faChevronLeft} />
+                    </button>
+                    <span className={styles.chartDateLabel}>
+                      {chartPeriod === "week" && `Tuần ${chartDate.toLocaleDateString("vi-VN")}`}
+                      {chartPeriod === "month" && `Tháng ${chartDate.getMonth() + 1}/${chartDate.getFullYear()}`}
+                      {chartPeriod === "year" && `Năm ${chartDate.getFullYear()}`}
+                    </span>
+                    <button
+                      type="button"
+                      className={styles.pageBtn}
+                      onClick={() => {
+                        const d = new Date(chartDate);
+                        if (chartPeriod === "week") d.setDate(d.getDate() + 7);
+                        else if (chartPeriod === "month") d.setMonth(d.getMonth() + 1);
+                        else d.setFullYear(d.getFullYear() + 1);
+                        setChartDate(d);
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faChevronRight} />
+                    </button>
+                  </div>
+                  <CategoryAnalysisChart
+                    data={chartData}
+                    total={chartTotal}
+                    loading={isChartLoading}
+                    error={null}
+                    categoryType={chartType}
+                    onActiveCategoryChange={setActiveCategory}
+                  />
                 </div>
 
                 {/* members */}

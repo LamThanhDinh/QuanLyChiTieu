@@ -11,6 +11,7 @@ router.post("/:id/invite", verifyToken, familyController.inviteMember);
 router.delete("/:id/members/:memberId", verifyToken, familyController.removeMember);
 router.post("/:id/leave", verifyToken, familyController.leaveFamily);
 router.post("/:id/transfer-ownership", verifyToken, familyController.transferOwnership);
+router.get("/:id/category-stats", verifyToken, familyController.getFamilyCategoryStats);
 router.get("/:id/transactions", verifyToken, familyController.getFamilyTransactions);
 router.post("/:id/transactions", verifyToken, familyController.createFamilyTransaction);
 router.put("/:id/transactions/:transactionId", verifyToken, familyController.updateFamilyTransaction);

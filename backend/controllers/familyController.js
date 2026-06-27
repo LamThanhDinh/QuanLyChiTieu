@@ -135,6 +135,105 @@ exports.getFamilies = async (req, res) => {
   }
 };
 
+exports.getFamilyCategoryStats = async (req, res) => {
+  try {
+    const family = await loadFamilyForMember(req.params.id, req.user.id);
+    if (!family) {
+      return res.status(403).json({ message: "Bạn không có quyền xem thống kê gia đình này" });
+    }
+
+    const { period, year, month, date: dateParam } = req.query;
+
+    // Xây dựng bộ lọc thời gian
+    const matchTimeFilter = {};
+    if (period) {
+      let startDate, endDate;
+      switch (period) {
+        case "year":
+          if (year) {
+            const y = parseInt(year);
+            startDate = new Date(Date.UTC(y, 0, 1));
+            endDate = new Date(Date.UTC(y, 11, 31, 23, 59, 59, 999));
+          }
+          break;
+        case "month":
+          if (year && month) {
+            const y = parseInt(year);
+            const m = parseInt(month);
+            startDate = new Date(Date.UTC(y, m - 1, 1));
+            endDate = new Date(Date.UTC(y, m, 0, 23, 59, 59, 999));
+          }
+          break;
+        case "week":
+          if (dateParam) {
+            const ref = new Date(dateParam);
+            ref.setUTCHours(0, 0, 0, 0);
+            const dow = ref.getUTCDay();
+            startDate = new Date(ref);
+            startDate.setUTCDate(ref.getUTCDate() - dow);
+            endDate = new Date(startDate);
+            endDate.setUTCDate(startDate.getUTCDate() + 6);
+            endDate.setUTCHours(23, 59, 59, 999);
+          }
+          break;
+      }
+      if (startDate && endDate) {
+        matchTimeFilter.date = { $gte: startDate, $lte: endDate };
+      }
+    }
+
+    // Aggregate giao dịch gia đình theo categoryId
+    const totals = await Transaction.aggregate([
+      {
+        $match: {
+          familyId: toObjectId(family._id),
+          ...matchTimeFilter,
+        },
+      },
+      {
+        $group: {
+          _id: "$categoryId",
+          totalAmount: { $sum: "$amount" },
+          transactionCount: { $sum: 1 },
+          type: { $first: "$type" },
+        },
+      },
+    ]);
+
+    if (totals.length === 0) {
+      return res.json([]);
+    }
+
+    // Lấy thông tin danh mục
+    const categoryIds = totals.map((t) => t._id).filter(Boolean);
+    const categories = await Category.find({ _id: { $in: categoryIds } }).lean();
+    const catMap = {};
+    categories.forEach((c) => {
+      catMap[c._id.toString()] = c;
+    });
+
+    const result = totals
+      .filter((t) => t._id)
+      .map((t) => {
+        const cat = catMap[t._id.toString()] || {};
+        return {
+          _id: t._id,
+          id: t._id,
+          name: cat.name || "Không rõ",
+          icon: cat.icon || "fa-question-circle",
+          type: cat.type || t.type,
+          totalAmount: t.totalAmount,
+          transactionCount: t.transactionCount,
+        };
+      });
+
+    res.json(result);
+  } catch (error) {
+    console.error("Error getting family category stats:", error);
+    res.status(500).json({ message: "Lỗi khi lấy thống kê danh mục gia đình" });
+  }
+};
+
 exports.getFamilyDetail = async (req, res) => {
   try {
     const family = await loadFamilyForMember(req.params.id, req.user.id);

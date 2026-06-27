@@ -56,6 +56,16 @@ export const getFamilyTransactions = async (familyId, { page = 1, limit = 20 } =
   return response.data;
 };
 
+export const getFamilyCategoryStats = async (familyId, { period, year, month, date } = {}) => {
+  const params = {};
+  if (period) params.period = period;
+  if (year) params.year = year;
+  if (month) params.month = month;
+  if (date) params.date = date;
+  const response = await axiosInstance.get(`${API_URL}/${familyId}/category-stats`, { params });
+  return response.data;
+};
+
 export const createFamilyTransaction = async (familyId, payload) => {
   const response = await axiosInstance.post(
     `${API_URL}/${familyId}/transactions`,
