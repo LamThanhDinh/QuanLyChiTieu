@@ -352,6 +352,8 @@ exports.createFamilyTransaction = async (req, res) => {
     }
 
     const { name, amount, type, categoryId, accountId, date, note } = req.body;
+    console.log("[Family Transaction] body:", { name, amount, type, categoryId, accountId, date, note });
+
     if (!name || amount === undefined || !type || !categoryId || !accountId) {
       return res.status(400).json({ message: "Thiếu thông tin giao dịch" });
     }
@@ -363,14 +365,19 @@ exports.createFamilyTransaction = async (req, res) => {
 
     const [account, category] = await Promise.all([
       Account.findOne({ _id: accountId, userId: req.user.id }),
-      Category.findOne({ _id: categoryId, userId: req.user.id, type }),
+      Category.findOne({ _id: categoryId, userId: req.user.id }),
     ]);
+
+    console.log("[Family Transaction] account:", account?._id, "category:", category?._id, "category.type:", category?.type);
 
     if (!account) {
       return res.status(404).json({ message: "Không tìm thấy tài khoản của bạn" });
     }
     if (!category) {
       return res.status(404).json({ message: "Không tìm thấy danh mục phù hợp" });
+    }
+    if (category.type !== type) {
+      return res.status(400).json({ message: `Danh mục không phù hợp với loại giao dịch (${type})` });
     }
 
     const transaction = await Transaction.create({
@@ -379,10 +386,10 @@ exports.createFamilyTransaction = async (req, res) => {
       name,
       amount: numericAmount,
       type,
-      categoryId,
-      accountId,
-      date: date || new Date(),
-      note,
+      categoryId: category._id,
+      accountId: account._id,
+      date: date ? new Date(date) : new Date(),
+      note: note || "",
     });
 
     const populated = await Transaction.findById(transaction._id)
@@ -392,8 +399,8 @@ exports.createFamilyTransaction = async (req, res) => {
 
     res.status(201).json(formatTransaction(populated));
   } catch (error) {
-    console.error("Error creating family transaction:", error);
-    res.status(500).json({ message: "Lỗi khi thêm giao dịch gia đình" });
+    console.error("Error creating family transaction:", error.message, error.stack);
+    res.status(500).json({ message: "Lỗi khi thêm giao dịch gia đình", detail: error.message });
   }
 };
 

@@ -216,7 +216,10 @@ const FamilyPage = () => {
       setMessage("Đã thêm giao dịch gia đình.");
       setMessageType("success");
     } catch (error) {
-      setMessage(error.response?.data?.message || "Không thể thêm giao dịch gia đình.");
+      const errData = error.response?.data;
+      const msg = errData?.message || "Không thể thêm giao dịch gia đình.";
+      const detail = errData?.detail ? ` (${errData.detail})` : "";
+      setMessage(msg + detail);
       setMessageType("error");
     } finally {
       setIsSaving(false);
