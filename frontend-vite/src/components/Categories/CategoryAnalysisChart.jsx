@@ -1,4 +1,4 @@
-﻿// frontend-vite/src/components/Categories/CategoryAnalysisChart.jsx
+// frontend-vite/src/components/Categories/CategoryAnalysisChart.jsx
 import React, { useState } from "react";
 import { Sector } from "recharts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -37,10 +37,10 @@ const CategoryAnalysisChart = ({
 
   const chartTitle =
     categoryType === "THUNHAP"
-      ? "CÆ¡ cáº¥u Thu nháº­p"
+      ? "Cơ cấu Thu nhập"
       : categoryType === "CHITIEU"
-        ? "CÆ¡ cáº¥u Chi tiĂªu"
-        : "CÆ¡ cáº¥u Thu chi";
+        ? "Cơ cấu Chi tiêu"
+        : "Cơ cấu Thu chi";
 
   // Custom active shape renderer - subtle highlight
   const renderCustomActiveShape = (props) => {

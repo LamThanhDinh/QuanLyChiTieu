@@ -987,7 +987,7 @@ const FamilyPage = () => {
                 {/* family header */}
                 <div className={styles.familyHeader}>
                   <div>
-                    <span className={styles.eyebrow}>Chi tiĂªu gia Ä‘Ă¬nh</span>
+                    <span className={styles.eyebrow}>Chi tiêu gia đình</span>
                     <h2>{familyDetail?.name || selectedFamily.name}</h2>
                     <p>{familyDetail?.description || "CĂ¹ng quáº£n lĂ½ thu chi chung."}</p>
                   </div>
@@ -1000,7 +1000,7 @@ const FamilyPage = () => {
                             type="email"
                             value={inviteEmail}
                             onChange={(e) => setInviteEmail(e.target.value)}
-                            placeholder="Nháº­p email thĂ nh viĂªn"
+                            placeholder="Nhập email thành viên"
                           />
                           <button type="submit" disabled={isSaving || !inviteEmail.trim()}>
                             Mời
@@ -1013,7 +1013,7 @@ const FamilyPage = () => {
                           onClick={() => { setEditingTx(null); setIsTxModalOpen(true); }}
                           className={styles.addTransactionButton}
                         >
-                          ThĂªm giao dá»‹ch chung
+                          Thêm giao dịch chung
                         </Button>
                         <button
                           type="button"
@@ -1060,19 +1060,19 @@ const FamilyPage = () => {
                 {/* stats */}
                 <div className={styles.statsGrid}>
                   <div className={styles.statCard}>
-                    <span>Tá»•ng thu</span>
+                    <span>Tổng thu</span>
                     <strong className={styles.income}>{formatCurrency(stats.totalIncome)}</strong>
                   </div>
                   <div className={styles.statCard}>
-                    <span>Tá»•ng chi</span>
+                    <span>Tổng chi</span>
                     <strong className={styles.expense}>{formatCurrency(stats.totalExpense)}</strong>
                   </div>
                   <div className={styles.statCard}>
-                    <span>Sá»‘ dÆ° chung</span>
+                    <span>Số dư chung</span>
                     <strong>{formatCurrency(stats.balance)}</strong>
                   </div>
                   <div className={styles.statCard}>
-                    <span>Giao dá»‹ch</span>
+                    <span>Giao dịch</span>
                     <strong>{stats.totalTransactions || 0}</strong>
                   </div>
                 </div>
@@ -1202,11 +1202,11 @@ const FamilyPage = () => {
                 {/* transactions */}
                 <div className={styles.panel}>
                   <div className={styles.panelHeader}>
-                    <h2>Giao dá»‹ch chung</h2>
+                    <h2>Giao dịch chung</h2>
                     <FontAwesomeIcon icon={faWallet} />
                   </div>
                   {transactions.length === 0 ? (
-                    <div className={styles.emptyState}>ChÆ°a cĂ³ giao dá»‹ch gia Ä‘Ă¬nh.</div>
+                    <div className={styles.emptyState}>Chưa có giao dịch gia đình.</div>
                   ) : (
                     <>
                       <div className={styles.transactionList}>
@@ -1219,21 +1219,16 @@ const FamilyPage = () => {
                           return (
                             <article key={tx.id || tx._id} className={styles.transactionItem}>
                               {/* Category icon */}
-                              <div
+                              <FontAwesomeIcon
+                                icon={getIconObject(tx.category?.icon)}
                                 className={styles.txCategoryIcon}
-                                style={{
-                                  background: tx.type === "THUNHAP" ? "#dcfce7" : "#fee2e2",
-                                  color: tx.type === "THUNHAP" ? "#059669" : "#dc2626",
-                                }}
-                              >
-                                <FontAwesomeIcon icon={getIconObject(tx.category?.icon)} />
-                              </div>
+                              />
                               <div style={{ minWidth: 0, flex: 1 }}>
                                 <strong>{tx.description || tx.name}</strong>
                                 <span>
                                   {tx.category?.name || "Danh mục"}
                                   {" · "}
-                                  {tx.paymentMethod?.name || "TĂ i khoáº£n"}
+                                  {tx.paymentMethod?.name || "Tài khoản"}
                                   {" · "}
                                   {new Date(tx.date).toLocaleDateString("vi-VN")}
                                   {creatorName && (
@@ -1260,7 +1255,7 @@ const FamilyPage = () => {
                                 <button
                                   type="button"
                                   className={styles.editTxButton}
-                                  title="Sá»­a giao dá»‹ch"
+                                  title="Sửa giao dịch"
                                   onClick={() => { setEditingTx(tx); setIsTxModalOpen(true); }}
                                 >
                                   <FontAwesomeIcon icon={faPencilAlt} />
@@ -1268,7 +1263,7 @@ const FamilyPage = () => {
                                 <button
                                   type="button"
                                   className={styles.deleteMemberButton}
-                                  title="XĂ³a giao dá»‹ch"
+                                  title="Xóa giao dịch"
                                   onClick={() => setTxToDelete(tx)}
                                 >
                                   <FontAwesomeIcon icon={faTrash} />
@@ -1286,13 +1281,13 @@ const FamilyPage = () => {
                             className={styles.pageBtn}
                             disabled={txPage <= 1}
                             onClick={() => loadFamilyData(txPage - 1)}
-                            title="Trang trÆ°á»›c"
+                            title="Trang trước"
                           >
                             <FontAwesomeIcon icon={faChevronLeft} />
                           </button>
                           <span className={styles.pageInfo}>
                             Trang {txPagination.page} / {txPagination.totalPages}
-                            <small> ({txPagination.total} giao dá»‹ch)</small>
+                            <small> ({txPagination.total} giao dịch)</small>
                           </span>
                           <button
                             className={styles.pageBtn}
@@ -1324,8 +1319,8 @@ const FamilyPage = () => {
             <div className={styles.modalHeader}>
               <FontAwesomeIcon icon={faHome} />
               <div>
-                <h2>Táº¡o Gia ÄĂ¬nh</h2>
-                <p>Táº¡o nhĂ³m Ä‘á»ƒ cĂ¹ng theo dĂµi chi tiĂªu chung.</p>
+                <h2>Tạo gia đình</h2>
+                <p>Tạo nhóm để cùng theo dõi chi tiêu chung.</p>
               </div>
               <button type="button" onClick={() => setIsFamilyModalOpen(false)} aria-label="ÄĂ³ng">
                 <FontAwesomeIcon icon={faTimes} />
@@ -1333,19 +1328,19 @@ const FamilyPage = () => {
             </div>
             <div className={styles.modalBody}>
               <label>
-                TĂªn gia Ä‘Ă¬nh
+                Tên gia đình
                 <input
                   value={familyForm.name}
                   onChange={(e) => setFamilyForm((p) => ({ ...p, name: e.target.value }))}
-                  placeholder="VD: Gia Ä‘Ă¬nh Äá»‰nh LĂ¢m"
+                  placeholder="VD: Gia đình của Đỉnh Lâm"
                 />
               </label>
               <label>
-                MĂ´ táº£
+                Mô tả
                 <textarea
                   value={familyForm.description}
                   onChange={(e) => setFamilyForm((p) => ({ ...p, description: e.target.value }))}
-                  placeholder="MĂ´ táº£ ngáº¯n"
+                  placeholder="Mô tả ngắn"
                   rows={3}
                 />
               </label>
@@ -1363,7 +1358,7 @@ const FamilyPage = () => {
                 className={styles.primaryButton}
                 disabled={isSaving || !familyForm.name.trim()}
               >
-                <FontAwesomeIcon icon={faCheck} /> Táº¡o gia Ä‘Ă¬nh
+                <FontAwesomeIcon icon={faCheck} /> Tạo gia đình
               </button>
             </div>
           </form>
@@ -1387,9 +1382,9 @@ const FamilyPage = () => {
         isOpen={Boolean(memberToDelete)}
         onClose={() => setMemberToDelete(null)}
         onConfirm={handleDeleteMember}
-        title="XĂ³a thĂ nh viĂªn"
-        message={`Báº¡n cĂ³ cháº¯c muá»‘n xĂ³a "${memberToDelete?.name || "thĂ nh viĂªn"}" khá»i nhĂ³m gia Ä‘Ă¬nh khĂ´ng?`}
-        confirmText="XĂ³a"
+        title="Xóa thành viên"
+        message={`Bạn có chắc muốn xóa "${memberToDelete?.name || "thành viên"}" khỏi nhóm gia đình không?`}
+        confirmText="Xóa"
         isProcessing={isSaving}
       />
 
@@ -1398,9 +1393,9 @@ const FamilyPage = () => {
         isOpen={Boolean(txToDelete)}
         onClose={() => setTxToDelete(null)}
         onConfirm={handleDeleteTx}
-        title="XĂ³a giao dá»‹ch"
-        message={`Báº¡n cĂ³ cháº¯c muá»‘n xĂ³a giao dá»‹ch "${txToDelete?.description || txToDelete?.name || ""}"? HĂ nh Ä‘á»™ng nĂ y khĂ´ng thá»ƒ hoĂ n tĂ¡c.`}
-        confirmText="XĂ³a"
+        title="Xóa giao dịch"
+        message={`Bạn có chắc muốn xóa giao dịch "${txToDelete?.description || txToDelete?.name || ""}"? Hành động này không thể hoàn tác.`}
+        confirmText="Xóa"
         isProcessing={isSaving}
       />
 
@@ -1409,9 +1404,9 @@ const FamilyPage = () => {
         isOpen={showDeleteFamily}
         onClose={() => setShowDeleteFamily(false)}
         onConfirm={handleDeleteFamily}
-        title="XĂ³a nhĂ³m gia Ä‘Ă¬nh"
-        message={`Báº¡n cĂ³ cháº¯c muá»‘n xĂ³a nhĂ³m "${selectedFamily?.name || ""}"? ToĂ n bá»™ giao dá»‹ch trong nhĂ³m sáº½ bá»‹ xĂ³a vÄ©nh viá»…n.`}
-        confirmText="XĂ³a nhĂ³m"
+        title="Xóa nhóm gia đình"
+        message={`Bạn có chắc muốn xóa nhóm "${selectedFamily?.name || ""}"? Toàn bộ giao dịch trong nhóm sẽ bị xóa vĩnh viễn.`}
+        confirmText="Xóa nhóm"
         isProcessing={isSaving}
       />
 
@@ -1420,9 +1415,9 @@ const FamilyPage = () => {
         isOpen={showLeaveFamily}
         onClose={() => setShowLeaveFamily(false)}
         onConfirm={handleLeaveFamily}
-        title="Rá»i khá»i nhĂ³m"
-        message={`Báº¡n cĂ³ cháº¯c muá»‘n rá»i khá»i nhĂ³m "${selectedFamily?.name || ""}"? Báº¡n sáº½ khĂ´ng cĂ²n truy cáº­p Ä‘Æ°á»£c dá»¯ liá»‡u cá»§a nhĂ³m nĂ y.`}
-        confirmText="Rá»i nhĂ³m"
+        title="Rời khỏi nhóm"
+        message={`Bạn có chắc muốn rời khỏi nhóm "${selectedFamily?.name || ""}"? Bạn sẽ không còn truy cập được dữ liệu của nhóm này.`}
+        confirmText="Rời khỏi nhóm"
         isProcessing={isSaving}
       />
 
@@ -1437,20 +1432,20 @@ const FamilyPage = () => {
             <div className={styles.modalHeader}>
               <FontAwesomeIcon icon={faPencilAlt} />
               <div>
-                <h2>Äáº·t biá»‡t danh</h2>
-                <p>Äáº·t cĂ¡ch gá»i thĂ¢n thuá»™c cho thĂ nh viĂªn trong gia Ä‘Ă¬nh.</p>
+                <h2>Đặt biệt danh</h2>
+                <p>Đặt cách gọi thân thuộc cho thành viên trong gia đình.</p>
               </div>
-              <button type="button" onClick={() => setMemberNicknameEdit(null)} aria-label="ÄĂ³ng">
+              <button type="button" onClick={() => setMemberNicknameEdit(null)} aria-label="Đóng">
                 <FontAwesomeIcon icon={faTimes} />
               </button>
             </div>
             <div className={styles.modalBody}>
               <label>
-                ThĂ nh viĂªn
+                Thành viên
                 <input value={memberNicknameEdit.name} disabled />
               </label>
               <label>
-                Biá»‡t danh
+                Biệt danh
                 <input
                   value={nicknameValue}
                   onChange={(e) => setNicknameValue(e.target.value)}
@@ -1460,7 +1455,7 @@ const FamilyPage = () => {
                 />
               </label>
               <p className={styles.modalHint}>
-                Äá»ƒ trá»‘ng vĂ  lÆ°u náº¿u báº¡n muá»‘n xĂ³a biá»‡t danh hiá»‡n táº¡i.
+                Để trống và lưu nếu bạn muốn xóa biệt danh hiện tại.
               </p>
             </div>
             <div className={styles.modalActions}>
@@ -1472,7 +1467,7 @@ const FamilyPage = () => {
                 <FontAwesomeIcon icon={faTimes} /> Hủy
               </button>
               <button type="submit" className={styles.primaryButton} disabled={isSaving}>
-                <FontAwesomeIcon icon={faCheck} /> LÆ°u biá»‡t danh
+                <FontAwesomeIcon icon={faCheck} /> Lưu biệt danh
               </button>
             </div>
           </form>
@@ -1490,22 +1485,22 @@ const FamilyPage = () => {
             <div className={styles.modalHeader}>
               <FontAwesomeIcon icon={faCrown} />
               <div>
-                <h2>Chuyá»ƒn quyá»n chá»§ nhĂ³m</h2>
-                <p>Chá»n thĂ nh viĂªn sáº½ tiáº¿p quáº£n nhĂ³m nĂ y.</p>
+                <h2>Chuyển quyền chủ nhóm</h2>
+                <p>Chọn thành viên sẽ tiếp quản nhóm này.</p>
               </div>
-              <button type="button" onClick={() => setIsTransferModalOpen(false)} aria-label="ÄĂ³ng">
+              <button type="button" onClick={() => setIsTransferModalOpen(false)} aria-label="Đóng">
                 <FontAwesomeIcon icon={faTimes} />
               </button>
             </div>
             <div className={styles.modalBody}>
               <label>
-                Chá»n thĂ nh viĂªn nháº­n quyá»n
+                Chọn thành viên nhận quyền
                 <select
                   value={transferToMemberId}
                   onChange={(e) => setTransferToMemberId(e.target.value)}
                   required
                 >
-                  <option value="">-- Chá»n thĂ nh viĂªn --</option>
+                  <option value="">-- Chọn thành viên --</option>
                   {(familyDetail?.members || []).filter((m) => {
                     const mid = m.userId?._id || m.userId;
                     return m.role !== "owner" && String(mid) !== String(currentUserId);
@@ -1520,7 +1515,7 @@ const FamilyPage = () => {
                 </select>
               </label>
               <p style={{ color: "#dc2626", fontSize: 13, margin: 0 }}>
-                â ï¸ Sau khi chuyá»ƒn, báº¡n sáº½ trá»Ÿ thĂ nh thĂ nh viĂªn thÆ°á»ng vĂ  khĂ´ng thá»ƒ hoĂ n tĂ¡c.
+                Sau khi chuyển, bạn sẽ trở thành thành viên thường và không thể hoàn tác.
               </p>
             </div>
             <div className={styles.modalActions}>
@@ -1536,7 +1531,7 @@ const FamilyPage = () => {
                 className={styles.primaryButton}
                 disabled={isSaving || !transferToMemberId}
               >
-                <FontAwesomeIcon icon={faCrown} /> ChuyỒn quyền
+                <FontAwesomeIcon icon={faCrown} /> Chuyển quyền
               </button>
             </div>
           </form>
