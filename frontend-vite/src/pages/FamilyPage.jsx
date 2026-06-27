@@ -602,11 +602,14 @@ const FamilyPage = () => {
                     }
                   >
                     <option value="">Chọn tài khoản</option>
-                    {accounts.map((account) => (
-                      <option key={account._id} value={account._id}>
-                        {account.name}
-                      </option>
-                    ))}
+                    {accounts.map((account) => {
+                      const accountId = account._id || account.id;
+                      return (
+                        <option key={accountId} value={accountId}>
+                          {account.name}
+                        </option>
+                      );
+                    })}
                   </select>
                 </label>
                 <label>
