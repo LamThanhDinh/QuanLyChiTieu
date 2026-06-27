@@ -966,7 +966,7 @@ const FamilyPage = () => {
                       onClick={() => setSelectedFamilyId(family._id)}
                     >
                       <strong>{family.name}</strong>
-                      <span>{family.members?.length || 0} thĂ nh viĂªn</span>
+                      <span>{family.members?.length || 0} thành viên</span>
                     </button>
                   ))}
                 </div>
