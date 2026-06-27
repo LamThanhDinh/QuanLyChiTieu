@@ -178,10 +178,10 @@
 }
 
 .detailsLink {
-  position: absolute;
-  bottom: 16px;
-  right: 16px;
-  z-index: 20;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 12px;
+  margin-top: 8px;
 }
 
 .detailsLinkButton {

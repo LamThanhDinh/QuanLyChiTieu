@@ -53,10 +53,11 @@ import styles from "../styles/FamilyPage.module.css";
 import txStyles from "../components/Transactions/AddEditTransactionModal.module.css";
 import CategoryAnalysisChart from "../components/Categories/CategoryAnalysisChart";
 import DateRangeNavigator from "../components/Common/DateRangeNavigator";
+import { getIconObject } from "../utils/iconMap";
 
-// â”€â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ————————————————————————————————————————————————————————————————————————————
 const formatCurrency = (amount) =>
-  `${Math.round(amount || 0).toLocaleString("vi-VN")} Ä‘`;
+  `${Math.round(amount || 0).toLocaleString("vi-VN")} đ`;
 
 const formatDateForInput = (date) => {
   const d = new Date(date);
@@ -79,7 +80,7 @@ const emptyTxForm = () => ({
 
 const initialFamilyForm = { name: "", description: "" };
 
-// â”€â”€â”€ FamilyTransactionModal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// —————————————————————————————————————————————————————————————————————————————
 const FamilyTransactionModal = ({
   isOpen,
   onClose,
@@ -107,17 +108,17 @@ const FamilyTransactionModal = ({
   // validate
   const validateField = useCallback((name, value) => {
     if (name === "amount") {
-      if (!value || value === "0") return "Sá»‘ tiá»n khĂ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng";
-      if (parseFloat(value) <= 0) return "Sá»‘ tiá»n pháº£i lá»›n hÆ¡n 0";
+      if (!value || value === "0") return "Số tiền không được để trống";
+      if (parseFloat(value) <= 0) return "Số tiền phải lớn hơn 0";
       return null;
     }
     if (name === "name") {
-      if (!String(value || "").trim()) return "TĂªn giao dá»‹ch khĂ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng";
+      if (!String(value || "").trim()) return "Tên giao dịch không được để trống";
       return null;
     }
-    if (name === "categoryId") return value ? null : "Vui lĂ²ng chá»n danh má»¥c";
-    if (name === "accountId") return value ? null : "Vui lĂ²ng chá»n tĂ i khoáº£n";
-    if (name === "date") return value ? null : "Vui lĂ²ng chá»n ngĂ y";
+    if (name === "categoryId") return value ? null : "Vui lòng chọn danh mục";
+    if (name === "accountId") return value ? null : "Vui lòng chọn tài khoản";
+    if (name === "date") return value ? null : "Vui lòng chọn ngày";
     return null;
   }, []);
 
@@ -228,7 +229,7 @@ const FamilyTransactionModal = ({
     REQUIRED_FIELDS.forEach((f) => (allTouched[f] = true));
     setTouched(allTouched);
     if (!validateAll(form)) {
-      setError("Vui lĂ²ng kiá»ƒm tra láº¡i cĂ¡c trÆ°á»ng Ä‘Ă£ nháº­p.");
+      setError("Vui lòng kiểm tra lại các trường đã nhập.");
       return;
     }
     setError("");
@@ -245,7 +246,7 @@ const FamilyTransactionModal = ({
     } catch (err) {
       const msg =
         err.response?.data?.message ||
-        (mode === "edit" ? "KhĂ´ng thá»ƒ sá»­a giao dá»‹ch." : "KhĂ´ng thá»ƒ thĂªm giao dá»‹ch.");
+        (mode === "edit" ? "Không thể sửa giao dịch." : "Không thể thêm giao dịch.");
       setError(msg);
     }
   };
@@ -271,7 +272,7 @@ const FamilyTransactionModal = ({
     touched[name] && fieldErrors[name] ? txStyles.fieldError : "";
 
   const isEditMode = mode === "edit";
-  const title = isEditMode ? "Sá»­a Giao Dá»‹ch Chung" : "ThĂªm Giao Dá»‹ch Chung";
+  const title = isEditMode ? "Sửa Giao Dịch Chung" : "Thêm Giao Dịch Chung";
 
   return (
     <div className={txStyles.modalOverlay} onClick={onClose}>
@@ -308,17 +309,17 @@ const FamilyTransactionModal = ({
               {isValid ? (
                 <>
                   <FontAwesomeIcon icon={faCheckCircle} className={txStyles.successIcon} />
-                  Sáºµn sĂ ng Ä‘á»ƒ lÆ°u
+                  Sẵn sàng để lưu
                 </>
               ) : (
-                `HoĂ n thĂ nh ${touchedCount}/${REQUIRED_FIELDS.length} trÆ°á»ng`
+                `Hoàn thành ${touchedCount}/${REQUIRED_FIELDS.length} trường`
               )}
             </span>
           </div>
 
           {/* type toggle */}
           <div className={txStyles.formGroup}>
-            <label className={txStyles.formLabel}>Loáº¡i giao dá»‹ch</label>
+            <label className={txStyles.formLabel}>Loại giao dịch</label>
             <div className={txStyles.radioGroup}>
               <label>
                 <input
@@ -330,7 +331,7 @@ const FamilyTransactionModal = ({
                 />
                 <span className={`${txStyles.radioLabelText} ${txStyles.expense}`}>
                   <FontAwesomeIcon icon={faArrowDown} className={txStyles.radioIcon} />
-                  Chi tiĂªu
+                  Chi tiêu
                 </span>
               </label>
               <label>
@@ -343,7 +344,7 @@ const FamilyTransactionModal = ({
                 />
                 <span className={`${txStyles.radioLabelText} ${txStyles.income}`}>
                   <FontAwesomeIcon icon={faArrowUp} className={txStyles.radioIcon} />
-                  Thu nháº­p
+                  Thu nhập
                 </span>
               </label>
             </div>
@@ -352,7 +353,7 @@ const FamilyTransactionModal = ({
           {/* name */}
           <div className={txStyles.formGroup}>
             <label htmlFor="fTxName" className={txStyles.formLabel}>
-              TĂªn/MĂ´ táº£ giao dá»‹ch <span className={txStyles.requiredStar}>*</span>
+              Tên/Mô tả giao dịch <span className={txStyles.requiredStar}>*</span>
             </label>
             <input
               ref={firstInputRef}
@@ -362,7 +363,7 @@ const FamilyTransactionModal = ({
               onChange={(e) => set("name", e.target.value)}
               onBlur={() => handleBlur("name")}
               className={`${txStyles.formInput} ${fieldCls("name")}`}
-              placeholder="VĂ­ dá»¥: Äi siĂªu thá»‹ cuá»‘i tuáº§nâ€¦"
+              placeholder="Ví dụ: Đi siêu thị cuối tuần…"
               maxLength={100}
             />
             {fieldErr("name")}
@@ -371,7 +372,7 @@ const FamilyTransactionModal = ({
           {/* amount */}
           <div className={txStyles.formGroup}>
             <label htmlFor="fTxAmount" className={txStyles.formLabel}>
-              Sá»‘ tiá»n <span className={txStyles.requiredStar}>*</span>
+              Số tiền <span className={txStyles.requiredStar}>*</span>
             </label>
             <div className={txStyles.amountInputWrapper}>
               <input
@@ -385,7 +386,7 @@ const FamilyTransactionModal = ({
                 className={`${txStyles.amountInput} ${fieldCls("amount")}`}
                 placeholder="0"
               />
-              <span className={txStyles.currencySymbol}>â‚«</span>
+              <span className={txStyles.currencySymbol}>₫</span>
             </div>
             {fieldErr("amount")}
             {!form.amount && (
@@ -400,7 +401,7 @@ const FamilyTransactionModal = ({
                       setTouched((p) => ({ ...p, amount: true }));
                     }}
                   >
-                    {v.toLocaleString("vi-VN")}â‚«
+                    {v.toLocaleString("vi-VN")}₫
                   </button>
                 ))}
               </div>
@@ -411,7 +412,7 @@ const FamilyTransactionModal = ({
           <div className={txStyles.formGrid}>
             <div className={txStyles.formGroup}>
               <label htmlFor="fTxCategory" className={txStyles.formLabel}>
-                Danh má»¥c <span className={txStyles.requiredStar}>*</span>
+                Danh mục <span className={txStyles.requiredStar}>*</span>
               </label>
               <select
                 id="fTxCategory"
@@ -420,7 +421,7 @@ const FamilyTransactionModal = ({
                 onBlur={() => handleBlur("categoryId")}
                 className={`${txStyles.formInput} ${fieldCls("categoryId")}`}
               >
-                <option value="">-- Chá»n danh má»¥c --</option>
+                <option value="">-- Chọn danh mục --</option>
                 {filteredCategories.map((cat) => (
                   <option key={cat._id} value={cat._id}>{cat.name}</option>
                 ))}
@@ -430,7 +431,7 @@ const FamilyTransactionModal = ({
 
             <div className={txStyles.formGroup}>
               <label htmlFor="fTxAccount" className={txStyles.formLabel}>
-                TĂ i khoáº£n <span className={txStyles.requiredStar}>*</span>
+                Tài khoản <span className={txStyles.requiredStar}>*</span>
               </label>
               <select
                 id="fTxAccount"
@@ -439,7 +440,7 @@ const FamilyTransactionModal = ({
                 onBlur={() => handleBlur("accountId")}
                 className={`${txStyles.formInput} ${fieldCls("accountId")}`}
               >
-                <option value="">-- Chá»n tĂ i khoáº£n --</option>
+                <option value="">-- Chọn tài khoản --</option>
                 {accounts.map((acc) => {
                   const id = acc._id || acc.id;
                   return <option key={id} value={id}>{acc.name}</option>;
@@ -453,7 +454,7 @@ const FamilyTransactionModal = ({
           <div className={txStyles.formGrid}>
             <div className={txStyles.formGroup}>
               <label htmlFor="fTxDate" className={txStyles.formLabel}>
-                NgĂ y <span className={txStyles.requiredStar}>*</span>
+                Ngày <span className={txStyles.requiredStar}>*</span>
               </label>
               <input
                 id="fTxDate"
@@ -468,14 +469,14 @@ const FamilyTransactionModal = ({
             </div>
 
             <div className={txStyles.formGroup}>
-              <label htmlFor="fTxNote" className={txStyles.formLabel}>Ghi chĂº</label>
+              <label htmlFor="fTxNote" className={txStyles.formLabel}>Ghi chú</label>
               <input
                 id="fTxNote"
                 type="text"
                 value={form.note}
                 onChange={(e) => set("note", e.target.value)}
                 className={txStyles.formInput}
-                placeholder="ThĂªm ghi chĂº náº¿u cáº§nâ€¦"
+                placeholder="Thêm ghi chú nếu cần…"
               />
             </div>
           </div>
@@ -488,23 +489,23 @@ const FamilyTransactionModal = ({
               className={`${txStyles.formButton} ${txStyles.cancelButton}`}
               disabled={isSaving}
             >
-              Há»§y
+              Hủy
             </button>
             <button
               type="submit"
               className={`${txStyles.formButton} ${txStyles.submitButton} ${isValid ? txStyles.submitButtonActive : ""}`}
               disabled={isSaving || !isValid}
-              title={!isValid ? "Vui lĂ²ng kiá»ƒm tra láº¡i cĂ¡c trÆ°á»ng" : "Nháº¥n Ctrl+Enter Ä‘á»ƒ lÆ°u nhanh"}
+              title={!isValid ? "Vui lòng kiểm tra lại các trường" : "Nhấn Ctrl+Enter để lưu nhanh"}
             >
               {isSaving ? (
                 <>
                   <FontAwesomeIcon icon={faSpinner} spin />
-                  <span>Äang lÆ°uâ€¦</span>
+                  <span>Đang lưu…</span>
                 </>
               ) : (
                 <>
                   {isValid && <FontAwesomeIcon icon={faCheckCircle} />}
-                  <span>{isEditMode ? "LÆ°u thay Ä‘á»•i" : "ThĂªm giao dá»‹ch"}</span>
+                  <span>{isEditMode ? "Lưu thay đổi" : "Thêm giao dịch"}</span>
                 </>
               )}
             </button>
@@ -512,7 +513,7 @@ const FamilyTransactionModal = ({
 
           <div className={txStyles.keyboardHints}>
             <span>
-              đŸ’¡ Máº¹o: Nháº¥n <kbd>Ctrl</kbd> + <kbd>Enter</kbd> Ä‘á»ƒ lÆ°u nhanh
+              💡 Mẹo: Nhấn <kbd>Ctrl</kbd> + <kbd>Enter</kbd> để lưu nhanh
             </span>
           </div>
         </form>
@@ -606,7 +607,7 @@ const FamilyPage = () => {
     return { chartData: data, chartTotal: total };
   }, [categoriesData, chartType]);
 
-  const userName = userProfile?.fullname || "Báº¡n";
+  const userName = userProfile?.fullname || "Bạn";
   const userAvatar = userProfile?.avatar || null;
 
   const selectedFamily = useMemo(
@@ -638,7 +639,7 @@ const FamilyPage = () => {
       setCategories(categoryRes || []);
       setSelectedFamilyId((cur) => cur || familyList[0]?._id || "");
     } catch {
-      setMessage("KhĂ´ng thá»ƒ táº£i dá»¯ liá»‡u gia Ä‘Ă¬nh.");
+      setMessage("Không thể tải dữ liệu gia đình.");
       setMessageType("error");
     } finally {
       setIsLoading(false);
@@ -663,12 +664,12 @@ const FamilyPage = () => {
       setTxPagination(txRes.pagination || null);
       setTxPage(page);
     } catch {
-      setMessage("KhĂ´ng thá»ƒ táº£i chi tiáº¿t gia Ä‘Ă¬nh.");
+      setMessage("Không thể tải chi tiết gia đình.");
       setMessageType("error");
     }
   }, [selectedFamilyId]);
 
-  // â”€â”€ chart loader â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── chart loader ──────────────────────────────────────────────────────────────────────────
   const buildChartParams = useCallback(() => {
     const params = { period: chartPeriod };
     if (chartPeriod === "year") params.year = chartDate.getFullYear();
@@ -709,7 +710,7 @@ const FamilyPage = () => {
     return () => clearTimeout(t);
   }, [message]);
 
-  // â”€â”€ handlers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── handlers ──────────────────────────────────────────────────────────────────────────────
   const handleCreateFamily = async (e) => {
     e.preventDefault();
     if (!familyForm.name.trim()) return;
@@ -721,10 +722,10 @@ const FamilyPage = () => {
       setIsFamilyModalOpen(false);
       await loadBaseData();
       setSelectedFamilyId(family._id);
-      setMessage("ÄĂ£ táº¡o nhĂ³m gia Ä‘Ă¬nh.");
+      setMessage("Đã tạo nhóm gia đình.");
       setMessageType("success");
     } catch (err) {
-      setMessage(err.response?.data?.message || "KhĂ´ng thá»ƒ táº¡o nhĂ³m gia Ä‘Ă¬nh.");
+      setMessage(err.response?.data?.message || "Không thể tạo nhóm gia đình.");
       setMessageType("error");
     } finally {
       setIsSaving(false);
@@ -739,10 +740,10 @@ const FamilyPage = () => {
     try {
       await inviteFamilyMember(selectedFamilyId, inviteEmail);
       setInviteEmail("");
-      setMessage("ÄĂ£ gá»­i lá»i má»i thĂ nh viĂªn.");
+      setMessage("Đã gửi lời mời thành viên.");
       setMessageType("success");
     } catch (err) {
-      setMessage(err.response?.data?.message || "KhĂ´ng thá»ƒ gá»­i lá»i má»i.");
+      setMessage(err.response?.data?.message || "Không thể gửi lời mời.");
       setMessageType("error");
     } finally {
       setIsSaving(false);
@@ -755,17 +756,16 @@ const FamilyPage = () => {
     try {
       if (editingTx) {
         await updateFamilyTransaction(selectedFamilyId, editingTx.id || editingTx._id, payload);
-        setMessage("ÄĂ£ cáº­p nháº­t giao dá»‹ch.");
+        setMessage("Đã cập nhật giao dịch.");
       } else {
         await createFamilyTransaction(selectedFamilyId, payload);
-        setMessage("ÄĂ£ thĂªm giao dá»‹ch gia Ä‘Ă¬nh.");
+        setMessage("Đã thêm giao dịch gia đình.");
       }
       setMessageType("success");
       setIsTxModalOpen(false);
       setEditingTx(null);
       await loadFamilyData();
     } catch (err) {
-      // re-throw Ä‘á»ƒ modal hiá»ƒn thá»‹ lá»—i
       throw err;
     } finally {
       setIsSaving(false);
@@ -779,10 +779,10 @@ const FamilyPage = () => {
       await deleteFamilyTransaction(selectedFamilyId, txToDelete.id || txToDelete._id);
       setTxToDelete(null);
       await loadFamilyData();
-      setMessage("ÄĂ£ xĂ³a giao dá»‹ch.");
+      setMessage("Đã xóa giao dịch.");
       setMessageType("success");
     } catch (err) {
-      setMessage(err.response?.data?.message || "KhĂ´ng thá»ƒ xĂ³a giao dá»‹ch.");
+      setMessage(err.response?.data?.message || "Không thể xóa giao dịch.");
       setMessageType("error");
     } finally {
       setIsSaving(false);
@@ -797,10 +797,10 @@ const FamilyPage = () => {
       await deleteFamilyMember(selectedFamilyId, memberToDelete.id);
       setMemberToDelete(null);
       await Promise.all([loadFamilyData(1), loadBaseData()]);
-      setMessage("ÄĂ£ xĂ³a thĂ nh viĂªn khá»i gia Ä‘Ă¬nh.");
+      setMessage("Đã xóa thành viên khỏi gia đình.");
       setMessageType("success");
     } catch (err) {
-      setMessage(err.response?.data?.message || "KhĂ´ng thá»ƒ xĂ³a thĂ nh viĂªn.");
+      setMessage(err.response?.data?.message || "Không thể xóa thành viên.");
       setMessageType("error");
     } finally {
       setIsSaving(false);
@@ -830,10 +830,10 @@ const FamilyPage = () => {
       setMemberNicknameEdit(null);
       setNicknameValue("");
       await Promise.all([loadFamilyData(txPage), loadBaseData()]);
-      setMessage(nicknameValue.trim() ? "ÄĂ£ cáº­p nháº­t biá»‡t danh." : "ÄĂ£ xĂ³a biá»‡t danh.");
+      setMessage(nicknameValue.trim() ? "Đã cập nhật biệt danh." : "Đã xóa biệt danh.");
       setMessageType("success");
     } catch (err) {
-      setMessage(err.response?.data?.message || "KhĂ´ng thá»ƒ cáº­p nháº­t biá»‡t danh.");
+      setMessage(err.response?.data?.message || "Không thể cập nhật biệt danh.");
       setMessageType("error");
     } finally {
       setIsSaving(false);
@@ -849,10 +849,10 @@ const FamilyPage = () => {
       setShowDeleteFamily(false);
       setSelectedFamilyId("");
       await loadBaseData();
-      setMessage("ÄĂ£ xĂ³a nhĂ³m gia Ä‘Ă¬nh.");
+      setMessage("Đã xóa nhóm gia đình.");
       setMessageType("success");
     } catch (err) {
-      setMessage(err.response?.data?.message || "KhĂ´ng thá»ƒ xĂ³a nhĂ³m gia Ä‘Ă¬nh.");
+      setMessage(err.response?.data?.message || "Không thể xóa nhóm gia đình.");
       setMessageType("error");
     } finally {
       setIsSaving(false);
@@ -868,10 +868,10 @@ const FamilyPage = () => {
       setShowLeaveFamily(false);
       setSelectedFamilyId("");
       await loadBaseData();
-      setMessage("ÄĂ£ rá»i khá»i nhĂ³m gia Ä‘Ă¬nh.");
+      setMessage("Đã rời khỏi nhóm gia đình.");
       setMessageType("success");
     } catch (err) {
-      setMessage(err.response?.data?.message || "KhĂ´ng thá»ƒ rá»i nhĂ³m.");
+      setMessage(err.response?.data?.message || "Không thể rời nhóm.");
       setMessageType("error");
     } finally {
       setIsSaving(false);
@@ -888,17 +888,17 @@ const FamilyPage = () => {
       setIsTransferModalOpen(false);
       setTransferToMemberId("");
       await Promise.all([loadFamilyData(1), loadBaseData()]);
-      setMessage("ÄĂ£ chuyá»ƒn quyá»n chá»§ nhĂ³m thĂ nh cĂ´ng.");
+      setMessage("Đã chuyển quyền chủ nhóm thành công.");
       setMessageType("success");
     } catch (err) {
-      setMessage(err.response?.data?.message || "KhĂ´ng thá»ƒ chuyá»ƒn quyá»n.");
+      setMessage(err.response?.data?.message || "Không thể chuyển quyền.");
       setMessageType("error");
     } finally {
       setIsSaving(false);
     }
   };
 
-  // â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── render ────────────────────────────────────────────────────────────────────────────────
   return (
     <div>
       <Header userName={userName} userAvatar={userAvatar} />
@@ -909,12 +909,12 @@ const FamilyPage = () => {
         <section className={styles.hero}>
           <div className={styles.heroCopy}>
             <span className={styles.eyebrow}>
-              <FontAwesomeIcon icon={faUsers} /> Quáº£n lĂ½ gia Ä‘Ă¬nh
+              <FontAwesomeIcon icon={faUsers} /> Quản lý gia đình
             </span>
             <h1>{getGreeting()}, {userName}!</h1>
             <p>
-              Táº¡o nhĂ³m chi tiĂªu gia Ä‘Ă¬nh, má»i thĂ nh viĂªn báº±ng email vĂ  cĂ¹ng theo
-              dĂµi cĂ¡c khoáº£n thu chi chung mĂ  khĂ´ng áº£nh hÆ°á»Ÿng dá»¯ liá»‡u cĂ¡ nhĂ¢n.
+              Tạo nhóm chi tiêu gia đình, mời thành viên bằng email và cùng theo
+              dõi các khoản thu chi chung mà không ảnh hưởng dữ liệu cá nhân.
             </p>
             <div className={styles.heroMeta}>
               <FontAwesomeIcon icon={faCalendarAlt} />
@@ -929,12 +929,12 @@ const FamilyPage = () => {
               onClick={() => setIsFamilyModalOpen(true)}
               className={styles.heroButton}
             >
-              Táº¡o gia Ä‘Ă¬nh
+              Tạo gia đình
             </Button>
             <div className={styles.heroBadge}>
               <FontAwesomeIcon icon={faHome} />
               <strong>{families.length}</strong>
-              <span>NhĂ³m gia Ä‘Ă¬nh</span>
+              <span>Nhóm gia đình</span>
             </div>
           </div>
         </section>
@@ -949,13 +949,13 @@ const FamilyPage = () => {
           <aside className={styles.sidebar}>
             <div className={styles.panel}>
               <div className={styles.panelHeader}>
-                <h2>NhĂ³m cá»§a tĂ´i</h2>
+                <h2>Nhóm của tôi</h2>
                 <FontAwesomeIcon icon={faUsers} />
               </div>
               {isLoading ? (
-                <div className={styles.emptyState}>Äang táº£i...</div>
+                <div className={styles.emptyState}>Đang tải...</div>
               ) : families.length === 0 ? (
-                <div className={styles.emptyState}>ChÆ°a cĂ³ nhĂ³m gia Ä‘Ă¬nh nĂ o.</div>
+                <div className={styles.emptyState}>Chưa có nhóm gia đình nào.</div>
               ) : (
                 <div className={styles.familyList}>
                   {families.map((family) => (
@@ -1003,7 +1003,7 @@ const FamilyPage = () => {
                             placeholder="Nháº­p email thĂ nh viĂªn"
                           />
                           <button type="submit" disabled={isSaving || !inviteEmail.trim()}>
-                            Má»i
+                            Mời
                           </button>
                         </form>
                         <Button
@@ -1085,6 +1085,19 @@ const FamilyPage = () => {
 
                   {/* Bộ lọc — giống trang Danh mục */}
                   <div className={styles.chartFiltersRow}>
+                    <DateRangeNavigator
+                      period={chartPeriod}
+                      currentDate={chartDate}
+                      onPeriodChange={(nextPeriod) => {
+                        setChartPeriod(nextPeriod);
+                        setActiveCategory(null);
+                      }}
+                      onDateChange={(nextDate) => {
+                        setChartDate(nextDate);
+                        setActiveCategory(null);
+                      }}
+                    />
+
                     <fieldset className={styles.typeFilterFieldset}>
                       <legend className={styles.typeFilterLegend}>Loại</legend>
                       <div className={styles.typeFilterButtons}>
@@ -1107,19 +1120,6 @@ const FamilyPage = () => {
                         ))}
                       </div>
                     </fieldset>
-
-                    <DateRangeNavigator
-                      period={chartPeriod}
-                      currentDate={chartDate}
-                      onPeriodChange={(nextPeriod) => {
-                        setChartPeriod(nextPeriod);
-                        setActiveCategory(null);
-                      }}
-                      onDateChange={(nextDate) => {
-                        setChartDate(nextDate);
-                        setActiveCategory(null);
-                      }}
-                    />
                   </div>
 
                   <CategoryAnalysisChart
@@ -1218,17 +1218,27 @@ const FamilyPage = () => {
                             null;
                           return (
                             <article key={tx.id || tx._id} className={styles.transactionItem}>
+                              {/* Category icon */}
+                              <div
+                                className={styles.txCategoryIcon}
+                                style={{
+                                  background: tx.type === "THUNHAP" ? "#dcfce7" : "#fee2e2",
+                                  color: tx.type === "THUNHAP" ? "#059669" : "#dc2626",
+                                }}
+                              >
+                                <FontAwesomeIcon icon={getIconObject(tx.category?.icon)} />
+                              </div>
                               <div style={{ minWidth: 0, flex: 1 }}>
                                 <strong>{tx.description || tx.name}</strong>
                                 <span>
-                                  {tx.category?.name || "Danh má»¥c"}
-                                  {" Â· "}
+                                  {tx.category?.name || "Danh mục"}
+                                  {" · "}
                                   {tx.paymentMethod?.name || "TĂ i khoáº£n"}
-                                  {" Â· "}
+                                  {" · "}
                                   {new Date(tx.date).toLocaleDateString("vi-VN")}
                                   {creatorName && (
                                     <>
-                                      {" Â· "}
+                                      {" · "}
                                       <FontAwesomeIcon
                                         icon={faUserCircle}
                                         style={{ marginRight: 3 }}
@@ -1346,7 +1356,7 @@ const FamilyPage = () => {
                 className={styles.secondaryButton}
                 onClick={() => setIsFamilyModalOpen(false)}
               >
-                <FontAwesomeIcon icon={faTimes} /> Há»§y
+                <FontAwesomeIcon icon={faTimes} /> Hủy
               </button>
               <button
                 type="submit"
@@ -1444,7 +1454,7 @@ const FamilyPage = () => {
                 <input
                   value={nicknameValue}
                   onChange={(e) => setNicknameValue(e.target.value)}
-                  placeholder="VD: Máº¹, Cha, Anh Hai..."
+                  placeholder="VD: Mẹ, Cha, Anh Hai..."
                   maxLength={40}
                   autoFocus
                 />
@@ -1459,7 +1469,7 @@ const FamilyPage = () => {
                 className={styles.secondaryButton}
                 onClick={() => setMemberNicknameEdit(null)}
               >
-                <FontAwesomeIcon icon={faTimes} /> Há»§y
+                <FontAwesomeIcon icon={faTimes} /> Hủy
               </button>
               <button type="submit" className={styles.primaryButton} disabled={isSaving}>
                 <FontAwesomeIcon icon={faCheck} /> LÆ°u biá»‡t danh
@@ -1519,14 +1529,14 @@ const FamilyPage = () => {
                 className={styles.secondaryButton}
                 onClick={() => setIsTransferModalOpen(false)}
               >
-                <FontAwesomeIcon icon={faTimes} /> Há»§y
+                <FontAwesomeIcon icon={faTimes} /> Hủy
               </button>
               <button
                 type="submit"
                 className={styles.primaryButton}
                 disabled={isSaving || !transferToMemberId}
               >
-                <FontAwesomeIcon icon={faCrown} /> Chuyá»ƒn quyá»n
+                <FontAwesomeIcon icon={faCrown} /> ChuyỒn quyền
               </button>
             </div>
           </form>
