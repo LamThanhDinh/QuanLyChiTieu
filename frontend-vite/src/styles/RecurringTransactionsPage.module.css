@@ -363,7 +363,7 @@
   margin-bottom: 1.25rem;
   color: #334155;
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.025em;
 }
 
@@ -384,6 +384,14 @@
   font-family: inherit;
   outline: none;
   transition: all 0.3s ease;
+}
+
+.formPanel input::placeholder,
+.formPanel textarea::placeholder,
+.modalFormPanel input::placeholder,
+.modalFormPanel textarea::placeholder {
+  color: #6b7280;
+  font-weight: 400;
 }
 
 .formPanel textarea,
@@ -443,7 +451,7 @@
 .checkboxRow label {
   flex-direction: row;
   align-items: center;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .checkboxRow input {
@@ -671,6 +679,18 @@
   color: #64748b;
   font-size: 13px;
   line-height: 1.4;
+}
+
+.familyScope {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4f46e5;
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .cardMoney strong,
@@ -1059,7 +1079,7 @@
   margin-bottom: 0.625rem;
   color: #334155;
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.025em;
 }
 
@@ -1203,7 +1223,7 @@
   position: absolute;
   right: 1.25rem;
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 600;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1225,7 +1245,7 @@
   background: #f8fafc;
   color: #475569;
   font-size: 0.8125rem;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;

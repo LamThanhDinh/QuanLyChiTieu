@@ -22,6 +22,7 @@ import Button from "../components/Common/Button";
 import ConfirmDialog from "../components/Common/ConfirmDialog";
 import { getAccounts } from "../api/accountsService";
 import { getCategories } from "../api/categoriesService";
+import { getFamilies } from "../api/familyService";
 import { getProfile } from "../api/profileService";
 import {
   createRecurringTransaction,
@@ -42,6 +43,7 @@ const initialForm = {
   type: "CHITIEU",
   accountId: "",
   categoryId: "",
+  familyId: "",
   frequency: "monthly",
   nextRunDate: new Date().toISOString().slice(0, 10),
   endDate: "",
@@ -87,6 +89,7 @@ const RecurringTransactionsPage = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [accounts, setAccounts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [families, setFamilies] = useState([]);
   const [recurringTransactions, setRecurringTransactions] = useState([]);
   const [formData, setFormData] = useState(initialForm);
   const [editingId, setEditingId] = useState(null);
@@ -111,17 +114,19 @@ const RecurringTransactionsPage = () => {
     setMessage("");
 
     try {
-      const [profileResponse, accountResponse, categoryResponse, recurringResponse] =
+      const [profileResponse, accountResponse, categoryResponse, familyResponse, recurringResponse] =
         await Promise.all([
           getProfile().catch(() => null),
           getAccounts({}),
           getCategories({ includeGoalCategories: "false" }),
+          getFamilies().catch(() => ({ data: [] })),
           getRecurringTransactions({ status: statusFilter }),
         ]);
 
       setUserProfile(profileResponse?.data || null);
       setAccounts(accountResponse || []);
       setCategories(categoryResponse || []);
+      setFamilies(familyResponse?.data || []);
       setRecurringTransactions(recurringResponse?.data || []);
     } catch (error) {
       console.error("Error loading recurring transactions:", error);
@@ -311,6 +316,7 @@ const RecurringTransactionsPage = () => {
       type: item.type || "CHITIEU",
       accountId: item.accountId?._id || item.accountId || "",
       categoryId: item.categoryId?._id || item.categoryId || "",
+      familyId: item.familyId?._id || item.familyId || "",
       frequency: item.frequency || "monthly",
       nextRunDate: item.nextRunDate
         ? new Date(item.nextRunDate).toISOString().slice(0, 10)
@@ -579,6 +585,21 @@ const RecurringTransactionsPage = () => {
               </select>
             </label>
 
+            <label>
+              Ghi nhận vào
+              <select
+                value={formData.familyId}
+                onChange={(event) => handleInputChange("familyId", event.target.value)}
+              >
+                <option value="">Cá nhân</option>
+                {families.map((family) => (
+                  <option key={family._id} value={family._id}>
+                    Gia đình: {family.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
             <div className={styles.inlineFields}>
               <label>
                 Chu kỳ
@@ -735,6 +756,11 @@ const RecurringTransactionsPage = () => {
                           {item.accountId?.name || "Tài khoản"} ·{" "}
                           {frequencyLabels[item.frequency]}
                         </p>
+                        {item.familyId && (
+                          <span className={styles.familyScope}>
+                            Gia đình: {item.familyId?.name || "Nhóm gia đình"}
+                          </span>
+                        )}
                       </div>
                     </div>
 
@@ -876,6 +902,9 @@ const RecurringTransactionsPage = () => {
                             {formatDate(transaction.date)} ·{" "}
                             {transaction.category?.name || "Danh mục"} ·{" "}
                             {transaction.paymentMethod?.name || "Tài khoản"}
+                            {transaction.family?.name
+                              ? ` · Gia đình: ${transaction.family.name}`
+                              : ""}
                           </span>
                         </div>
                         <strong
@@ -1036,6 +1065,21 @@ const RecurringTransactionsPage = () => {
                 {filteredCategories.map((category) => (
                   <option key={category._id} value={category._id}>
                     {category.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label>
+              Ghi nhận vào
+              <select
+                value={formData.familyId}
+                onChange={(event) => handleInputChange("familyId", event.target.value)}
+              >
+                <option value="">Cá nhân</option>
+                {families.map((family) => (
+                  <option key={family._id} value={family._id}>
+                    Gia đình: {family.name}
                   </option>
                 ))}
               </select>

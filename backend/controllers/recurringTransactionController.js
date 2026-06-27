@@ -3,6 +3,7 @@ const RecurringTransaction = require("../models/RecurringTransaction");
 const Transaction = require("../models/Transaction");
 const Account = require("../models/Account");
 const Category = require("../models/Category");
+const Family = require("../models/Family");
 
 const toObjectId = (id) =>
   typeof id === "string" ? new mongoose.Types.ObjectId(id) : id;
@@ -90,7 +91,16 @@ const calculateNextRunDate = (currentDate, frequency, dayOfMonth = null) => {
   return nextDate;
 };
 
-const validateReferences = async ({ userId, accountId, categoryId, type }) => {
+const isFamilyMember = (family, userId) =>
+  family?.members?.some((member) => String(member.userId) === String(userId));
+
+const validateReferences = async ({
+  userId,
+  accountId,
+  categoryId,
+  type,
+  familyId = null,
+}) => {
   const [account, category] = await Promise.all([
     Account.findOne({ _id: accountId, userId }),
     Category.findOne({ _id: categoryId, userId }),
@@ -108,6 +118,17 @@ const validateReferences = async ({ userId, accountId, categoryId, type }) => {
     return {
       error: "Loại giao dịch không khớp với loại danh mục đã chọn",
     };
+  }
+
+  if (familyId) {
+    if (!mongoose.Types.ObjectId.isValid(familyId)) {
+      return { error: "Nhóm gia đình không hợp lệ" };
+    }
+
+    const family = await Family.findById(familyId);
+    if (!family || !isFamilyMember(family, userId)) {
+      return { error: "Không tìm thấy nhóm gia đình phù hợp" };
+    }
   }
 
   return { account, category };
@@ -152,6 +173,7 @@ const getRecurringTransactions = async (req, res) => {
     const recurringTransactions = await RecurringTransaction.find(filter)
       .populate("accountId", "name type bankName")
       .populate("categoryId", "name type icon")
+      .populate("familyId", "name")
       .sort({ isActive: -1, nextRunDate: 1, createdAt: -1 });
 
     res.json({
@@ -181,6 +203,7 @@ const createRecurringTransaction = async (req, res) => {
       note = "",
       autoCreate = false,
       isActive = true,
+      familyId = null,
     } = req.body;
 
     const numericAmount = Number(amount);
@@ -210,6 +233,7 @@ const createRecurringTransaction = async (req, res) => {
       accountId,
       categoryId,
       type,
+      familyId,
     });
 
     if (referenceCheck.error) {
@@ -218,6 +242,7 @@ const createRecurringTransaction = async (req, res) => {
 
     const recurringTransaction = await RecurringTransaction.create({
       userId,
+      familyId: familyId || null,
       name,
       amount: Math.round(numericAmount),
       type,
@@ -239,7 +264,8 @@ const createRecurringTransaction = async (req, res) => {
       recurringTransaction._id
     )
       .populate("accountId", "name type bankName")
-      .populate("categoryId", "name type icon");
+      .populate("categoryId", "name type icon")
+      .populate("familyId", "name");
 
     res.status(201).json(enrichRecurring(populated));
   } catch (error) {
@@ -264,6 +290,7 @@ const UPDATABLE_FIELDS = [
   "note",
   "autoCreate",
   "isActive",
+  "familyId",
 ];
 
 const updateRecurringTransaction = async (req, res) => {
@@ -360,12 +387,18 @@ const updateRecurringTransaction = async (req, res) => {
     const accountId = updates.accountId || recurring.accountId;
     const categoryId = updates.categoryId || recurring.categoryId;
     const type = updates.type || recurring.type;
+    const familyId =
+      updates.familyId !== undefined ? updates.familyId || null : recurring.familyId;
+    if (updates.familyId !== undefined) {
+      updates.familyId = familyId;
+    }
 
     const referenceCheck = await validateReferences({
       userId,
       accountId,
       categoryId,
       type,
+      familyId,
     });
 
     if (referenceCheck.error) {
@@ -377,7 +410,8 @@ const updateRecurringTransaction = async (req, res) => {
 
     const populated = await RecurringTransaction.findById(recurring._id)
       .populate("accountId", "name type bankName")
-      .populate("categoryId", "name type icon");
+      .populate("categoryId", "name type icon")
+      .populate("familyId", "name");
 
     res.json(enrichRecurring(populated));
   } catch (error) {
@@ -425,6 +459,7 @@ const createTransactionFromRecurring = async (recurring, runDate = null) => {
     note: recurring.note || "Tạo từ giao dịch định kỳ",
     date: transactionDate,
     recurringTransactionId: recurring._id,
+    familyId: recurring.familyId || null,
   });
 
   recurring.lastRunDate = transactionDate;
@@ -487,7 +522,8 @@ const runRecurringTransaction = async (req, res) => {
     const transaction = await createTransactionFromRecurring(recurring);
     const populatedRecurring = await RecurringTransaction.findById(recurring._id)
       .populate("accountId", "name type bankName")
-      .populate("categoryId", "name type icon");
+      .populate("categoryId", "name type icon")
+      .populate("familyId", "name");
 
     res.status(201).json({
       message: "Đã tạo giao dịch từ mẫu định kỳ",
@@ -522,6 +558,7 @@ const getGeneratedTransactions = async (req, res) => {
     })
       .populate("accountId", "name type")
       .populate("categoryId", "name icon type")
+      .populate("familyId", "name")
       .sort({ date: -1, createdAt: -1 })
       .limit(50);
 
@@ -537,6 +574,7 @@ const getGeneratedTransactions = async (req, res) => {
         category: transaction.categoryId,
         paymentMethod: transaction.accountId,
         recurringTransactionId: transaction.recurringTransactionId,
+        family: transaction.familyId,
       })),
     });
   } catch (error) {

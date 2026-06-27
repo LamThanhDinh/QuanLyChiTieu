@@ -8,6 +8,12 @@ const RecurringTransactionSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    familyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Family",
+      default: null,
+      index: true,
+    },
     accountId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Account",

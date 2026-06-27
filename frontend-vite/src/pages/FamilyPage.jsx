@@ -1341,7 +1341,7 @@ const FamilyPage = () => {
                 <input
                   value={familyForm.name}
                   onChange={(e) => setFamilyForm((p) => ({ ...p, name: e.target.value }))}
-                  placeholder="VD: Gia đình Đình Lâm"
+                  placeholder="VD: Gia đình Đỉnh Lâm"
                 />
               </label>
               <label>
@@ -1349,7 +1349,7 @@ const FamilyPage = () => {
                 <textarea
                   value={familyForm.description}
                   onChange={(e) => setFamilyForm((p) => ({ ...p, description: e.target.value }))}
-                  placeholder="Mô tả ngắn..."
+                  placeholder="Mô tả ngắn"
                   rows={3}
                 />
               </label>
